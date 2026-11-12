@@ -89,6 +89,19 @@ const teams = [
           <figcaption class="hx-cap">A sample website, as its visitors see it and through the Privaini lens</figcaption>
         </figure>
       </div>
+      <!-- trusted by: the customers' marks run along the foot of the hero, each in its own colours (stops on hover) -->
+      <div class="wrap hx-trust" role="region" aria-labelledby="trust-h">
+        <h2 id="trust-h" class="fx-label trust-h">Trusted by leading insurers &amp; enterprises</h2>
+        <div class="lg">
+          <div class="lg-track">
+            {[0, 1].map((c) => (
+              <ul role="list" class="lg-set" aria-hidden={c === 1 ? 'true' : undefined}>
+                {customerLogos.map((l) => <li class:list={{ boxed: l.boxed }}><img src={l.src} alt={c === 1 ? '' : l.name} width="160" height="116" decoding="async" /></li>)}
+              </ul>
+            ))}
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- privacy enforcement is routine: one giant figure, three tiles, the settlements as a band -->
@@ -151,13 +164,9 @@ const teams = [
       </div>
     </section>
 
-    <!-- trusted by: a wall of the customers' marks, then a customer's words -->
-    <section class="trust is-stone" id="trusted" aria-labelledby="trust-h">
+    <!-- a customer's words (their marks run along the foot of the hero) -->
+    <section class="trust is-stone" id="trusted" aria-label="What a customer says">
       <div class="wrap">
-        <h2 id="trust-h" class="fx-label trust-h" data-reveal data-in>Trusted by leading insurers &amp; enterprises</h2>
-        <ul class="wall fx-hd" role="list" data-reveal-group>
-          {customerLogos.map((l) => <li data-reveal><img src={l.src} alt={l.name} width="160" height="116" loading="lazy" decoding="async" /></li>)}
-        </ul>
         <figure class="quote" data-reveal-group>
           <span class="q-pad fx-dots" aria-hidden="true" data-reveal><span class="q-mark"></span></span>
           <blockquote class="q-text" data-reveal>“{viaquest.text}”</blockquote>
@@ -306,7 +315,7 @@ const teams = [
   .f-btn:hover > span[aria-hidden], .v5-link:hover > span[aria-hidden], .tr:hover .tr-go > span[aria-hidden] { transform: translateX(4px); }
 
   /* ---- the hero: the copy, and /v4's x-ray beside it, on white ---- */
-  .hx { position: relative; min-height: max(100svh, 760px); display: grid; align-items: center; padding-block: calc(var(--nav-h) + 48px) 64px; overflow-x: clip; }
+  .hx { position: relative; min-height: max(100svh, 760px); display: grid; grid-template-rows: 1fr auto; align-items: center; padding-block: calc(var(--nav-h) + 40px) 20px; overflow-x: clip; }
   .hx-grid { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; }
   .hx-copy { grid-column: 1 / span 6; display: grid; gap: 36px; justify-items: start; padding-right: clamp(0px, 3vw, 48px); }
   .hx-sub { margin: 0; font: 500 var(--t-lead)/1.6 var(--font); letter-spacing: -0.01em; color: var(--ink); }
@@ -383,15 +392,23 @@ const teams = [
   .inst-panel:nth-child(3) .inst-grid i { transition-delay: calc(var(--i) * 14ms + 300ms); }
   :global(html.js) .inst-panel:not(.in) .inst-grid i.lit { background: var(--stone-3); }
 
-  /* ---- trusted by: a wall of marks, and the quotation ---- */
-  .trust { padding-block: clamp(24px, 3vw, 48px) clamp(104px, 11vw, 184px); }
-  .trust-h { margin-bottom: 28px; }
-  .wall { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; }
-  .wall li { display: grid; place-items: center; aspect-ratio: 3 / 2; background: var(--tone); transition: background-color 0.35s; }
-  .wall li:hover { background: var(--stone-3); }
-  /* each mark in its own colours; multiply drops a mark's white ground into the cell */
-  .wall img { display: block; width: auto; height: auto; max-width: 68%; max-height: 52%; object-fit: contain; mix-blend-mode: multiply; }
-  .quote { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 36px; margin: clamp(88px, 9vw, 152px) 0 0; }
+  /* ---- trusted by: the customers' marks, a marquee along the foot of the hero ---- */
+  .hx-trust { grid-row: 2; align-self: end; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; margin-top: clamp(24px, 3vw, 48px); padding-top: 16px; border-top: 1px solid var(--on-stone-line); }
+  .trust-h { grid-column: 1 / span 3; margin: 0; max-width: 24ch; }
+  .lg { grid-column: 4 / -1; overflow: hidden; margin-right: calc(var(--margin) * -1); -webkit-mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 96px), transparent); mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 96px), transparent); }
+  .lg-track { display: flex; width: max-content; }
+  .lg-set { display: flex; flex: none; align-items: center; list-style: none; margin: 0; padding: 0; animation: tk 55s linear infinite; }
+  .lg:hover .lg-set { animation-play-state: paused; }
+  .lg-set li { flex: none; display: grid; place-items: center; height: 56px; padding-inline: clamp(8px, 1vw, 16px); }
+  /* each mark in its own colours; multiply drops a mark's white ground into the page */
+  /* the source files are padded 221×161 cards with the mark in the middle: cover crops the empty top and bottom */
+  .lg-set img { display: block; width: 150px; height: 56px; object-fit: cover; mix-blend-mode: multiply; }
+  /* a boxed mark (McGraw Hill) fills its card, so it is shown whole */
+  .lg-set .boxed img { object-fit: contain; }
+
+  /* ---- the quotation ---- */
+  .trust { padding-block: clamp(104px, 11vw, 184px); }
+  .quote { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 36px; margin: 0; }
   /* the quote mark sits on a square of dots */
   .q-pad { grid-column: 1 / span 2; grid-row: 1 / span 2; align-self: start; display: grid; place-items: center; aspect-ratio: 1; padding-top: 0.12em; }
   .q-mark { font: 500 clamp(160px, 16vw, 260px)/0.7 var(--font); color: var(--cyan); }
@@ -487,7 +504,8 @@ const teams = [
 
   /* ---- narrower ---- */
   @media (max-width: 1099px) {
-    .wall { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .trust-h { grid-column: 1 / -1; max-width: none; margin-bottom: 16px; }
+    .lg { grid-column: 1 / -1; margin-left: calc(var(--margin) * -1); }
     .tr { grid-template-columns: 48px minmax(0, 1fr) auto; row-gap: 12px; }
     .tr-note { grid-column: 2 / 3; }
     .tr-go { grid-column: 3; grid-row: 1; }
@@ -521,8 +539,8 @@ const teams = [
   @media (max-width: 600px) {
     .fnd-head br, .cta-h br { display: none; }
     .enf-p { font-size: 22px; }
-    .wall { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
-    .wall img { max-width: 78%; }
+    .lg-set li { height: 56px; padding-inline: 20px; }
+    .lg-set img { width: 120px; height: 46px; }
     .tr { grid-template-columns: 1fr auto; padding: 24px 20px; }
     .tr-icon { display: none; }
     .tr-name { grid-column: 1; }
@@ -533,5 +551,8 @@ const teams = [
   @media (prefers-reduced-motion: reduce) {
     .tk-set { animation: none; }
     .tk-pause { display: none; }
+    /* the marks stand still and scroll by hand instead */
+    .lg-set { animation: none; }
+    .lg { overflow-x: auto; }
   }
 </style>
