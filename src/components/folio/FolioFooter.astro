@@ -36,7 +36,6 @@ const platformCols = [
 ---
 {flat ? (
 <footer class="ff ff--flat is-night" data-nav-dark>
-  <p class="fz-name" aria-hidden="true">PRIVAINI</p>
   <div class="wrap fz-groups">
     <nav class="fz-g fz-g--1" aria-labelledby="fz-for"><p class="fz-h" id="fz-for">Privaini for</p>
       <ul role="list" class="fz-list fz-list--lead">{solutions.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
@@ -55,6 +54,7 @@ const platformCols = [
       <ul role="list" class="fz-list">{resources.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
     </nav>
   </div>
+  <p class="fz-name" aria-hidden="true">PRIVAINI</p>
   <div class="fz-bar">
     <div class="wrap fz-bar-in">
       <address class="fz-contact">
@@ -128,9 +128,9 @@ const platformCols = [
      name sits behind it all, large and faint, fading out towards the foot ---- */
   .ff--flat { position: relative; overflow: clip; border-top: 0; padding: clamp(80px, 8vw, 120px) 0 0; isolation: isolate; }
   .fz-name {
-    position: absolute; z-index: -1; left: 50%; bottom: 0; translate: -50% 2%; margin: 0; pointer-events: none; user-select: none;
-    font: 400 clamp(64px, 16.4vw, 330px)/0.8 var(--logo); letter-spacing: 0.02em; white-space: nowrap; color: var(--on-night); opacity: 0.1;
-    -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 92%); mask-image: linear-gradient(180deg, #000 30%, transparent 92%);
+    order: 5; margin: clamp(48px, 6vw, 96px) 0 0; text-align: center; pointer-events: none; user-select: none;
+    font: 400 clamp(56px, 15.6vw, 320px)/1 var(--logo); letter-spacing: 0.02em; white-space: nowrap; color: var(--on-night); opacity: 0.12;
+    -webkit-mask-image: linear-gradient(180deg, #000 35%, transparent 100%); mask-image: linear-gradient(180deg, #000 35%, transparent 100%);
   }
   .fz-groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(64px, 6vw, 96px) var(--gap); align-items: start; }
   .fz-g--3 { grid-column: span 3; }
@@ -149,7 +149,7 @@ const platformCols = [
   .ff--flat a:hover { color: var(--on-night); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
   .ff--flat a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
   .ff--flat a:active { opacity: 0.75; }
-  .fz-bar { margin-top: clamp(120px, 13vw, 220px); border-block: 1px solid var(--on-night-line); }
+  .fz-bar { margin-top: clamp(24px, 3vw, 48px); border-block: 1px solid var(--on-night-line); }
   .fz-bar-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; min-height: 72px; padding-block: 14px; }
   .fz-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid var(--on-night-line-2); font-size: 14px; color: var(--on-night); }
   .ff--flat .fz-cta:hover { background: var(--cyan); border-color: var(--cyan); color: var(--night); text-decoration: none; }
