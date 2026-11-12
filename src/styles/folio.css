@@ -183,11 +183,6 @@ body.folio.flat {
 html.js .flat [data-in]:not(.in) :is(.fx-label, .fx-chip), html.js .flat :is(.fx-label, .fx-chip)[data-in]:not(.in) { clip-path: inset(0 100% 0 0); }
 .flat .in .fx-chip::before, .flat .fx-chip.in::before { animation: fx-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both; }
 @keyframes fx-pop { from { transform: scale(0); } }
-@media (prefers-reduced-motion: reduce) {
-  html.js .flat [data-in]:not(.in) :is(.fx-label, .fx-chip), html.js .flat :is(.fx-label, .fx-chip)[data-in]:not(.in) { clip-path: none; }
-  .flat :is(.fx-label, .fx-chip) { transition: none; }
-  .flat .fx-chip::before { animation: none !important; }
-}
 body.folio.flat .nav.theme-dark {
   --bg: var(--night); --bg-2: var(--night-2); --bg-3: var(--night-3); --bg-4: #2a2a2a;
   --ink: var(--on-night); --muted: var(--on-night-muted); --accent-hi: var(--cyan); --ui-line: var(--on-night-line);

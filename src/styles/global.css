@@ -314,7 +314,11 @@ main { display: block; }
   .js [data-reveal] { opacity: 1; transform: none; filter: none; }
   .js [data-split] { visibility: visible; }
   .js [data-reveal-line] .line-inner { transform: none; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  body:not(.flat) *, body:not(.flat) *::before, body:not(.flat) *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  /* Flat (/v5) keeps its motion for visitors who have Reduce Motion on (an iPhone in Low Power Mode, say): the
+     large movements go (no rise, no parallax, no smooth scroll, no travelling lens scene), the quiet ones stay:
+     fades, drawn lines, counters. A reveal is a fade alone. */
+  .js body.flat [data-reveal] { opacity: 0; transform: none; filter: none; }
 }
 
 /* ---------- page changes: the lens closes on the old page and opens an iris onto the new one ---------- */

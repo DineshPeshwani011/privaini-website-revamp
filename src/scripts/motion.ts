@@ -58,7 +58,31 @@ function counters(duration: number) {
   });
 }
 
-if (reduce) {
+// Flat (/v5) with Reduce Motion on: a gentle layer, so the page is not simply still. Reveals are fades only (no
+// rise), headlines fade in whole, counters count; no smooth scroll, no parallax, no scramble.
+const gentle = reduce && document.body.classList.contains('flat');
+
+if (gentle) {
+  document.querySelectorAll<HTMLElement>('[data-split]').forEach((el) => {
+    el.style.visibility = 'visible';
+    gsap.from(el, { opacity: 0, duration: 0.9, ease: 'power2.out', delay: el.hasAttribute('data-split-now') ? 0.2 : 0,
+      scrollTrigger: el.hasAttribute('data-split-now') ? undefined : { trigger: el, start: 'top 88%', once: true } });
+  });
+  const groups = new Map<Element, HTMLElement[]>();
+  document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => {
+    const group = el.closest('[data-reveal-group]') ?? el.parentElement ?? document.body;
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group)!.push(el);
+  });
+  groups.forEach((els, group) => {
+    const fromTop = group.getBoundingClientRect().top < innerHeight * 0.9;
+    gsap.to(els, {
+      opacity: 1, duration: 0.9, ease: 'power2.out', stagger: 0.08, delay: fromTop ? 0.3 : 0,
+      scrollTrigger: fromTop ? undefined : { trigger: group, start: 'top 88%', once: true },
+    });
+  });
+  counters(1.4);
+} else if (reduce) {
   document.querySelectorAll('[data-reveal]').forEach(show);
   document.querySelectorAll('[data-reveal-line]').forEach((el) => el.removeAttribute('data-reveal-line'));
 } else if (editorial) {

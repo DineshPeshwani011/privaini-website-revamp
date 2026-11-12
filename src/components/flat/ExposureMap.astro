@@ -83,7 +83,4 @@ const rest2 = (1 - ((X.b - X.a) + (Y.low - Y.full) + (X.c - X.b)) / total).toFix
   .xm[data-part='1'] .xm-line { stroke-dashoffset: var(--rest1); }
   .xm[data-part='2'] .xm-line { stroke-dashoffset: var(--rest2); }
   .xm[data-part='0'] .xm-p1, .xm:is([data-part='0'], [data-part='1']) .xm-p2, .xm:not([data-part='3']) .xm-p3 { opacity: 0; transition-delay: 0s; }
-  @media (prefers-reduced-motion: reduce) {
-    .xm * { transition: none !important; }
-  }
 </style>

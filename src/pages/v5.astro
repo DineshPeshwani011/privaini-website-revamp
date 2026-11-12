@@ -553,11 +553,12 @@ const teams = [
     .tr-go { grid-column: 2; grid-row: 1; }
     .cta-btn { width: 100%; }
   }
+  /* the marquee stops under a mouse, and on a tap (a touch has no hover) */
+  .lg.is-paused .lg-set { animation-play-state: paused; }
+  @media (hover: none) { .lg:hover .lg-set { animation-play-state: running; } .lg.is-paused:hover .lg-set { animation-play-state: paused; } }
   @media (prefers-reduced-motion: reduce) {
-    .tk-set { animation: none; }
-    .tk-pause { display: none; }
-    /* the marks stand still and scroll by hand instead */
-    .lg-set { animation: none; }
-    .lg { overflow-x: auto; }
+    /* the loops run slower, not off: the page keeps its life (see docs/DESIGN-LANGUAGE) */
+    .tk-set { animation-duration: 90s; }
+    .lg-set { animation-duration: 90s; }
   }
 </style>

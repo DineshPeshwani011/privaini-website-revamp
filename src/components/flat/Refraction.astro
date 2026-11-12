@@ -162,10 +162,11 @@ const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; ret
   .rf-box { fill: var(--cyan); }
   .rf-tick { stroke: var(--night); stroke-width: 1.8; stroke-linecap: square; }
 
+  /* the light along the threads runs for everyone; the ring turns only where Reduce Motion is off */
+  .rf.is-live .rf-pulse { opacity: 1; animation: rf-run var(--t) linear var(--d) infinite; }
+  .rf:not(.is-vis) :is(.rf-ring, .rf-pulse) { animation-play-state: paused; }
   @media (prefers-reduced-motion: no-preference) {
     .rf-ring { animation: rf-turn 90s linear infinite; }
-    .rf.is-live .rf-pulse { opacity: 1; animation: rf-run var(--t) linear var(--d) infinite; }
-    .rf:not(.is-vis) :is(.rf-ring, .rf-pulse) { animation-play-state: paused; }
   }
   @keyframes rf-turn { to { transform: rotate(360deg); } }
   @keyframes rf-run { from { stroke-dashoffset: 0.2; } to { stroke-dashoffset: -1; } }

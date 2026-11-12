@@ -15,10 +15,12 @@ import { mountXray } from './xray';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const MOTION = '(prefers-reduced-motion: no-preference)';
+// Flat keeps its (quiet) motion for visitors with Reduce Motion on too, such as an iPhone in Low Power Mode:
+// the drawings are scroll-driven, nothing travels or loops large; so none of these queries names the preference.
+const MOTION = '(min-width: 0px)';
 const WIDE_PL = '(min-width: 1280px)';
-const FND_WIDE = '(prefers-reduced-motion: no-preference) and (min-width: 900px)';
-const FND_NARROW = '(prefers-reduced-motion: no-preference) and (max-width: 899px)';
+const FND_WIDE = '(min-width: 900px)';
+const FND_NARROW = '(max-width: 899px)';
 const NS = 'http://www.w3.org/2000/svg';
 
 export function mountFlatV5(root: HTMLElement) {
@@ -41,7 +43,7 @@ function marks(root: HTMLElement) {
   root.querySelectorAll('[data-in]').forEach((el) => io.observe(el));
 }
 
-const still = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+const still = () => false;
 
 /** [data-decode] figures come out of scrambled glyphs, settling left to right, once they are on screen
  *  (the page is served with the real figure; it is scrambled only once the script runs) */
@@ -128,6 +130,9 @@ function typeOn(root: HTMLElement) {
 
 /** the settlements ticker's pause: stops and starts the band, and says which it will do next */
 function ticker(root: HTMLElement) {
+  // the customer marks: a tap (or click) on the strip stops it and starts it again (hover does too, with a mouse)
+  const lg = root.querySelector<HTMLElement>('.lg');
+  lg?.addEventListener('click', () => lg.classList.toggle('is-paused'));
   const band = root.querySelector<HTMLElement>('[data-ticker]');
   const btn = band?.querySelector<HTMLButtonElement>('[data-tk-pause]');
   if (!band || !btn) return;
@@ -165,7 +170,7 @@ function refraction(root: HTMLElement, mm: gsap.MatchMedia) {
   const full = Number(clip.getAttribute('width'));
   watch(rf);
 
-  mm.add('(prefers-reduced-motion: no-preference) and (min-width: 1100px)', () => {
+  mm.add('(min-width: 1100px)', () => {
     const S = { ev: 0, ex: 0 };
     const tl: gsap.core.Timeline = gsap.timeline({
       defaults: { ease: 'none' },

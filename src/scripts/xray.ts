@@ -19,7 +19,8 @@ export function mountXray(root: HTMLElement, avoid?: () => DOMRect | null): Xray
   const tagNote = tag.querySelector<HTMLElement>('[data-xr-note]')!;
   const parts = [...root.querySelectorAll<HTMLElement>('[data-xr-target]')]
     .sort((a, b) => Number(a.dataset.xrTarget) - Number(b.dataset.xrTarget));
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Flat (/v5) keeps the tour for visitors with Reduce Motion on: the lens drifts inside its own small picture
+  const reduce = !document.body.classList.contains('flat') && matchMedia('(prefers-reduced-motion: reduce)').matches;
   const mouse = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   let r0 = 120;          // the lens's radius, px
