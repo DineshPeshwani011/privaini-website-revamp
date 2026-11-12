@@ -90,8 +90,8 @@ const teams = [
         </figure>
       </div>
       <!-- trusted by: the customers' marks run along the foot of the hero, each in its own colours (stops on hover) -->
-      <div class="wrap hx-trust" role="region" aria-labelledby="trust-h">
-        <h2 id="trust-h" class="fx-label trust-h">Trusted by leading insurers &amp; enterprises</h2>
+      <div class="hx-trust" role="region" aria-labelledby="trust-h">
+        <div class="wrap trust-row"><h2 id="trust-h" class="fx-label trust-h">Trusted by leading insurers &amp; enterprises</h2></div>
         <div class="lg">
           <div class="lg-track">
             {[0, 1].map((c) => (
@@ -393,9 +393,11 @@ const teams = [
   :global(html.js) .inst-panel:not(.in) .inst-grid i.lit { background: var(--stone-3); }
 
   /* ---- trusted by: the customers' marks, a marquee along the foot of the hero ---- */
-  .hx-trust { grid-row: 2; align-self: end; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; margin-top: clamp(24px, 3vw, 48px); padding-top: 16px; border-top: 1px solid var(--on-stone-line); }
-  .trust-h { grid-column: 1 / span 3; margin: 0; max-width: 24ch; }
-  .lg { grid-column: 4 / -1; overflow: hidden; margin-right: calc(var(--margin) * -1); -webkit-mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 96px), transparent); mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 96px), transparent); }
+  /* row one: the label, centred; row two: the marks, running from one edge of the page to the other */
+  .hx-trust { grid-row: 2; align-self: end; display: grid; gap: 14px; margin-top: clamp(24px, 3vw, 48px); padding-top: 20px; border-top: 1px solid var(--on-stone-line); }
+  .trust-row { display: flex; justify-content: center; }
+  .trust-h { margin: 0; text-align: center; }
+  .lg { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 96px), transparent); mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 96px), transparent); }
   .lg-track { display: flex; width: max-content; }
   .lg-set { display: flex; flex: none; align-items: center; list-style: none; margin: 0; padding: 0; animation: tk 55s linear infinite; }
   .lg:hover .lg-set { animation-play-state: paused; }
@@ -504,8 +506,6 @@ const teams = [
 
   /* ---- narrower ---- */
   @media (max-width: 1099px) {
-    .trust-h { grid-column: 1 / -1; max-width: none; margin-bottom: 16px; }
-    .lg { grid-column: 1 / -1; margin-left: calc(var(--margin) * -1); }
     .tr { grid-template-columns: 48px minmax(0, 1fr) auto; row-gap: 12px; }
     .tr-note { grid-column: 2 / 3; }
     .tr-go { grid-column: 3; grid-row: 1; }

@@ -3,7 +3,7 @@
 // contacts on the left, then four columns: the main pages, Solutions, Partners and Legal. Night, square, Urbanist.
 // Used through Base's "footer" slot; every other page keeps src/components/Footer.astro. /v5 passes `flat`.
 import Wordmark from '@/components/Wordmark.astro';
-import { solutions, partners, legal, contact } from '@/data/site';
+import { solutions, partners, legal, contact, platform, statutes, resources, PLATFORM_URL, DEMO_URL } from '@/data/site';
 
 interface Props {
   /** Flat (/v5): column titles set plain, and the name set across the whole width as the page's close */
@@ -20,8 +20,58 @@ const main = [
 ];
 // "Privacy Settings": this build sets no cookies, so there is nothing to switch; the link explains that
 const legalLinks = [...legal, { label: 'Privacy Settings', href: '/cookie-notice' }];
+// Flat: the link groups, laid out after carta.com's footer: a labelled rule over each group; Platform spans three
+// columns, each led by a bold entry
+const company = [
+  { label: 'About us', href: '/about-us' },
+  { label: 'Partner program', href: '/partner-program' },
+  { label: 'Request a demo', href: DEMO_URL },
+  { label: 'Log in', href: PLATFORM_URL },
+];
+const platformCols = [
+  { lead: { label: 'Platform overview', href: '/platform-overview' }, items: platform.filter((l) => l.href !== '/platform-overview') },
+  { lead: { label: 'Privacy laws', href: '/state-privacy-laws' }, items: statutes.filter((l) => l.href !== '/state-privacy-laws') },
+  { lead: { label: 'Partners', href: '/partner-program' }, items: partners },
+];
 ---
-<footer class:list={['ff is-night', { 'ff--flat': flat }]} data-nav-dark>
+{flat ? (
+<footer class="ff ff--flat is-night" data-nav-dark>
+  <p class="fz-name" aria-hidden="true">PRIVAINI</p>
+  <div class="wrap fz-groups">
+    <nav class="fz-g fz-g--1" aria-labelledby="fz-for"><p class="fz-h" id="fz-for">Privaini for</p>
+      <ul role="list" class="fz-list fz-list--lead">{solutions.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+    <nav class="fz-g fz-g--3" aria-labelledby="fz-pl"><p class="fz-h" id="fz-pl">Platform</p>
+      <div class="fz-cols">
+        {platformCols.map((c) => (
+          <ul role="list" class="fz-list"><li class="fz-lead"><a href={c.lead.href}>{c.lead.label}</a></li>{c.items.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+        ))}
+      </div>
+    </nav>
+    <nav class="fz-g" aria-labelledby="fz-co"><p class="fz-h" id="fz-co">Company</p>
+      <ul role="list" class="fz-list">{company.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+    <nav class="fz-g" aria-labelledby="fz-re"><p class="fz-h" id="fz-re">Resources</p>
+      <ul role="list" class="fz-list">{resources.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+  </div>
+  <div class="fz-bar">
+    <div class="wrap fz-bar-in">
+      <address class="fz-contact">
+        <span>Sales <a href={`mailto:${contact.sales}`}>{contact.sales}</a></span>
+        <span>Support <a href={`mailto:${contact.support}`}>{contact.support}</a></span>
+        <span>{contact.address.join(', ')}</span>
+      </address>
+      <a class="fz-cta" href={DEMO_URL}>See your exposure</a>
+    </div>
+  </div>
+  <div class="wrap fz-base">
+    <p class="fz-copy">© {year} Privaini Inc. All rights reserved.</p>
+    <nav aria-label="Legal"><ul role="list" class="fz-legal">{legalLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul></nav>
+  </div>
+</footer>
+) : (
+<footer class="ff is-night" data-nav-dark>
   <div class="wrap ff-grid">
     <div class="ff-intro">
       <a href="/" class="ff-mark" aria-label="Privaini home"><Wordmark size="md" /></a>
@@ -48,8 +98,8 @@ const legalLinks = [...legal, { label: 'Privacy Settings', href: '/cookie-notice
       <ul role="list">{legalLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
     </nav>
   </div>
-  {flat && <div class="wrap"><p class="ff-name" aria-hidden="true">PRIV<b>AI</b>NI</p></div>}
 </footer>
+)}
 
 <style>
   .ff { padding-block: clamp(72px, 8vw, 120px) clamp(48px, 5vw, 72px); border-top: 1px solid var(--on-night-line); }
@@ -69,17 +119,50 @@ const legalLinks = [...legal, { label: 'Privacy Settings', href: '/cookie-notice
   /* the main pages, set larger: they are the column's titles */
   .ff-main ul { gap: 16px; }
   .ff-main a { font-size: clamp(19px, 1.5vw, 23px); letter-spacing: -0.02em; }
-  /* Flat: plain titles, no rule on top, and the name across the whole width, its AI in cyan */
-  .ff--flat { border-top: 0; padding-bottom: clamp(24px, 3vw, 44px); }
-  .ff--flat .ff-title { font: 600 14px/1.4 var(--font); letter-spacing: 0.01em; color: var(--on-night-muted); }
-  .ff--flat .ff-intro { color: var(--on-night); }
-  .ff-name {
-    margin: clamp(72px, 8vw, 128px) 0 0; font: 400 calc((min(100vw, var(--max)) - 2 * var(--margin)) / 6.32)/0.78 var(--logo);
-    letter-spacing: 0.01em; white-space: nowrap; color: var(--on-night);
-  }
-  .ff-name b { font-weight: 400; color: var(--cyan); }
   @media (max-width: 899px) {
     .ff-grid { grid-template-columns: 1fr 1fr; }
     .ff-intro { grid-column: 1 / -1; }
+  }
+
+  /* ---- Flat (/v5): carta.com's footer. Labelled groups on a four-column grid, a bar, then the base line; the
+     name sits behind it all, large and faint, fading out towards the foot ---- */
+  .ff--flat { position: relative; overflow: clip; border-top: 0; padding: clamp(80px, 8vw, 120px) 0 0; isolation: isolate; }
+  .fz-name {
+    position: absolute; z-index: -1; left: 50%; bottom: 0; translate: -50% 2%; margin: 0; pointer-events: none; user-select: none;
+    font: 400 clamp(64px, 16.4vw, 330px)/0.8 var(--logo); letter-spacing: 0.02em; white-space: nowrap; color: var(--on-night); opacity: 0.1;
+    -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 92%); mask-image: linear-gradient(180deg, #000 30%, transparent 92%);
+  }
+  .fz-groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(64px, 6vw, 96px) var(--gap); align-items: start; }
+  .fz-g--3 { grid-column: span 3; }
+  .fz-h {
+    display: flex; align-items: center; gap: 12px; margin: 0 0 20px; padding-bottom: 12px; border-bottom: 1px solid var(--on-night-line-2);
+    font: 500 12.5px/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-night);
+  }
+  .fz-h::before { content: ''; flex: none; width: 8px; height: 8px; background: var(--on-night); }
+  .fz-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 32px; }
+  .fz-list { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; gap: 10px; font-size: 14px; line-height: 1.45; color: var(--on-night-muted); }
+  .fz-list--lead, .fz-lead { color: var(--on-night); font-weight: 600; }
+  .fz-lead { margin-bottom: 2px; }
+  .fz-contact { display: flex; flex-wrap: wrap; gap: 8px 32px; font-style: normal; font-size: 14px; color: var(--on-night-muted); }
+  .fz-contact a { color: var(--on-night); margin-left: 6px; }
+  .ff--flat a { transition: color 0.25s; }
+  .ff--flat a:hover { color: var(--on-night); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+  .ff--flat a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+  .ff--flat a:active { opacity: 0.75; }
+  .fz-bar { margin-top: clamp(120px, 13vw, 220px); border-block: 1px solid var(--on-night-line); }
+  .fz-bar-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; min-height: 72px; padding-block: 14px; }
+  .fz-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid var(--on-night-line-2); font-size: 14px; color: var(--on-night); }
+  .ff--flat .fz-cta:hover { background: var(--cyan); border-color: var(--cyan); color: var(--night); text-decoration: none; }
+  .fz-base { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding-block: 28px 32px; }
+  .fz-copy { margin: 0; font: 500 12.5px/1.4 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-night-muted); }
+  .fz-legal { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 14px; color: var(--on-night-muted); }
+  @media (max-width: 1099px) {
+    .fz-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fz-g--3 { grid-column: 1 / -1; }
+  }
+  @media (max-width: 600px) {
+    .fz-groups { grid-template-columns: 1fr; }
+    .fz-cols { grid-template-columns: 1fr 1fr; }
+    .fz-cols ul:last-child { grid-column: 1 / -1; }
   }
 </style>

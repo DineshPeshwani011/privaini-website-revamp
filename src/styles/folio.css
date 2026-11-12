@@ -134,10 +134,11 @@ body.folio.flat {
   --on-stone-line: rgba(26, 26, 26, 0.14);
   --dot: #dedfdf;              /* a dot field's dots on white */
   --dot-on-tone: #d3d5d5;      /* and on the tone step */
-  --cyan-wash: rgba(7, 188, 212, 0.12);
-  --cyan-dot: rgba(7, 188, 212, 0.55);
-  --cyan-soft: #07bcd4;        /* on charcoal the accent is the brand cyan itself */
-  --teal: #0a7f91;             /* the cyan, deepened to read as small text on white (4.7:1) */
+  --cyan: #189db5;             /* the brand accent (2026-11-12) */
+  --cyan-wash: rgba(24, 157, 181, 0.12);
+  --cyan-dot: rgba(24, 157, 181, 0.55);
+  --cyan-soft: #189db5;        /* on charcoal the accent is the brand cyan itself */
+  --teal: #12798c;             /* the cyan, deepened to read as small text on white (~5:1) */
   --bg-3: #efefef;
   --bg-4: #e4e4e4;
   --faint: #8a8a8a;

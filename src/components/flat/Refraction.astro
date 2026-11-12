@@ -65,7 +65,7 @@ const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; ret
       <circle class="rf-core" cx={L.x} cy={L.y} r="46" />
       <circle class="rf-inner" cx={L.x} cy={L.y} r="66" />
       <circle class="rf-glass" cx={L.x} cy={L.y} r={L.r} />
-      <text class="rf-mark" x={L.x} y={L.y + 2} text-anchor="middle">priv<tspan>ai</tspan>ni</text>
+      <text class="rf-mark" x={L.x} y={L.y + 2} text-anchor="middle">privaini</text>
       <text class="rf-events" x={L.x} y={L.y + 26} text-anchor="middle"><tspan data-rf-events>14</tspan> events captured</text>
     </g>
 
@@ -106,7 +106,7 @@ const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; ret
   <div class="rf-m" aria-hidden="true">
     <p class="fx-chip">Your Company</p>
     <ul class="rf-m-sigs" role="list">{signals.map(([s, hot]) => <li class:list={{ hot }}>{s}</li>)}</ul>
-    <div class="rf-m-lens"><span class="rf-m-mark">priv<b>ai</b>ni</span><span class="rf-m-ev">14 events captured</span></div>
+    <div class="rf-m-lens"><span class="rf-m-mark">privaini</span><span class="rf-m-ev">14 events captured</span></div>
     <ul class="rf-m-caps" role="list">{caps.map((c) => <li>{c}</li>)}</ul>
     <p class="fx-chip">Privaini Risk Briefing</p>
     <dl class="rf-m-out">
@@ -140,7 +140,6 @@ const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; ret
   .rf-inner { stroke: var(--on-night-line-2); stroke-dasharray: 2 5; }
   .rf-core { fill: var(--cyan-wash) !important; }
   .rf-mark { font: 400 17px/1 var(--logo) !important; }
-  .rf-mark tspan { fill: var(--cyan); }
   .rf-events { font: 500 9.5px/1 var(--mono) !important; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--on-night-muted) !important; }
   .rf-ring { font-size: 12.5px; letter-spacing: 0.02em; fill: var(--on-night-muted) !important; paint-order: stroke; stroke: var(--night); stroke-width: 7px; transform-box: view-box; transform-origin: 590px 330px; }
 
@@ -181,9 +180,7 @@ const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; ret
     .rf-m-sigs { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 16px; color: var(--on-night-muted); }
     .rf-m-sigs .hot { color: var(--cyan); }
     .rf-m-lens { justify-self: center; display: grid; place-content: center; gap: 8px; width: 200px; aspect-ratio: 1; border: 1.5px solid var(--cyan); border-radius: 50%; text-align: center; }
-    .rf-m-mark { font: 400 18px/1 var(--logo); }
-    .rf-m-mark b { font-weight: 400; color: var(--cyan); }
-    .rf-m-ev { font: 500 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-night-muted); }
+    .rf-m-mark { font: 400 18px/1 var(--logo); }    .rf-m-ev { font: 500 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-night-muted); }
     .rf-m-caps { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; }
     .rf-m-out { display: grid; gap: 20px; width: 100%; }
     .rf-m-out div { display: grid; gap: 8px; padding-left: 16px; border-left: 2px solid var(--cyan); }
