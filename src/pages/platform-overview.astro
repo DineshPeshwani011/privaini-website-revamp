@@ -1,0 +1,152 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import ExplainerSection from '@/components/ExplainerSection.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PointList from '@/components/PointList.astro';
+import FactGrid from '@/components/FactGrid.astro';
+import CoverageGlobe from '@/components/CoverageGlobe.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import { DEMO_URL } from '@/data/site';
+import { platformCategories } from '@/data/platform-content';
+---
+<Base
+  title="The Platform | Privaini"
+  description="Enter a company name and see what regulators and litigators already see. Observe, detect, recommend."
+>
+  <PageHero
+    title="Type a name. See what regulators see."
+    lead="See exactly how it works, from what Privaini observes to the exposure it surfaces: what regulators and litigators already see."
+    secondary={{ label: 'Book an assessment', href: DEMO_URL }}
+  >
+    <StatusPanel
+      title="Privaini"
+      subject=""
+      rows={[
+        { label: 'Companies', value: '23', state: 'ok' },
+        { label: 'Open findings', value: '47', state: 'info' },
+        { label: 'Coverage', value: '90 countries', state: 'ok' },
+      ]}
+      total={{ label: 'Status', value: 'Live', state: 'ok' }}
+    />
+  </PageHero>
+
+  <ExplainerSection
+    name="outside-in-scanner"
+    figureTitle="Interactive figure: an outside-in assessment of a company's public properties"
+    heading="Three steps. One outside-in loop."
+    text="From a company name to regulator-grade, evidence-backed findings, in one outside-in intelligence loop."
+    points={[
+      { title: 'Observe: any company, any market.', text: 'From a company name and website, Privaini sees what regulators see. No deployment, access, or cooperation required.' },
+      { title: 'Detect: 100+ signals, every applicable regulation.', text: 'Signals are scored against statutes across 90 countries and 20 US states.' },
+      { title: 'Recommend: evidence-backed and prioritized.', text: 'Regulator-grade findings with a defensible exposure range and clear next steps.' },
+    ]}
+  />
+
+  <section class="section" aria-labelledby="cat-h">
+    <div class="wrap">
+      <SectionHead
+        id="cat-h"
+        title="Eight finding categories, each statute-mapped."
+        text="Every category has at least one governing statute with reproducible, timestamped evidence."
+      />
+      <PointList
+        variant="tiles"
+        items={platformCategories.map((c) => ({ title: c.name, text: c.overview ?? c.text, href: c.href, linkLabel: c.law }))}
+      />
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="vec-h">
+    <div class="wrap">
+      <SectionHead
+        id="vec-h"
+        title="Four exposure vectors. One range per finding."
+        text="A defensible range for every finding, modeled from legal precedent, not guesswork."
+      />
+      <PointList
+        variant="index"
+        items={[
+          { title: 'Litigation', text: 'Modeled from lawsuit settlements for comparable findings.', href: '/what-we-find', linkLabel: 'Worked example' },
+          { title: 'Regulatory', text: 'Modeled from regulator fines under the governing statute.', href: '/what-we-find', linkLabel: 'Worked example' },
+          { title: 'Remediation', text: 'Modeled from the engineering and legal effort to fix the finding.', href: '/what-we-find', linkLabel: 'Worked example' },
+          { title: 'Reputational', text: 'Modeled from disclosure obligations and customer-churn impact.', href: '/what-we-find', linkLabel: 'Worked example' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="section cov" aria-labelledby="cov-h">
+    <div class="wrap grid">
+      <div class="cov-globe" data-reveal>
+        <CoverageGlobe />
+      </div>
+      <div class="cov-copy">
+        <SectionHead
+          id="cov-h"
+          title="90 countries. 20 US states."
+          text="Coverage is verified at every assessment. Statutes change; our corpus tracks them."
+        />
+        <FactGrid
+          class="cov-facts"
+          items={[
+            { figure: '90', count: 90, label: 'Countries covered', href: '/what-we-find', linkLabel: 'Verify coverage' },
+            { figure: '20', count: 20, label: 'US states with privacy statutes', href: '/what-we-find', linkLabel: 'View statutes' },
+            { figure: '8', count: 8, label: 'Finding categories, each statute-mapped', href: '/what-we-find', linkLabel: 'See categories' },
+            { figure: '100+', count: 100, suffix: '+', label: 'Signals evaluated per assessment', href: '/how-it-works', linkLabel: 'How it works' },
+          ]}
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="not-h">
+    <div class="wrap grid">
+      <div class="not-head">
+        <SectionHead
+          id="not-h"
+          title="What the platform does not do."
+          text="No agents, SDKs, or firewall presence. Observation only, the same vantage as regulators."
+        />
+      </div>
+      <ul role="list" class="not-list" data-reveal-group>
+        {[
+          { title: 'Does not scan internal systems', text: 'Company name and domain are the only input. Privaini observes from the outside.' },
+          { title: 'Does not require credentials', text: 'No API keys, no access, no cooperation from the company being assessed.' },
+          { title: 'Does not provide legal advice', text: 'Findings are evidence; exposure is range-modeled. Both inform your counsel.' },
+          { title: 'Does not predict liability', text: 'Ranges are defensible estimates from precedent, not verdicts.' },
+        ].map((n) => (
+          <li data-reveal>
+            <h3>{n.title}</h3>
+            <p>{n.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBlank />
+</Base>
+
+<style>
+  .cov .grid { align-items: center; row-gap: 48px; }
+  .cov-globe { grid-column: 1 / span 5; }
+  .cov-copy { grid-column: 7 / span 6; }
+  .cov-copy :global(.sh) { margin-bottom: clamp(32px, 4vw, 48px); }
+  .cov-copy :global(.cov-facts) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cov-copy :global(.cov-facts .fact) { min-height: 210px; }
+
+  .not-head { grid-column: 1 / span 5; }
+  .not-list { grid-column: 7 / span 6; display: grid; gap: clamp(28px, 3vw, 44px); }
+  .not-list h3 { font-size: clamp(22px, 2vw, 30px); letter-spacing: -0.025em; }
+  .not-list p { margin-top: 8px; color: var(--muted); font-size: 17px; max-width: 46ch; }
+
+  @media (max-width: 960px) {
+    .cov-globe { grid-column: 2 / span 10; }
+    .cov-copy, .not-head, .not-list { grid-column: 1 / -1; }
+  }
+  @media (max-width: 480px) {
+    .cov-copy :global(.cov-facts) { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,64 @@
+---
+import Base from '@/layouts/Base.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PointList from '@/components/PointList.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import PartnerHero from '@/components/partners/PartnerHero.astro';
+import PartnerRoster from '@/components/partners/PartnerRoster.astro';
+import { DEMO_URL } from '@/data/site';
+
+const ways = [
+  { title: 'Insurance partners', text: 'Embed privacy risk intelligence into your underwriting workflow and policyholder offering.' },
+  { title: 'Channel partners', text: 'Resell or co-market Privaini to your client base. Add privacy risk to your portfolio.' },
+  { title: 'Technology partners', text: 'Integrate Privaini’s privacy risk data into your platform via API.' },
+].map((w) => ({ ...w, href: DEMO_URL, linkLabel: 'Become a partner' }));
+
+const built = [
+  { name: 'Chubb', text: 'Publicly co-branded Privacy Risk Management with Privaini for policyholders.', links: [{ label: 'Chubb', href: '/chubb' }] },
+  { name: 'Beazley', text: 'Co-branded Privacy Risk Monitoring via the Risk Management Offering.', links: [{ label: 'Beazley', href: '/beazley' }] },
+  { name: 'Sompo', text: 'Privacy risk monitoring added to Sompo’s Cyber Risk Services for policyholders.', links: [{ label: 'Sompo', href: '/sompo' }] },
+  { name: 'Arch Insurance', text: 'Updated underwriting guidelines based on Privaini intelligence.', links: [{ label: 'Arch Insurance', href: '/arch-insurance' }] },
+  {
+    name: 'WTW & Marsh',
+    text: 'Embedded Privaini in global cyber risk advisory for clients.',
+    links: [{ label: 'WTW', href: '/wtw' }, { label: 'Marsh', href: '/marsh' }],
+  },
+];
+---
+<Base
+  title="Partner Program | Privaini"
+  description="Join the privacy risk intelligence ecosystem: insurance, channel, and technology partnerships with Privaini."
+>
+  <PartnerHero
+    title="Join the privacy risk intelligence ecosystem."
+    lead="Partner with Privaini to deliver more value to your policyholders and clients, from co-branded products to embedded risk data."
+    primary={{ label: 'Apply to partner', href: DEMO_URL }}
+    secondary={{ label: 'See a sample report', href: DEMO_URL }}
+  >
+    <StatusPanel
+      title="Partners"
+      subject="co-branded"
+      rows={[
+        { label: 'Chubb', value: 'Co-branded', state: 'ok' },
+        { label: 'Beazley', value: 'Co-branded', state: 'ok' },
+        { label: 'Arch', value: 'Underwriting', state: 'ok' },
+        { label: 'WTW & Marsh', value: 'Advisory', state: 'ok' },
+      ]}
+      total={{ label: 'Ecosystem', value: 'Growing' }}
+    />
+  </PartnerHero>
+
+  <section class="section" aria-labelledby="ways-h">
+    <div class="wrap">
+      <SectionHead id="ways-h" title="Three ways to partner with Privaini." />
+      <PointList variant="tiles" cols={2} items={ways} />
+    </div>
+  </section>
+
+  <PartnerRoster id="built-h" heading="Market leaders already built products on Privaini." items={built}>
+    <p><b>2 of the top 3</b> global brokers and <b>4 of the top 10</b> cyber insurers work with Privaini.</p>
+  </PartnerRoster>
+
+  <CtaBlank after="From your domain name to statute-mapped findings." />
+</Base>

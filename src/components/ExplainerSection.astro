@@ -1,0 +1,53 @@
+---
+// A section that pairs a short argument (left, sticky on desktop) with a hairline figure (right).
+import HairlineFigure from './hairline/HairlineFigure.astro';
+interface Props {
+  name: 'outside-in-scanner' | 'policy-practice-gap' | 'exposure-scale';
+  heading: string;
+  text: string;
+  points?: { title: string; text: string }[];
+  figureTitle: string;
+  flip?: boolean;
+  tone?: 'plain' | 'raised';
+}
+const { name, heading, text, points = [], figureTitle, flip = false, tone = 'plain' } = Astro.props;
+---
+<section class:list={['xs section', { 'section--raised': tone === 'raised', flip }]} aria-labelledby={`xs-${name}`}>
+  <div class="wrap grid">
+    <div class="copy" data-reveal-group>
+      <h2 id={`xs-${name}`} data-split>{heading}</h2>
+      <p class="text" data-reveal>{text}</p>
+      {points.length > 0 && (
+        <dl class="points">
+          {points.map((p) => (
+            <div class="pt" data-reveal>
+              <dt>{p.title}</dt>
+              <dd>{p.text}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <slot />
+    </div>
+    <div class="fig" data-reveal>
+      <HairlineFigure name={name} title={figureTitle} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: start; }
+  .copy { grid-column: 1 / span 5; position: sticky; top: calc(var(--nav-h) + 32px); display: grid; gap: 24px; padding-right: clamp(0px, 2vw, 32px); }
+  .copy h2 { font-size: clamp(28px, 2.7vw, 42px); }
+  .text { color: var(--muted); font-size: 18px; max-width: 40ch; }
+  .points { display: grid; gap: 18px; margin: 8px 0 0; }
+  .pt dt { font-weight: 600; font-size: 17px; }
+  .pt dd { margin: 4px 0 0; color: var(--muted); font-size: 16px; max-width: 38ch; }
+  .fig { grid-column: 6 / span 7; }
+  .flip .copy { grid-column: 8 / span 5; grid-row: 1; padding-right: 0; padding-left: clamp(0px, 2vw, 32px); }
+  .flip .fig { grid-column: 1 / span 7; grid-row: 1; }
+  @media (max-width: 960px) {
+    .copy, .flip .copy { grid-column: 1 / -1; position: static; grid-row: auto; }
+    .fig, .flip .fig { grid-column: 1 / -1; margin-top: 40px; grid-row: auto; }
+  }
+</style>

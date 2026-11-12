@@ -1,0 +1,41 @@
+---
+// Ledger · customer logos in one slow line: greyscale at 70%, 60s per loop, still on hover and under reduced
+// motion. The set is drawn twice so the loop has no seam; the copy is hidden from assistive tech.
+import { customerLogos } from '@/data/logos';
+interface Props { label?: string }
+const { label = 'Trusted by insurers, brokers and enterprises in 90 countries' } = Astro.props;
+---
+<section class="logos" aria-label={label}>
+  <div class="wrap"><p class="l-label l-eyebrow cap" data-reveal>{label}</p></div>
+  <div class="track" data-reveal>
+    {[0, 1].map((copy) => (
+      <ul role="list" class="set" aria-hidden={copy === 1 ? 'true' : undefined}>
+        {customerLogos.map((logo) => (
+          <li><img class:list={{ boxed: 'boxed' in logo && logo.boxed }} src={logo.src} alt={copy === 0 ? logo.name : ''} width="160" height="56" loading="lazy" decoding="async" /></li>
+        ))}
+      </ul>
+    ))}
+  </div>
+</section>
+
+<style>
+  .logos { padding-block: clamp(40px, 5vw, 72px); border-block: 1px solid var(--line); }
+  .cap { margin-bottom: 12px; }
+  .track {
+    display: flex; overflow: hidden; width: 100%;
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .set { display: flex; align-items: center; flex: none; gap: clamp(28px, 3vw, 56px); padding-right: clamp(28px, 3vw, 56px); animation: run 60s linear infinite; }
+  .track:hover .set { animation-play-state: paused; }
+  @keyframes run { to { transform: translateX(-100%); } }
+  li { flex: none; display: flex; align-items: center; }
+  /* the source files are 220×160 with the mark centred in their own padding */
+  img { display: block; height: 84px; width: auto; filter: var(--logo-filter); mix-blend-mode: var(--logo-blend); opacity: 0.7; }
+  img.boxed { height: 58px; }
+  @media (prefers-reduced-motion: reduce) {
+    .set { animation: none; }
+    .track { flex-wrap: wrap; justify-content: center; mask-image: none; }
+    .set[aria-hidden] { display: none; }
+    .set { flex-wrap: wrap; justify-content: center; row-gap: 24px; }
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+// "Not this / This" — what Privaini is not, set against what it is, with an optional third column.
+interface Props {
+  notTitle?: string; not: string[];
+  isTitle?: string; is: string[];
+  getTitle?: string; get?: string[];
+}
+const { notTitle = 'Not this', not, isTitle = 'This', is, getTitle = 'What you get', get = [] } = Astro.props;
+---
+<div class:list={['cmp', { three: get.length > 0 }]} data-reveal-group>
+  <div class="col col--not" data-reveal>
+    <h3>{notTitle}</h3>
+    <ul role="list">{not.map((t) => <li><span class="mk" aria-hidden="true">×</span>{t}</li>)}</ul>
+  </div>
+  <div class="col col--is theme-dark" data-reveal>
+    <h3>{isTitle}</h3>
+    <ul role="list">{is.map((t) => <li><span class="mk" aria-hidden="true">✓</span>{t}</li>)}</ul>
+  </div>
+  {get.length > 0 && (
+    <div class="col col--get" data-reveal>
+      <h3>{getTitle}</h3>
+      <ul role="list">{get.map((t) => <li><span class="mk" aria-hidden="true">→</span>{t}</li>)}</ul>
+    </div>
+  )}
+</div>
+
+<style>
+  .cmp { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .col { border-radius: var(--radius); padding: clamp(24px, 2.6vw, 40px); display: grid; gap: 22px; align-content: start; }
+  .col--not { background: var(--bg-2); }
+  .col--is { background: var(--field); color: var(--field-ink); }
+  .col--get { background: var(--bg-2); }
+  h3 { font-size: clamp(22px, 1.8vw, 28px); }
+  ul { display: grid; gap: 14px; }
+  li { display: grid; grid-template-columns: 24px 1fr; gap: 10px; font-size: 18px; line-height: 1.4; }
+  .mk { font-weight: 700; }
+  .col--not li { color: var(--muted); }
+  .col--not .mk { color: var(--high); }
+  .col--is .mk { color: var(--accent-pale); }
+  .col--get .mk { color: var(--accent-hi); }
+  @media (max-width: 860px) {
+    .cmp, .three { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,240 @@
+---
+import Base from '@/layouts/Base.astro';
+import RiskReport from '@/components/RiskReport.astro';
+import { contact } from '@/data/site';
+import HairlineField from '@/components/hairline/HairlineField.astro';
+
+// No backend in this static build: the form hands the request to the visitor's email app as a
+// prefilled message to sales. Wire it to the real lead endpoint before launch.
+const SALES = contact.sales;
+const points = [
+  'Regulator-grade, statute-mapped findings',
+  'Jurisdiction-mapped across 90 countries & 20 US states',
+  'Statute-anchored, reproducible evidence',
+];
+---
+<Base
+  title="Request a Demo | Privaini"
+  description="See your privacy exposure live, generated from your domain. No installation, no questionnaires."
+>
+  <section class="demo has-field" aria-labelledby="demo-h">
+    <HairlineField at={{ x: 0.76, y: 0.42 }} />
+    <div class="wrap grid">
+      <div class="copy" data-reveal-group>
+        <h1 id="demo-h" data-split data-split-now>See your privacy exposure.</h1>
+        <p class="t-lead lead" data-reveal>
+          Tell us where to reach you and we’ll walk you through your actual outside-in profile, generated from your
+          domain. No installation, no questionnaires, no IT lift.
+        </p>
+        <ul role="list" class="checks" data-reveal>
+          {points.map((p) => (
+            <li>
+              <svg class="ck" viewBox="0 0 16 16" width="18" height="18" aria-hidden="true"><path d="M3 8.6l3.1 3.1L13 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+              <span>{p}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="stage" data-reveal>
+        <form
+          class="form"
+          action={`mailto:${SALES}?subject=Demo%20request`}
+          method="post"
+          enctype="text/plain"
+          data-demo-form
+          data-sales={SALES}
+        >
+          <div class="pair">
+            <div class="field">
+              <label for="first_name">First name</label>
+              <input id="first_name" name="first_name" type="text" autocomplete="given-name" maxlength="40" required />
+            </div>
+            <div class="field">
+              <label for="last_name">Last name</label>
+              <input id="last_name" name="last_name" type="text" autocomplete="family-name" maxlength="80" required />
+            </div>
+          </div>
+          <div class="field">
+            <label for="email">Work email</label>
+            <input id="email" name="email" type="email" autocomplete="email" maxlength="80" required />
+          </div>
+          <div class="field">
+            <label for="company">Company</label>
+            <input id="company" name="company" type="text" autocomplete="organization" maxlength="40" required />
+          </div>
+          <div class="field">
+            <label for="domain">Company domain</label>
+            <input
+              id="domain"
+              name="domain"
+              type="text"
+              inputmode="url"
+              autocomplete="url"
+              placeholder="your-company.com"
+              spellcheck="false"
+              autocapitalize="off"
+              maxlength="253"
+              required
+            />
+          </div>
+          <button class="btn submit" type="submit">Request a demo <span class="arrow">→</span></button>
+          <p class="legal">By submitting, you agree to Privaini's <a href="/privacy-notice">Privacy Notice</a>.</p>
+        </form>
+
+        <div class="done" data-demo-done hidden tabindex="-1">
+          <h2 class="done-h">Your request is ready to send.</h2>
+          <p>
+            We opened your email app with a message to <a href={`mailto:${SALES}`}>{SALES}</a>. Send it and we’ll be in
+            touch to walk you through the outside-in profile for <strong data-done-domain>your domain</strong>.
+          </p>
+          <p class="muted">
+            Email app didn’t open? Copy the request below and send it to {SALES} from any account.
+          </p>
+          <pre class="draft" data-done-draft></pre>
+          <div class="actions">
+            <button class="btn" type="button" data-copy>Copy request</button>
+            <button class="btn btn--ghost" type="button" data-edit>Edit details</button>
+          </div>
+          <p class="copied" data-copied role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--raised sample" id="sample" aria-labelledby="sample-h">
+    <div class="wrap grid">
+      <div class="sample-copy" data-reveal-group>
+        <h2 id="sample-h" data-split>A sample of what you’ll walk through.</h2>
+        <p data-reveal>
+          Privaini’s published sample report for your-company.com: each finding mapped to the statute it triggers, with
+          an estimated exposure range and a total across every jurisdiction that applies.
+        </p>
+      </div>
+      <div class="sample-fig" data-reveal>
+        <RiskReport />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-demo-form]');
+  const done = document.querySelector<HTMLElement>('[data-demo-done]');
+  const SALES = form?.dataset.sales ?? 'sales@privaini.com';
+
+  const cleanDomain = (v: string) =>
+    v.trim().toLowerCase().replace(/^[a-z]+:\/\//, '').replace(/^www\./, '').replace(/[/?#].*$/, '');
+
+  if (form && done) {
+    const domain = form.querySelector<HTMLInputElement>('#domain')!;
+    const fromUrl = new URLSearchParams(location.search).get('domain');
+    if (fromUrl && !domain.value) domain.value = cleanDomain(fromUrl).slice(0, 253);
+
+    let draft = '';
+    const copied = done.querySelector<HTMLElement>('[data-copied]')!;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      domain.value = cleanDomain(domain.value);
+      if (!form.reportValidity()) return;
+
+      const data = new FormData(form);
+      const v = (k: string) => String(data.get(k) ?? '').trim();
+      const subject = `Demo request: ${v('company')} (${v('domain')})`;
+      const body = [
+        'I’d like a walkthrough of our outside-in privacy exposure.',
+        '',
+        `Name: ${v('first_name')} ${v('last_name')}`,
+        `Work email: ${v('email')}`,
+        `Company: ${v('company')}`,
+        `Company domain: ${v('domain')}`,
+      ].join('\r\n');
+      draft = `To: ${SALES}\r\nSubject: ${subject}\r\n\r\n${body}`;
+
+      done.querySelector('[data-done-domain]')!.textContent = v('domain');
+      done.querySelector('[data-done-draft]')!.textContent = draft;
+      copied.textContent = '';
+      form.hidden = true;
+      done.hidden = false;
+      done.focus();
+
+      window.location.href = `mailto:${SALES}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    });
+
+    done.querySelector('[data-edit]')!.addEventListener('click', () => {
+      done.hidden = true;
+      form.hidden = false;
+      form.querySelector<HTMLInputElement>('input')!.focus();
+    });
+
+    done.querySelector('[data-copy]')!.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(draft);
+        copied.textContent = 'Copied. Paste it into a new email.';
+      } catch {
+        const range = document.createRange();
+        range.selectNodeContents(done.querySelector('[data-done-draft]')!);
+        const sel = getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+        copied.textContent = 'Selected. Press Ctrl+C or ⌘C to copy.';
+      }
+    });
+  }
+</script>
+
+<style>
+  .demo { padding-top: calc(var(--nav-h) + clamp(40px, 6vw, 96px)); padding-bottom: clamp(64px, 8vw, 120px); }
+  .grid { align-items: start; row-gap: 48px; }
+  .copy { grid-column: 1 / span 5; display: grid; gap: 28px; justify-items: start; padding-top: 8px; }
+  h1 { font-size: clamp(40px, 4.4vw, 76px); }
+  .lead { color: var(--muted); }
+  .checks { display: grid; gap: 14px; margin-top: 4px; }
+  .checks li { display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: start; font-size: 18px; line-height: 1.45; }
+  .ck { color: var(--accent-hi); margin-top: 3px; }
+
+  .stage { grid-column: 7 / span 6; background: var(--bg-2); border-radius: var(--radius); padding: clamp(24px, 3.6vw, 52px); }
+  .form { display: grid; gap: 18px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: grid; gap: 8px; }
+  label { font-size: 15px; font-weight: 600; }
+  input {
+    height: 52px; width: 100%; padding: 0 14px; border: 0; border-radius: var(--radius);
+    background: var(--bg-3); color: var(--ink); font-size: 17px; outline: none;
+    transition: background-color 0.2s, box-shadow 0.2s;
+  }
+  input::placeholder { color: var(--faint); }
+  input:hover { background: var(--bg-4); }
+  input:focus-visible { background: var(--bg-4); box-shadow: 0 0 0 2px var(--accent-hi); }
+  input:user-invalid { box-shadow: 0 0 0 2px var(--high); }
+  .submit { width: 100%; min-height: 56px; margin-top: 8px; font-size: 17px; }
+  .legal { font-size: 14.5px; color: var(--muted); }
+  .legal a, .done a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  .legal a:hover, .done a:hover { color: var(--accent-hi); }
+
+  .done { display: grid; gap: 18px; outline: none; }
+  .done-h { font-size: clamp(28px, 2.6vw, 40px); }
+  .done p { font-size: 17px; max-width: 52ch; }
+  .done .muted { color: var(--muted); font-size: 15.5px; }
+  .draft {
+    margin: 0; padding: 16px 18px; background: var(--bg); border-radius: var(--radius);
+    font-family: var(--font); font-size: 15px; line-height: 1.55; color: var(--ink); white-space: pre-wrap; overflow-wrap: anywhere;
+  }
+  .copied { font-size: 15px; color: var(--low); min-height: 1.5em; }
+
+  .sample .grid { align-items: center; }
+  .sample-copy { grid-column: 1 / span 5; display: grid; gap: 20px; }
+  .sample-copy h2 { font-size: clamp(30px, 3vw, 48px); max-width: 16ch; }
+  .sample-copy p { color: var(--muted); font-size: clamp(17px, 1.25vw, 20px); max-width: 44ch; }
+  .sample-fig { grid-column: 7 / span 6; display: grid; justify-items: center; }
+
+  @media (max-width: 960px) {
+    .copy, .stage, .sample-copy, .sample-fig { grid-column: 1 / -1; }
+    h1 { font-size: clamp(40px, 10vw, 72px); }
+  }
+  @media (max-width: 480px) {
+    .stage { padding: 20px 16px; margin-inline: calc(var(--margin) * -1); border-radius: 0; }
+    .pair { grid-template-columns: 1fr; }
+  }
+</style>

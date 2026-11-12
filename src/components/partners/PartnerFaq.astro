@@ -1,0 +1,35 @@
+---
+// Common questions: the heading holds its place on the left while the answers run on the right.
+// Emits FAQPage structured data for the same questions.
+interface Props { id: string; heading: string; items: { q: string; a: string }[]; tone?: 'plain' | 'raised' }
+const { id, heading, items, tone = 'plain' } = Astro.props;
+---
+<section class:list={['faq section', { 'section--raised': tone === 'raised' }]} aria-labelledby={id}>
+  <div class="wrap grid">
+    <div class="side">
+      <h2 id={id} data-split>{heading}</h2>
+    </div>
+    <ul role="list" class="list" data-reveal-group>
+      {items.map((item) => (
+        <li data-reveal>
+          <h3>{item.q}</h3>
+          <p>{item.a}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: start; row-gap: 48px; }
+  .side { grid-column: 1 / span 5; position: sticky; top: calc(var(--nav-h) + 32px); }
+  h2 { font-size: clamp(30px, 3vw, 48px); max-width: 16ch; }
+  .list { grid-column: 7 / span 6; display: grid; gap: clamp(36px, 4vw, 56px); }
+  .list li { display: grid; gap: 12px; }
+  h3 { font-size: clamp(21px, 1.7vw, 26px); letter-spacing: -0.02em; max-width: 30ch; }
+  .list p { font-size: 18px; line-height: 1.55; color: var(--ink); max-width: 54ch; }
+  @media (max-width: 960px) {
+    .side, .list { grid-column: 1 / -1; }
+    .side { position: static; }
+  }
+</style>

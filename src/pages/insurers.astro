@@ -1,0 +1,118 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import Timeline from '@/components/Timeline.astro';
+import QuoteBlock from '@/components/QuoteBlock.astro';
+import FigureBand from '@/components/solutions/FigureBand.astro';
+import ExplainerSection from '@/components/ExplainerSection.astro';
+import StoryIndex from '@/components/StoryIndex.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import StatuteMap from '@/components/solutions/StatuteMap.astro';
+import { panels } from '@/data/solutions-panels';
+import { quotes } from '@/data/quotes';
+import { sampleFindings, sampleReport } from '@/data/findings';
+
+const p = panels.insurers;
+const vppa = sampleFindings[0];
+---
+<Base
+  title="Privaini for Insurers"
+  description="Outside-in privacy risk intelligence for cyber underwriting: assess applicant posture at submission and monitor your portfolio."
+>
+  <PageHero
+    title="Lawsuit risk, not just breach risk."
+    lead="Security ratings tell breach risk. Privaini tells lawsuit risk. Both drive cyber claims, and privacy litigation is the fastest-growing driver. See it at submission, and monitor it across your whole portfolio."
+    secondary={{ label: 'See the platform', href: '/platform-overview' }}
+  >
+    <StatusPanel title={p.title} subject={p.subject} rows={p.rows} total={p.total} />
+  </PageHero>
+
+  <section class="section" aria-labelledby="stages-h">
+    <div class="wrap">
+      <SectionHead
+        id="stages-h"
+        title="From application to claims, at every stage."
+        text="The same outside-in assessment improves underwriting accuracy, portfolio monitoring, and claims validation."
+      />
+      <Timeline
+        items={[
+          { when: 'At submission', title: 'Application-time', text: 'Outside-in privacy posture at submission. See what the applicant won’t self-report, before you bind.' },
+          { when: 'Between renewals', title: 'Portfolio monitoring', text: 'Continuous outside-in monitoring across your book. Identify drift and emerging exposure between renewals.' },
+          { when: 'At claim time', title: 'Claims validation', text: 'Observable behavior at claim time. Verify what the insured’s posture actually was when the incident occurred.' },
+        ]}
+      />
+      <div class="said">
+        <QuoteBlock quote={quotes.arch} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="claims-h">
+    <div class="wrap">
+      <SectionHead
+        id="claims-h"
+        title="Privacy is the dominant cyber claims driver."
+        text="It was always observable from the outside. Now it’s priced into every claim."
+      />
+      <FigureBand
+        items={[
+          { figure: '65%', count: 65, suffix: '%', label: 'of large cyber claims driven by privacy elements', href: '/privacy-risk-gap', linkLabel: 'Allianz 2024' },
+          { figure: '32%', count: 32, suffix: '%', label: 'of third-party cyber claims triggered by privacy', href: '/privacy-risk-gap', linkLabel: 'Chubb 2024' },
+          { figure: '$11.5M', count: 11.5, decimals: 1, prefix: '$', suffix: 'M', label: 'average BIPA & VPPA settlement', href: '/privacy-risk-gap', linkLabel: 'Settlements' },
+          { figure: '$7B+', count: 7, prefix: '$', suffix: 'B+', label: 'in global privacy fines and settlements since 2020', href: '/privacy-risk-gap', linkLabel: 'Enforcement' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <ExplainerSection
+    name="exposure-scale"
+    tone="raised"
+    figureTitle="Interactive figure: the sample report's findings weighed by modeled exposure, and lifted off phase by phase"
+    heading="Lawsuit risk, priced per finding."
+    text="Every finding carries a statute-anchored exposure range. Summed, they price an applicant’s privacy exposure at submission; remediated phase by phase, they show exposure mitigated before a claim."
+    points={[
+      { title: 'Each finding is a weight', text: `Sized by the midpoint of its modeled exposure. In the sample report, ${vppa.statute} video tracking alone is ${vppa.exposure}.` },
+      { title: 'The needle reads the total', text: `${sampleReport.total} across ${sampleReport.jurisdictions} jurisdictions for the sample report’s ${sampleReport.findings} findings.` },
+      { title: 'Remediation lifts weights off', text: 'Each phase retires its findings, and the exposure that came with them.' },
+    ]}
+  >
+    <a class="link" href="/risk-aggregator-use-case">How an insurer prices a whole book <span class="arrow">→</span></a>
+  </ExplainerSection>
+
+  <StatuteMap
+    id="laws-h"
+    flip
+    heading="Every policyholder, every applicable law."
+    subject={p.subject}
+    footnote="Privaini maps each policyholder’s exposure across all applicable regulations, from one assessment."
+    items={[
+      { law: 'VPPA', penalty: '$11.5M average settlement', text: 'Video content on any policyholder site creates exposure, observable from the outside.', href: '/vppa' },
+      { law: 'CCPA / CPRA', penalty: '$7,500 per intentional violation', text: 'Data-broker activity, consent flows, and opt-out failures: the highest-frequency enforcement.', href: '/ccpa-cpra' },
+      { law: 'BIPA', penalty: '$5,000 per violation: strict liability', text: 'No breach, no harm required. Biometric collection alone triggers liability.', href: '/bipa' },
+      { law: 'GDPR', penalty: '€20M or 4% of global revenue', text: 'EU-headquartered policyholders, or US companies with EU-facing data.', href: '/gdpr' },
+    ]}
+  />
+
+  <section class="section" aria-labelledby="stories-h">
+    <div class="wrap">
+      <SectionHead id="stories-h" title="See it in action." />
+      <div class="lead-quote">
+        <QuoteBlock quote={quotes.aggregator} />
+      </div>
+      <StoryIndex />
+    </div>
+  </section>
+
+  <CtaBlank />
+</Base>
+
+<style>
+  .said { margin-top: clamp(72px, 9vw, 140px); padding-left: calc((100% - 11 * var(--gap)) / 12 * 3 + 3 * var(--gap)); }
+  .lead-quote { margin-bottom: clamp(48px, 6vw, 88px); }
+  @media (max-width: 960px) {
+    .said { padding-left: 0; }
+  }
+</style>

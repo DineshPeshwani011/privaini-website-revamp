@@ -1,0 +1,77 @@
+---
+// "Privacy enforcement is routine": the four figures, with the settlements running past underneath.
+import { enforcement, settlements } from '@/data/findings';
+interface Props { heading?: string; text?: string; link?: { label: string; href: string } }
+const {
+  heading = 'Privacy enforcement is routine.',
+  text = 'Most enforcement actions hit companies that didn’t see them coming. It’s become a recurring cost of doing business online, and it’s accelerating.',
+  link = { label: 'Find out if your company is exposed', href: '/request-a-demo' },
+} = Astro.props;
+const loop = [...settlements, ...settlements, ...settlements, ...settlements];
+---
+<section class="enf section" aria-labelledby="enf-h">
+  <div class="wrap">
+    <div class="head" data-reveal-group>
+      <h2 id="enf-h" data-split>{heading}</h2>
+      <div class="side">
+        <p data-reveal>{text}</p>
+        {link && <a class="link" href={link.href} data-reveal>{link.label} <span class="arrow">→</span></a>}
+      </div>
+    </div>
+    <dl class="figs" data-reveal-group>
+      {enforcement.map((e) => (
+        <div class="fig" data-reveal>
+          <dt class="sr-only">{e.label}</dt>
+          <dd class="n nums" data-count={e.count} data-decimals={e.decimals ?? 0} data-prefix={e.prefix ?? ''} data-suffix={e.suffix ?? ''}>{e.figure}</dd>
+          <dd class="l">{e.label}</dd>
+        </div>
+      ))}
+    </dl>
+    {link && <a class="link link--after" href={link.href}>{link.label} <span class="arrow">→</span></a>}
+  </div>
+  <div class="ticker" aria-label={`Recent settlements: ${settlements.join(', ')}`}>
+    <div class="track" aria-hidden="true">
+      {loop.map((s, i) => {
+        const [name, amount] = [s.replace(/\s[$€][\d.]+M$/, ''), s.match(/[$€][\d.]+M$/)?.[0]];
+        return <span class:list={['item', { dup: i >= settlements.length }]}><span class="who">{name}</span> <span class="amt">{amount}</span></span>;
+      })}
+    </div>
+  </div>
+</section>
+
+<style>
+  .head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: end; margin-bottom: clamp(48px, 6vw, 96px); }
+  .head h2 { grid-column: 1 / span 7; font-size: clamp(38px, 5.2vw, 88px); }
+  .side { grid-column: 9 / span 4; display: grid; gap: 18px; justify-items: start; }
+  .side p { color: var(--muted); font-size: 18px; }
+  .figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; }
+  .fig { background: var(--bg-2); border-radius: var(--radius); padding: clamp(20px, 2.2vw, 32px); display: grid; gap: 36px; align-content: space-between; min-height: 260px; }
+  .fig dd { margin: 0; }
+  .n { font-size: clamp(52px, 5.6vw, 96px); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; }
+  .fig:first-child .n { color: var(--accent-hi); }
+  .l { font-size: 16px; color: var(--muted); max-width: 22ch; }
+  .ticker { margin-top: clamp(40px, 5vw, 72px); overflow: hidden; }
+  .track { display: flex; gap: 56px; width: max-content; animation: tick 48s linear infinite; }
+  .ticker:hover .track { animation-play-state: paused; }
+  .item { font-size: clamp(28px, 3vw, 48px); font-weight: 600; letter-spacing: -0.03em; white-space: nowrap; }
+  .who { color: var(--faint); }
+  .amt { color: var(--ink); }
+  @keyframes tick { to { transform: translateX(-50%); } }
+  .link--after { display: none; margin-top: 28px; }
+  @media (max-width: 960px) {
+    .head h2, .side { grid-column: 1 / -1; }
+    .side .link { display: none; }
+    .link--after { display: inline-flex; }
+    .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fig { min-height: 200px; }
+  }
+  @media (max-width: 480px) {
+    .head h2 { font-size: 32px; }
+    .figs { grid-template-columns: 1fr; }
+    .fig { min-height: 0; gap: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .track { animation: none; flex-wrap: wrap; gap: 8px 40px; width: auto; padding-inline: var(--margin); }
+    .dup { display: none; }
+  }
+</style>

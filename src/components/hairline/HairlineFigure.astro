@@ -1,0 +1,230 @@
+---
+// Hairline figures: flat diagrams that replace the old isometric (anatomy) figures. Each is one labelled
+// drawing in hairlines with one cyan mark and one slow motion:
+//   outside-in-scanner  a scan line reads a domain's public properties; signals appear as it passes
+//   policy-practice-gap what the policy says against what the site does; the gaps light in turn
+//   exposure-scale      each finding's exposure range drawn on one axis, then a reading cursor
+// SVG and CSS only. Motion pauses offscreen and holds still under reduced motion.
+import { sampleFindings, sampleReport } from '@/data/findings';
+type Name = 'outside-in-scanner' | 'policy-practice-gap' | 'exposure-scale';
+interface Props { name: Name; title?: string; class?: string }
+const { name, title, class: cls } = Astro.props;
+
+const labels: Record<Name, { head: string; side: string; desc: string }> = {
+  'outside-in-scanner': {
+    head: 'Fig. · Observed from outside', side: sampleReport.domain,
+    desc: 'Six public properties of a company domain are read from outside. Signals appear on each as the scan passes; the video page raises a VPPA finding.',
+  },
+  'policy-practice-gap': {
+    head: 'Fig. · Policy against practice', side: 'Observed behaviour',
+    desc: 'What a privacy policy says, against what the site is observed to do, across six areas. Three gaps are found and each maps to a statute.',
+  },
+  'exposure-scale': {
+    head: 'Fig. · Exposure per finding', side: 'Sample report',
+    desc: `The exposure range of each finding in the sample report on one axis. Total exposure ${sampleReport.total}.`,
+  },
+};
+const L = labels[name];
+
+// --- outside-in: six property frames, signals inside them, a scan line across ---
+const props = ['www.', 'app.', 'checkout.', 'video.', 'help.', 'careers.'];
+const frames = props.map((p, i) => ({ p, x: 40 + (i % 3) * 196, y: 78 + Math.floor(i / 3) * 148 }));
+const SIG: [number, number][][] = [
+  [[120, 52], [150, 98]], [[30, 98], [128, 64]], [[96, 52], [150, 104], [40, 104]],
+  [[138, 56], [80, 98]], [[60, 52]], [[110, 98], [148, 52]],
+];
+const SCAN = { x0: 28, x1: 616, t: 8 };
+const signals = frames.flatMap((f, i) => SIG[i].map(([dx, dy]) => {
+  const x = f.x + dx, y = f.y + dy;
+  return { x, y, delay: ((x - SCAN.x0) / (SCAN.x1 - SCAN.x0)) * SCAN.t };
+}));
+const video = frames[3];
+
+// --- policy vs practice: six areas, three gaps ---
+// gaps sit two columns apart so their notes never overlap
+const areas = ['Consent', 'Cookies', 'Sharing', 'Biometrics', 'Retention', 'Ads'];
+const gaps: Record<number, { says: string; law: string }> = {
+  0: { says: 'Fires before consent', law: 'GDPR Art.7' },
+  2: { says: 'Pixel shares with ads', law: 'CCPA §1798' },
+  4: { says: 'Kept 4 yrs, not 1', law: 'GDPR Art.5' },
+};
+const colX = (i: number) => 92 + i * 92;
+
+// --- exposure: ranges on one axis, $0–$25M ---
+const AX = { x0: 214, x1: 600, max: 25 };
+const sx = (v: number) => AX.x0 + (Math.min(v, AX.max) / AX.max) * (AX.x1 - AX.x0);
+const rows = sampleFindings.map((f, i) => ({ ...f, y: 112 + i * 58 }));
+---
+<figure class:list={['hfig', `hfig--${name}`, cls]} data-hairline-figure>
+  <svg viewBox="0 0 640 420" role="img" aria-label={title ?? L.desc}>
+    <text class="t head" x="24" y="34">{L.head}</text>
+    <text class="t head side" x="616" y="34" text-anchor="end">{L.side}</text>
+    <path class="rule" d="M24 50H616" />
+
+    {name === 'outside-in-scanner' && (
+      <g>
+        {frames.map((f) => (
+          <g class="frame">
+            <rect x={f.x} y={f.y} width="176" height="128" rx="2" />
+            <text class="t prop" x={f.x + 12} y={f.y + 22}>{f.p}</text>
+            <path class="wire" d={`M${f.x + 12} ${f.y + 40}h96M${f.x + 12} ${f.y + 52}h70M${f.x + 12} ${f.y + 64}h84M${f.x + 12} ${f.y + 82}h152v30h-152z`} />
+          </g>
+        ))}
+        {signals.map((s) => <rect class="sig" x={s.x - 3} y={s.y - 3} width="6" height="6" style={`animation-delay:${s.delay.toFixed(2)}s`} />)}
+        <g class="finding" style={`animation-delay:${(((video.x + 138) - SCAN.x0) / (SCAN.x1 - SCAN.x0) * SCAN.t).toFixed(2)}s`}>
+          <circle cx={video.x + 138} cy={video.y + 56} r="11" />
+          <rect class="hint" x={video.x + 106} y={video.y - 18} width="7" height="7" />
+          <text class="t tag" x={video.x + 118} y={video.y - 11}>VPPA §2710</text>
+        </g>
+        <g class="scan">
+          <path d={`M${SCAN.x0} 66V${78 + 148 + 128 + 12}`} />
+          <text class="t tag" x={SCAN.x0 + 6} y="72">Observing</text>
+        </g>
+        <text class="t foot" x="24" y="396">6 properties · {signals.length} signals · 1 finding</text>
+        <text class="t foot" x="616" y="396" text-anchor="end">Nothing installed</text>
+      </g>
+    )}
+
+    {name === 'policy-practice-gap' && (
+      <g>
+        <text class="t track" x="24" y="128">What the policy says</text>
+        <path class="line" d="M24 150H616" />
+        <text class="t track" x="24" y="278">What the site does</text>
+        <path class="line" d="M24 300H616" />
+        {areas.map((a, i) => {
+          const g = gaps[i];
+          const x = colX(i), px = g ? x + 34 : x;
+          return (
+            // negative delays: every gap's cycle is already running at first paint, so exactly one is lit
+            <g class:list={['area', { gap: !!g }]} style={g ? `animation-delay:${-((9 - Object.keys(gaps).indexOf(String(i)) * 3) % 9)}s` : undefined}>
+              <text class="t col" x={x} y="88" text-anchor="middle">{a}</text>
+              <circle class="node" cx={x} cy="150" r="5" />
+              <path class="link" d={g ? `M${x} 156V226H${px}V294` : `M${x} 156V294`} />
+              <circle class:list={['node', { solid: !g }]} cx={px} cy="300" r="5" />
+              {g && <>
+                <rect class="hint" x={px - 3.5} y="318" width="7" height="7" />
+                <text class="t gaptxt" x={px + 8} y="325">{g.says}</text>
+                <text class="t law" x={px + 8} y="343">{g.law}</text>
+                <title>{`${a}: ${g.says} (${g.law})`}</title>
+              </>}
+            </g>
+          );
+        })}
+        <text class="t foot" x="24" y="396">3 gaps · each mapped to a statute</text>
+        <text class="t foot" x="616" y="396" text-anchor="end">Observed, not self-reported</text>
+      </g>
+    )}
+
+    {name === 'exposure-scale' && (
+      <g>
+        {rows.map((r, i) => (
+          <g class="row" style={`--i:${i}`}>
+            <text class="t law" x="24" y={r.y - 4}>{r.statute}</text>
+            <text class="t ttl" x="24" y={r.y + 12}>{r.title}</text>
+            <path class="guide" d={`M${AX.x0} ${r.y}H${AX.x1}`} />
+            <rect class="range" x={sx(r.low)} y={r.y - 7} width={sx(r.high) - sx(r.low)} height="14" style={`transform-origin:${sx(r.low)}px ${r.y}px`} />
+            <path class="mid" d={`M${sx((r.low + r.high) / 2)} ${r.y - 11}V${r.y + 11}`} />
+            {/* values in one right-aligned column above their ranges, so none can run off the edge */}
+            {i === 0 && <rect class="hint" x={AX.x1 - 118} y={r.y - 22} width="7" height="7" />}
+            <text class="t val" x={AX.x1} y={r.y - 15} text-anchor="end">{r.exposure}</text>
+          </g>
+        ))}
+        <path class="axis" d={`M${AX.x0} 346H${AX.x1}`} />
+        {[0, 5, 10, 15, 20, 25].map((v) => (
+          <>
+            <path class="axis" d={`M${sx(v)} 346v6`} />
+            <text class="t tick" x={sx(v)} y="368" text-anchor="middle">{v === 0 ? '0' : `${v}M`}</text>
+          </>
+        ))}
+        <path class="cursor" d={`M${AX.x0} 88V346`} />
+        <text class="t foot" x="24" y="396">Total exposure {sampleReport.total}</text>
+        <text class="t foot" x="616" y="396" text-anchor="end">{sampleReport.jurisdictions} jurisdictions</text>
+      </g>
+    )}
+  </svg>
+</figure>
+
+<script>
+  // play while in view; the exposure ranges draw in the first time the figure is seen
+  document.querySelectorAll<HTMLElement>('[data-hairline-figure]').forEach((el) => {
+    new IntersectionObserver(([e]) => {
+      el.toggleAttribute('data-paused', !e.isIntersecting);
+      if (e.isIntersecting) el.classList.add('seen');
+    }, { threshold: 0.25 }).observe(el);
+  });
+</script>
+
+<style>
+  .hfig {
+    --f-line: var(--line, color-mix(in srgb, var(--ink) 14%, transparent));
+    --f-mid: color-mix(in srgb, var(--ink) 34%, transparent);
+    --f-ink: var(--ink);
+    --f-muted: var(--muted);
+    --f-hint: var(--hint, var(--accent));
+    margin: 0; border: 1px solid var(--f-line); border-radius: 4px; background: var(--bg);
+  }
+  svg { display: block; width: 100%; height: auto; fill: none; stroke-width: 1; }
+  svg * { vector-effect: non-scaling-stroke; }
+  .t { stroke: none; fill: var(--f-muted); font: 500 11px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; }
+  .head { fill: var(--f-ink); }
+  .side { fill: var(--f-muted); text-transform: none; letter-spacing: 0; }
+  .rule, .line, .guide { stroke: var(--f-line); }
+  .foot { fill: var(--f-muted); }
+  .hint { fill: var(--f-hint); stroke: none; }
+
+  /* outside-in */
+  .frame rect { stroke: var(--f-mid); }
+  .wire { stroke: var(--f-line); }
+  .prop { fill: var(--f-ink); text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .sig { fill: var(--f-ink); opacity: 0; animation: sig 8s linear infinite; }
+  @keyframes sig { 0% { opacity: 0; } 2% { opacity: 1; } 80% { opacity: 1; } 90%, 100% { opacity: 0; } }
+  .finding { opacity: 0; animation: sig 8s linear infinite; }
+  .finding circle { stroke: var(--f-ink); }
+  .tag { fill: var(--f-ink); }
+  .scan path { stroke: var(--f-ink); }
+  .scan { animation: scan 8s linear infinite; }
+  @keyframes scan { to { transform: translateX(588px); } }
+
+  /* policy vs practice */
+  .col { fill: var(--f-ink); }
+  .track { fill: var(--f-muted); }
+  .node { stroke: var(--f-ink); fill: var(--bg); }
+  .node.solid { fill: var(--f-ink); }
+  .link { stroke: var(--f-mid); }
+  .gap .link { stroke-dasharray: 3 4; }
+  .gaptxt { fill: var(--f-ink); text-transform: none; letter-spacing: 0; font-size: 12px; }
+  .law { fill: var(--f-muted); }
+  /* the three gaps take turns: each is drawn in ink for its third of the cycle */
+  .gap { animation: turn 9s linear infinite; }
+  .gap .hint, .gap .gaptxt, .gap .law { animation: inherit; animation-name: show; }
+  @keyframes turn { 0%, 33% { opacity: 1; } 36%, 97% { opacity: 0.38; } 100% { opacity: 1; } }
+  @keyframes show { 0%, 33% { opacity: 1; } 36%, 97% { opacity: 0; } 100% { opacity: 1; } }
+
+  /* exposure */
+  .ttl { fill: var(--f-ink); text-transform: none; letter-spacing: 0; font-size: 12px; font-family: var(--font); font-weight: 500; }
+  .range { stroke: var(--f-ink); transform: scaleX(0); transition: transform 0.9s var(--ease-std, cubic-bezier(0.4, 0, 0.2, 1)) calc(var(--i) * 0.12s); }
+  .seen .range { transform: none; }
+  .mid { stroke: var(--f-ink); opacity: 0; transition: opacity 0.4s calc(0.7s + var(--i) * 0.12s); }
+  .seen .mid { opacity: 1; }
+  .val { fill: var(--f-ink); text-transform: none; letter-spacing: 0; }
+  .axis { stroke: var(--f-mid); }
+  .tick { fill: var(--f-muted); }
+  .cursor { stroke: var(--f-mid); stroke-dasharray: 2 4; animation: read 14s var(--ease-std, ease-in-out) infinite alternate; }
+  @keyframes read { to { transform: translateX(386px); } }
+
+  .hfig[data-paused] * { animation-play-state: paused !important; }
+
+  /* phones: the drawing scales down, so its labels grow to stay readable */
+  @media (max-width: 600px) {
+    .t, .prop, .gaptxt { font-size: 17px; }
+    .wire, .side, .track, .ttl, .val, .gaptxt, .area:not(.gap) .col, text.foot[text-anchor='end'] { display: none; }
+    .law { font-size: 15px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hfig * { animation: none !important; transition: none !important; }
+    .sig, .finding { opacity: 1; }
+    .range { transform: none; }
+    .mid { opacity: 1; }
+    .scan, .cursor { display: none; }
+  }
+</style>

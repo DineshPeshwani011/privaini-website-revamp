@@ -1,0 +1,20 @@
+---
+interface Props { size?: 'sm' | 'md' | 'xl'; class?: string }
+const { size = 'md', class: cls } = Astro.props;
+---
+<span class:list={['wordmark', `wordmark--${size}`, cls]} aria-label="Privaini">PRIV<span class="ai">AI</span>NI</span>
+
+<style>
+  .wordmark {
+    font-family: var(--logo);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .ai { color: var(--accent); }
+  .wordmark--sm { font-size: 18px; }
+  .wordmark--md { font-size: 22px; }
+  .wordmark--xl { font-size: clamp(64px, 17.4vw, 300px); letter-spacing: 0.01em; display: block; }
+</style>

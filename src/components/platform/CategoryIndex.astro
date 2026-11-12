@@ -1,0 +1,50 @@
+---
+// The eight finding categories as a large index: category name, what it covers, and the statute it maps to.
+// A row links to its statute page unless that page is the one being read.
+import { categories } from '@/data/findings';
+interface Props { current?: string; class?: string }
+const { current = Astro.url.pathname.replace(/\/$/, ''), class: cls } = Astro.props;
+---
+<ul role="list" class:list={['cats', cls]} data-reveal-group>
+  {categories.map((c) => {
+    const linked = c.href !== current;
+    const Tag = linked ? 'a' : 'div';
+    return (
+      <li data-reveal>
+        <Tag class:list={['row', { linked }]} href={linked ? c.href : undefined}>
+          <h3 class="name">{c.name}</h3>
+          <p class="text">{c.text}</p>
+          <span class="law">{c.law}</span>
+          <span class="go" aria-hidden="true">{linked ? '→' : ''}</span>
+          {linked && <span class="sr-only">See statute</span>}
+        </Tag>
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .cats { display: grid; }
+  .row {
+    display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) minmax(0, 2fr) 32px; gap: var(--gap);
+    align-items: baseline; padding: clamp(18px, 2vw, 28px) 0; position: relative;
+  }
+  .row::before {
+    content: ''; position: absolute; inset: 0 calc(var(--margin) * -0.5); background: var(--bg-2); border-radius: var(--radius);
+    transform: scaleY(0.6); opacity: 0; transition: transform 0.45s var(--ease-out), opacity 0.3s; z-index: -1;
+  }
+  .linked:hover::before, .linked:focus-visible::before { transform: none; opacity: 1; }
+  .name { font-size: clamp(26px, 2.7vw, 44px); letter-spacing: -0.04em; line-height: 1.02; transition: color 0.3s, transform 0.5s var(--ease-out); }
+  .text { font-size: 17px; color: var(--muted); line-height: 1.5; max-width: 44ch; }
+  .law { font-size: 15px; font-weight: 600; color: var(--accent-hi); }
+  .go { font-size: 26px; color: var(--muted); justify-self: end; transition: transform 0.4s var(--ease-out), color 0.3s; }
+  .linked:hover .name { color: var(--accent-hi); transform: translateX(6px); }
+  .linked:hover .go { color: var(--accent-hi); transform: translateX(4px); }
+  @media (max-width: 960px) {
+    .row { grid-template-columns: minmax(0, 1fr) auto; row-gap: 8px; }
+    .name { grid-column: 1; }
+    .law { grid-column: 2; grid-row: 1; justify-self: end; }
+    .text { grid-column: 1 / -1; }
+    .go { display: none; }
+  }
+</style>

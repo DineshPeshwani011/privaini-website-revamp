@@ -1,0 +1,73 @@
+---
+// The sample risk report for your-company.com: briefing header, statute-mapped findings, total.
+import { sampleFindings, sampleReport } from '@/data/findings';
+interface Props { variant?: 'report' | 'briefing'; class?: string }
+const { variant = 'report', class: cls } = Astro.props;
+const rows = variant === 'briefing' ? [sampleFindings[0], sampleFindings[1], sampleFindings[3]] : sampleFindings;
+---
+<article class:list={['report', variant, cls]} data-ui aria-label={`Sample ${variant === 'briefing' ? 'risk briefing' : 'risk report'} for ${sampleReport.domain}`}>
+  <header class="ui-head">
+    <div class="t">
+      <span class="ui-label">{variant === 'briefing' ? 'Risk briefing' : 'Risk report'}</span>
+      <span class="ui-mono">{sampleReport.domain}</span>
+    </div>
+    <span class="ui-chip" data-sev="high">Risk: {sampleReport.risk}</span>
+  </header>
+  {variant === 'briefing' && (
+    <div class="stats">
+      <div class="ui-kv"><span class="ui-label">Risk score</span><span class="ui-value hi">HIGH</span></div>
+      <div class="ui-kv"><span class="ui-label">Jurisdictions</span><span class="ui-value">{sampleReport.jurisdictions}</span></div>
+      <div class="ui-kv"><span class="ui-label">Findings</span><span class="ui-value">{sampleReport.findings}</span></div>
+    </div>
+  )}
+  <ul role="list" class="list">
+    {rows.map((f) => (
+      <li class="ui-row row" tabindex="0">
+        <span class="ui-dot" data-sev={f.severity}></span>
+        <span class="what">
+          <span class="ui-mono ui-muted">{[f.id, f.statute].filter(Boolean).join(' · ')}</span>
+          <span class="name">{f.title}</span>
+        </span>
+        <span class="ui-mono amt">{f.exposure}</span>
+      </li>
+    ))}
+  </ul>
+  <footer class="total">
+    {variant === 'briefing' ? (
+      <>
+        <span class="ui-mono ui-muted">{sampleReport.detected}</span>
+        <span class="ui-ok val">✓ Validated in live UK ICO regulatory response</span>
+      </>
+    ) : (
+      <>
+        <span class="ui-label">Estimated total exposure across {sampleReport.jurisdictions} jurisdictions</span>
+        <span class="ui-value big">{sampleReport.total}</span>
+      </>
+    )}
+  </footer>
+</article>
+
+<style>
+  .report { width: 100%; max-width: 540px; }
+  .t { display: grid; gap: 2px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--ui-line); }
+  .stats .ui-kv { padding: 14px 16px; }
+  .stats .ui-kv + .ui-kv { border-left: 1px solid var(--ui-line); }
+  .hi { color: var(--high); }
+  .list .row { grid-template-columns: auto 1fr auto; transition: background-color 0.2s; outline-offset: -2px; }
+  .list .row:hover, .list .row:focus-visible { background: var(--ui-bg-2); }
+  .what { display: grid; gap: 2px; min-width: 0; }
+  .name { font-weight: 600; color: var(--strong); font-size: 14.5px; }
+  .amt { color: var(--ui-text); white-space: nowrap; }
+  .total {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 14px 16px; border-top: 1px solid var(--ui-line); background: var(--ui-bg-2);
+    border-radius: 0 0 var(--ui-radius) var(--ui-radius);
+  }
+  .big { font-size: 20px; color: var(--accent-hi); }
+  .val { font-size: 13px; }
+  @media (max-width: 480px) {
+    .list .row { grid-template-columns: auto 1fr; }
+    .amt { grid-column: 2; }
+  }
+</style>

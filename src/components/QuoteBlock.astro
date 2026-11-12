@@ -1,0 +1,33 @@
+---
+// One quotation set as a statement, with who said it.
+import type { Quote } from '@/data/quotes';
+interface Props { quote: Quote; tone?: 'plain' | 'field'; class?: string }
+const { quote, tone = 'plain', class: cls } = Astro.props;
+---
+<figure class:list={['qb', `qb--${tone}`, { 'theme-dark': tone === 'field' }, cls]} data-reveal-group>
+  <blockquote data-reveal>{quote.text}</blockquote>
+  <figcaption data-reveal>
+    <span class="disc" aria-hidden="true">{quote.initials}</span>
+    <span><strong>{quote.name}</strong>{quote.org && quote.org !== quote.name && <span class="org">{quote.org}</span>}</span>
+  </figcaption>
+</figure>
+
+<style>
+  .qb { display: grid; gap: 32px; max-width: 1100px; }
+  blockquote {
+    margin: 0; font-size: clamp(26px, 2.6vw, 36px); line-height: 1.25; letter-spacing: -0.025em; font-weight: 500;
+    max-width: 34ch; text-wrap: pretty;
+  }
+  blockquote::before { content: '“'; margin-left: -0.45em; color: var(--accent); }
+  blockquote::after { content: '”'; color: var(--accent); }
+  figcaption { display: flex; align-items: center; gap: 14px; font-size: 16px; }
+  figcaption strong { display: block; font-weight: 600; }
+  .org { display: block; color: var(--muted); }
+  .disc { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 14px; flex: none; }
+  .qb--field .org { color: color-mix(in srgb, var(--field-ink) 75%, transparent); }
+  .qb--field .disc { background: var(--field-ink); color: var(--field); }
+  @media (max-width: 640px) {
+    blockquote { font-size: 24px; }
+    blockquote::before { margin-left: 0; }
+  }
+</style>

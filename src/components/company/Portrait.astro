@@ -1,0 +1,19 @@
+---
+// A person's headshot with the one treatment used for every face on the site: a 4:5 crop from the square
+// original (which also trims its baked-in rounded corners), set in monochrome, warming to colour on hover.
+interface Props { src: string; name: string; size?: number; eager?: boolean; class?: string }
+const { src, name, size = 396, eager = false, class: cls } = Astro.props;
+---
+<div class:list={['portrait', cls]}>
+  <img src={src} alt={`Portrait of ${name}`} width={size} height={size} loading={eager ? 'eager' : 'lazy'} decoding="async" />
+</div>
+
+<style>
+  .portrait { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--radius); background: var(--bg-3); }
+  .portrait img {
+    width: 100%; height: 100%; object-fit: cover; object-position: 50% 35%;
+    filter: grayscale(1) contrast(1.06) brightness(0.94);
+    transition: filter 0.7s var(--ease-out), transform 1s var(--ease-out);
+  }
+  :global(.person:hover) .portrait img, :global(.person:focus-within) .portrait img { filter: grayscale(0) contrast(1) brightness(1); transform: scale(1.025); }
+</style>

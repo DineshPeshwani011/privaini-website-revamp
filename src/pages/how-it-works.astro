@@ -1,0 +1,125 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import ExplainerSection from '@/components/ExplainerSection.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import FindingCard from '@/components/FindingCard.astro';
+import PointList from '@/components/PointList.astro';
+import Timeline from '@/components/Timeline.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+
+const methods = [
+  { title: 'Corporate intelligence', text: 'Who the org is, where it operates, subsidiaries, microsites, and its full digital footprint.' },
+  { title: 'Policy analysis', text: 'Parses all privacy policies and terms. Maps declaration vs. observed practice.' },
+  { title: 'Jurisdictional regulatory mapping', text: '90 countries + 20 US states. Findings are never generic: each maps to the statute that applies.' },
+  { title: 'Signal detection', text: 'Live scan of trackers, pixels, and consent behavior across your public properties.' },
+];
+---
+<Base
+  title="How It Works | Privaini"
+  description="Company name to regulator-grade risk intelligence. Observe, detect, recommend: no installation, no cooperation."
+>
+  <PageHero
+    title="Company → risk intelligence → action."
+    lead="From a company or domain name to regulator-grade findings. No installation, no internal data, no cooperation required."
+  >
+    <StatusPanel
+      title="The loop"
+      subject="outside-in"
+      rows={[
+        { label: 'Observe', value: 'Any company', state: 'ok' },
+        { label: 'Detect', value: '100+ signals', state: 'ok' },
+        { label: 'Recommend', value: 'Statute-mapped', state: 'ok' },
+      ]}
+      total={{ label: 'Setup required', value: 'None', state: 'ok' }}
+    />
+  </PageHero>
+
+  <ExplainerSection
+    name="outside-in-scanner"
+    figureTitle="Interactive figure: an outside-in assessment of a company's public properties"
+    heading="Observe. Detect. Recommend."
+    text="Three stages, each grounded in the outside-in vantage point regulators and litigators use."
+    points={[
+      { title: 'Observe', text: 'Any company, from a name and website: consent flows, tracker behavior, and policy-practice gaps.' },
+      { title: 'Detect', text: 'Consent failures and tracking signals detected automatically and scored against the governing statute.' },
+      { title: 'Recommend', text: 'Regulator-grade, evidence-backed, actionable, prioritized by exposure with clear next steps.' },
+    ]}
+  />
+
+  <section class="section section--raised methods" aria-labelledby="m-h">
+    <div class="wrap grid">
+      <div class="m-copy">
+        <SectionHead
+          id="m-h"
+          title="Four methods. One finding."
+          text="A finding no single method could produce alone: each method surfaces a different dimension of outside-in exposure."
+        />
+        <ul role="list" class="m-list" data-reveal-group>
+          {methods.map((m) => (
+            <li data-reveal>
+              <h3>{m.title}</h3>
+              <p>{m.text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="m-card" data-reveal>
+        <FindingCard />
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="diff-h">
+    <div class="wrap">
+      <SectionHead id="diff-h" title="What makes a Privaini finding different." />
+      <PointList
+        variant="index"
+        items={[
+          { title: 'Regulator-grade evidence', text: 'Reproducible, timestamped, jurisdiction-specific, validated the way regulators would.' },
+          { title: 'Policy-practice gap analysis', text: 'Detects authorized practices not properly disclosed: the precise gap litigators exploit.' },
+          { title: 'Litigation exposure signals', text: 'VPPA, BIPA, wiretapping, wrongful collection, identified before they become claims.' },
+          { title: 'Jurisdiction-specific findings', text: '47 trackers → 12 violate LGPD, 8 create CA wiretapping exposure. Specific, not generic.' },
+          { title: 'Zero-deployment assessment', text: 'Any entity assessed from name and domain alone: no agents, access, or cooperation.' },
+          { title: 'Exposure range modeling', text: 'A defensible dollar range per finding, modeled from legal precedent.' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="weeks-h">
+    <div class="wrap">
+      <SectionHead
+        id="weeks-h"
+        title="From demo to production in three weeks."
+        text="Zero IT involvement. No deployment. No internal data. No cooperation from the company being assessed."
+      />
+      <Timeline
+        items={[
+          { when: 'Week 1', title: 'Live demo', text: 'A live demo on real entities you recognize.' },
+          { when: 'Week 2', title: 'Your entities, assessed', text: 'Five of your own entities assessed before contract.' },
+          { when: 'Week 3', title: 'Terms & contract', text: 'Terms and contract signed after validating quality.' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <CtaBlank after="From your domain name to statute-mapped findings. No sales pitch, no questionnaires, no IT lift." />
+</Base>
+
+<style>
+  .methods .grid { align-items: center; row-gap: 56px; }
+  .m-copy { grid-column: 1 / span 6; }
+  .m-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(28px, 3vw, 44px) var(--gap); }
+  .m-list h3 { font-size: clamp(20px, 1.6vw, 24px); }
+  .m-list p { margin-top: 8px; color: var(--muted); font-size: 17px; max-width: 34ch; }
+  .m-card { grid-column: 8 / span 5; display: grid; justify-items: center; }
+  @media (max-width: 960px) {
+    .m-copy, .m-card { grid-column: 1 / -1; }
+    .m-card { justify-items: stretch; }
+  }
+  @media (max-width: 560px) {
+    .m-list { grid-template-columns: 1fr; }
+  }
+</style>

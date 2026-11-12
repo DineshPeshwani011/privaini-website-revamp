@@ -1,0 +1,8 @@
+[
+  ["wait", 600],
+  ["key", "0"], ["wait", 1200],
+  ["slow", 0.25],
+  ["key", "2"],
+  ["sheet", "explainers/exposure-scale/shots/sheet-0to2.png", 120, 12, null, 0.6, [60, 60, 640, 380], 4],
+  ["slow", 1]
+]

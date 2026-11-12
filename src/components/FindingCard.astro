@@ -1,0 +1,64 @@
+---
+// The F-0042 finding card from Privaini's sample report, as the product renders it.
+import { sampleFindings, sampleReport } from '@/data/findings';
+interface Props { compact?: boolean; class?: string }
+const { compact = false, class: cls } = Astro.props;
+const f = sampleFindings[0];
+---
+<article class:list={['finding', { compact }, cls]} data-ui aria-label={`Sample finding ${f.id}: ${f.title}`}>
+  <header class="ui-head">
+    <div class="id">
+      <span class="ui-mono">{f.id}</span>
+      <span class="ui-chip" data-sev="high"><span class="ui-dot" data-sev="high"></span>High</span>
+      <span class="ui-chip">{f.law}</span>
+    </div>
+    <span class="ui-mono ui-muted">ID w-042-v</span>
+  </header>
+  <div class="ui-body main">
+    <h4 class="title">{f.title}</h4>
+    {!compact && (
+      <div class="block">
+        <span class="ui-label">Observation</span>
+        <p>{f.observation}</p>
+      </div>
+    )}
+    <div class="grid">
+      <div class="ui-kv">
+        <span class="ui-label">Statute</span>
+        <span class="ui-value">{f.statute}</span>
+        <span class="ui-mono ui-muted">{f.citation}</span>
+      </div>
+      <div class="ui-kv">
+        <span class="ui-label">Class exposure</span>
+        <span class="ui-value">{f.perViolation}</span>
+        <span class="ui-mono exp">Est. {f.exposure}</span>
+      </div>
+    </div>
+  </div>
+  <footer class="foot">
+    <span class="ui-mono ui-muted">Detected {sampleReport.detected}</span>
+    <span class="btns">
+      <a class="ui-btn" href="/request-a-demo">View</a>
+      <a class="ui-btn ui-btn--primary" href="/request-a-demo">Download</a>
+    </span>
+  </footer>
+  {!compact && <p class="validated"><span class="ui-ok">✓</span> {sampleReport.validated}</p>}
+</article>
+
+<style>
+  .finding { width: 100%; max-width: 520px; }
+  .id { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .main { display: grid; gap: 16px; }
+  .title { font-size: 19px; font-weight: 600; letter-spacing: -0.01em; color: var(--strong); line-height: 1.25; }
+  .block { display: grid; gap: 6px; }
+  .block p { font-size: 14px; color: var(--ui-text); line-height: 1.5; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid .ui-kv { padding: 12px; border-radius: 5px; background: var(--ui-bg-2); }
+  .exp { color: var(--high); }
+  .foot {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 12px 16px; border-top: 1px solid var(--ui-line);
+  }
+  .btns { display: flex; gap: 6px; }
+  .validated { padding: 12px 16px; border-top: 1px solid var(--ui-line); font-size: 13px; color: var(--ui-muted); }
+</style>

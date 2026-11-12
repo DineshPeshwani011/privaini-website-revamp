@@ -1,0 +1,59 @@
+---
+// A small product panel for page heroes: a titled check list for one entity, as Privaini renders it.
+// state: ok (✓ green) · warn (⚠ amber) · bad (red) · info (plain value)
+export interface StatusRow { label: string; value: string; state?: 'ok' | 'warn' | 'bad' | 'info' }
+interface Props {
+  title: string;
+  subject?: string;
+  badge?: string;
+  rows: StatusRow[];
+  total?: { label: string; value: string; state?: 'ok' | 'warn' | 'bad' | 'info' };
+  note?: string;
+}
+const { title, subject = 'your-company.com', badge, rows, total, note } = Astro.props;
+const icon = { ok: '✓', warn: '⚠', bad: '!', info: '' } as const;
+---
+<div class="panel" data-ui role="group" aria-label={`${title}${subject ? ` for ${subject}` : ''}`}>
+  <div class="ui-head">
+    <div class="t">
+      <span class="ui-label">{title}</span>
+      {subject && <span class="ui-mono">{subject}</span>}
+    </div>
+    {badge && <span class="ui-chip" data-sev="info">{badge}</span>}
+  </div>
+  <ul role="list">
+    {rows.map((r) => (
+      <li class="ui-row row" data-state={r.state ?? 'info'}>
+        <span class="lbl">{r.label}</span>
+        <span class="val">{r.state && r.state !== 'info' && <span class="ic" aria-hidden="true">{icon[r.state]}</span>}{r.value}</span>
+      </li>
+    ))}
+  </ul>
+  {total && (
+    <div class="total" data-state={total.state ?? 'info'}>
+      <span class="ui-label">{total.label}</span>
+      <span class="ui-value big">{total.value}</span>
+    </div>
+  )}
+  {note && <p class="note ui-muted">{note}</p>}
+</div>
+
+<style>
+  .panel { width: 100%; max-width: 480px; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.8); }
+  .t { display: grid; gap: 2px; }
+  .row { grid-template-columns: 1fr auto; }
+  .lbl { font-size: 14px; color: var(--ui-text); }
+  .val { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .ic { font-size: 12px; }
+  [data-state='ok'] .val, .total[data-state='ok'] .big { color: var(--low); }
+  [data-state='warn'] .val, .total[data-state='warn'] .big { color: var(--med); }
+  [data-state='bad'] .val, .total[data-state='bad'] .big { color: var(--high); }
+  [data-state='info'] .val { color: var(--ui-text); }
+  .total {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding: 14px 16px; border-top: 1px solid var(--ui-line); background: var(--ui-bg-2);
+  }
+  .total:last-child { border-radius: 0 0 var(--ui-radius) var(--ui-radius); }
+  .big { font-size: 22px; color: var(--accent-hi); }
+  .note { padding: 12px 16px; border-top: 1px solid var(--ui-line); font-size: 12.5px; }
+</style>

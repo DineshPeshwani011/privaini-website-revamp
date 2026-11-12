@@ -1,0 +1,68 @@
+---
+// The other statute pages as an index: each name at display size, the figure that sums it up beside it.
+import { statutes, statuteOrder, type StatuteSlug } from '@/data/platform-statutes';
+interface Props { current?: StatuteSlug; heading?: string; text?: string; class?: string }
+const {
+  current,
+  heading = 'Other statutes Privaini maps.',
+  text = 'Every finding category has at least one governing statute, with reproducible, timestamped evidence.',
+  class: cls,
+} = Astro.props;
+const items = statuteOrder.filter((s) => s !== current).map((s) => statutes[s]);
+const id = `rel-h${current ? `-${current}` : ''}`;
+---
+<section class:list={['rel section', cls]} aria-labelledby={id}>
+  <div class="wrap grid">
+    <div class="head" data-reveal-group>
+      <h2 id={id} data-split>{heading}</h2>
+      <p data-reveal>{text}</p>
+      <a class="link" href="/what-we-find" data-reveal>All eight finding categories <span class="arrow">→</span></a>
+    </div>
+    <ul role="list" class="list" data-reveal-group>
+      {items.map((s) => (
+        <li data-reveal>
+          <a href={`/${s.slug}`} class="row">
+            <span class="name">{s.name}</span>
+            <span class="fig">{s.teaser}</span>
+            <span class="go" aria-hidden="true">→</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: start; row-gap: 48px; }
+  .head { grid-column: 1 / span 4; display: grid; gap: 20px; justify-items: start; position: sticky; top: calc(var(--nav-h) + 32px); }
+  .head h2 { font-size: clamp(30px, 3vw, 46px); max-width: 14ch; }
+  .head p { color: var(--muted); font-size: 18px; max-width: 34ch; }
+  .list { grid-column: 6 / span 7; display: grid; }
+  .row {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 15ch) 28px; gap: var(--gap); align-items: baseline;
+    padding: clamp(12px, 1.3vw, 20px) 0; position: relative;
+  }
+  .row::before {
+    content: ''; position: absolute; inset: 0 -16px; background: var(--bg-2); border-radius: var(--radius); z-index: -1;
+    opacity: 0; transform: scaleY(0.6); transition: opacity 0.3s, transform 0.45s var(--ease-out);
+  }
+  .row:hover::before, .row:focus-visible::before { opacity: 1; transform: none; }
+  .name {
+    font-size: clamp(30px, 3.6vw, 58px); font-weight: 600; letter-spacing: -0.045em; line-height: 1;
+    transition: color 0.3s, transform 0.5s var(--ease-out);
+  }
+  .fig { font-size: 16px; color: var(--muted); line-height: 1.35; }
+  .go { font-size: 24px; color: var(--muted); justify-self: end; transition: transform 0.4s var(--ease-out), color 0.3s; }
+  .row:hover .name, .row:focus-visible .name { color: var(--accent-hi); transform: translateX(6px); }
+  .row:hover .go { color: var(--accent-hi); transform: translateX(4px); }
+  @media (max-width: 960px) {
+    .head, .list { grid-column: 1 / -1; }
+    .head { position: static; }
+  }
+  @media (max-width: 560px) {
+    .row { grid-template-columns: minmax(0, 1fr) minmax(0, 12ch); }
+    .name { font-size: 28px; }
+    .fig { font-size: 14.5px; }
+    .go { display: none; }
+  }
+</style>

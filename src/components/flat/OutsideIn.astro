@@ -1,0 +1,173 @@
+---
+// Flat (/v5) · outside-in: the hero's three sentences, drawn. It plays in three beats, each lighting its sentence
+// beside it (the page's [data-oi-step] buttons; src/scripts/flat-v5.ts runs it):
+//   1  "Your program & current stack look inwards."  a website; squares close in on its middle, looking in
+//   2  "Enforcement and litigation come from outside."  arrows come in from the corners; what the site gives off
+//      appears round it, faint (the labels are the ones floating over the live page's hero)
+//   3  "We show you what they see."  the Privaini lens circles the site, and each thing it passes lights up
+// then starts again. Under reduced motion it is the third beat, still, with every label lit.
+// Square everywhere but the lens.
+
+const W = 720;
+const H = 600;
+const C = { x: 360, y: 300 };
+const BOX = { x: 240, y: 180, s: 240 };
+const ORBIT = 218;
+
+// what the site gives off: [label, marker x, marker y, text anchor, mono]
+const raw: [string, number, number, 'start' | 'middle' | 'end', boolean?][] = [
+  ['CIPA', 232, 112, 'end'], ['Undisclosed AI', 360, 86, 'middle'], ['VPPA', 488, 112, 'start'],
+  ['/track', 556, 190, 'start', true], ['BIPA', 572, 262, 'start'], ['meta_pixel', 572, 338, 'start', true], ['Wiretapping', 556, 410, 'start'],
+  ['Tracker Fired', 488, 488, 'start'], ['?consent=', 360, 514, 'middle', true], ['Policy Gap', 232, 488, 'end'],
+  ['Dark Patterns', 164, 410, 'end'], ['CPRA', 148, 338, 'end'], ['GDPR', 148, 262, 'end'], ['CCPA', 164, 190, 'end'],
+];
+const f = (n: number) => Number(n.toFixed(1));
+const tags = raw.map(([t, x, y, a, mono]) => {
+  // the leak: from where a line from the middle meets the site's edge, out to just short of the marker
+  const dx = x - C.x;
+  const dy = y - C.y;
+  const k = Math.min(BOX.s / 2 / Math.abs(dx || 0.001), BOX.s / 2 / Math.abs(dy || 0.001));
+  const len = Math.hypot(dx, dy);
+  const e = { x: C.x + dx * k, y: C.y + dy * k };
+  const end = { x: x - (dx / len) * 9, y: y - (dy / len) * 9 };
+  // the angle round the orbit (clockwise from the top, as the lens travels)
+  let ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+  if (ang < -90) ang += 360;
+  const tx = a === 'start' ? x + 12 : a === 'end' ? x - 12 : x;
+  const ty = a === 'middle' ? (y < C.y ? y - 13 : y + 23) : y + 5;
+  return { t, x, y, a, mono, tx, ty, ang: f(ang), leak: `M${f(e.x)} ${f(e.y)}L${f(end.x)} ${f(end.y)}` };
+});
+
+// enforcement and litigation, from the corners in towards the site's corners
+const corners = [[28, 22, BOX.x, BOX.y], [W - 28, 22, BOX.x + BOX.s, BOX.y], [W - 28, H - 22, BOX.x + BOX.s, BOX.y + BOX.s], [28, H - 22, BOX.x, BOX.y + BOX.s]].map(([sx, sy, bx, by]) => {
+  const ex = sx + (bx - sx) * 0.93;
+  const ey = sy + (by - sy) * 0.93;
+  const a = Math.atan2(by - sy, bx - sx);
+  const head = [a + 2.5, a - 2.5].map((r) => `${f(ex - 11 * Math.cos(r))} ${f(ey - 11 * Math.sin(r))}`);
+  return { line: `M${sx} ${sy}L${f(ex)} ${f(ey)}`, head: `M${head[0]}L${f(ex)} ${f(ey)}L${head[1]}` };
+});
+
+// looking in: chevrons on the inside of each edge, pointing at the middle of the page
+const mid = { x: C.x, y: 316 };
+const inward = [
+  `M${mid.x - 7} 226L${mid.x} 233L${mid.x + 7} 226`,
+  `M${mid.x - 7} 406L${mid.x} 399L${mid.x + 7} 406`,
+  `M252 ${mid.y - 7}L259 ${mid.y}L252 ${mid.y + 7}`,
+  `M468 ${mid.y - 7}L461 ${mid.y}L468 ${mid.y + 7}`,
+];
+---
+<svg class="oi" viewBox={`0 0 ${W} ${H}`} data-oi data-stage="all" role="img" aria-label="A company's website. Its own program and tools look inwards at it; enforcement and litigation come from outside, where the website gives off signals such as tracking pixels, consent parameters and wiretapping and BIPA, VPPA, CIPA, CCPA, CPRA and GDPR exposure. The Privaini lens circles it from the outside and shows each of them.">
+  <!-- 2 · from outside -->
+  <g class="oi-out" aria-hidden="true">
+    {corners.map((c) => <g><path class="oi-out-line" d={c.line} /><path class="oi-out-head" d={c.head} /></g>)}
+  </g>
+  <g class="oi-leaks" aria-hidden="true">{tags.map((t) => <path d={t.leak} pathLength="1" />)}</g>
+
+  <!-- the website -->
+  <g class="oi-site" aria-hidden="true">
+    <rect class="oi-frame" x={BOX.x} y={BOX.y} width={BOX.s} height={BOX.s} />
+    <path class="oi-rule" d={`M${BOX.x} 204H${BOX.x + BOX.s}`} />
+    {[0, 1, 2].map((i) => <rect class="oi-dot" x={BOX.x + 10 + i * 10} y="189" width="6" height="6" />)}
+    <g class="oi-page">
+      <rect class="oi-ink" x="256" y="220" width="128" height="12" />
+      <rect class="oi-soft" x="256" y="240" width="180" height="5" />
+      <rect class="oi-soft" x="256" y="250" width="150" height="5" />
+      <rect class="oi-img" x="256" y="266" width="208" height="92" />
+      <rect class="oi-soft" x="256" y="370" width="190" height="5" />
+      <rect class="oi-soft" x="256" y="380" width="140" height="5" />
+      <rect class="oi-ink" x="256" y="394" width="52" height="14" />
+    </g>
+  </g>
+
+  <!-- 1 · looking in -->
+  <g class="oi-in" aria-hidden="true">
+    {[0, 1, 2].map((i) => <rect class="oi-sq" x={mid.x - 96} y={mid.y - 84} width="192" height="168" style={`--i: ${i}`} />)}
+    {inward.map((d) => <path class="oi-chev" d={d} />)}
+  </g>
+
+  <!-- what it gives off -->
+  <g class="oi-tags" aria-hidden="true">
+    {tags.map((t) => (
+      <g class:list={['oi-tag', { mono: t.mono }]} data-oi-tag data-ang={t.ang}>
+        <rect class="oi-mk" x={t.x - 3.5} y={t.y - 3.5} width="7" height="7" />
+        <text x={t.tx} y={t.ty} text-anchor={t.a}>{t.t}</text>
+      </g>
+    ))}
+  </g>
+
+  <!-- 3 · the lens, going round -->
+  <g class="oi-lens" data-oi-lens aria-hidden="true" transform={`translate(${f(C.x + ORBIT * Math.cos((-62 * Math.PI) / 180))} ${f(C.y + ORBIT * Math.sin((-62 * Math.PI) / 180))})`}>
+    <circle class="oi-glass" r="30" />
+    <circle class="oi-ring" r="30" />
+    <circle class="oi-inner" r="22" />
+    <path class="oi-cross" d="M0 -38V-33M0 33V38M-38 0H-33M33 0H38" />
+  </g>
+  <circle class="oi-orbit" cx={C.x} cy={C.y} r={ORBIT} aria-hidden="true" data-orbit={ORBIT} data-cx={C.x} data-cy={C.y} />
+</svg>
+
+<style>
+  .oi { display: block; width: 100%; height: auto; overflow: visible; }
+  .oi path, .oi circle { fill: none; }
+
+  /* the website: flat, black on white */
+  .oi-frame { fill: var(--stone) !important; stroke: var(--on-stone); stroke-width: 1.5; }
+  .oi-rule { stroke: var(--on-stone); stroke-width: 1; }
+  .oi-dot { fill: var(--on-stone); }
+  .oi-ink { fill: var(--on-stone); }
+  .oi-soft { fill: #cfcfcf; }
+  .oi-img { fill: var(--stone-2); }
+  .oi-page { transition: opacity 0.6s; }
+
+  /* 1 · looking in */
+  .oi-sq { fill: none; stroke: var(--on-stone); stroke-width: 1; stroke-dasharray: 4 5; vector-effect: non-scaling-stroke; transform-box: fill-box; transform-origin: center; opacity: 0; }
+  .oi-chev { stroke: var(--on-stone); stroke-width: 1.5; stroke-linecap: square; opacity: 0; transition: opacity 0.4s; }
+
+  /* 2 · from outside */
+  .oi-out-line { stroke: var(--on-stone); stroke-width: 1; stroke-dasharray: 3 6; opacity: 0; transition: opacity 0.5s; }
+  .oi-out-head { stroke: var(--on-stone); stroke-width: 1.5; stroke-linecap: square; opacity: 0; transition: opacity 0.5s; }
+  .oi-leaks path { stroke: var(--on-stone-muted); stroke-width: 1; stroke-dasharray: 1 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+  .oi-tag { opacity: 0; transition: opacity 0.5s; }
+  .oi-tag text { font: 500 14px/1 var(--font); fill: #9a9a9a; letter-spacing: 0.01em; transition: fill 0.35s; }
+  .oi-tag.mono text { font: 400 13px/1 var(--mono); }
+  .oi-mk { fill: var(--stone); stroke: #9a9a9a; stroke-width: 1; transition: fill 0.35s, stroke 0.35s; }
+  .oi-tag.lit text { fill: var(--on-stone); font-weight: 600; }
+  .oi-tag.mono.lit text { font-weight: 500; }
+  .oi-tag.lit .oi-mk { fill: var(--cyan); stroke: var(--cyan); }
+
+  /* 3 · the lens: the one round thing */
+  .oi-orbit { stroke: var(--on-stone-line); stroke-width: 1; stroke-dasharray: 2 6; opacity: 0; transition: opacity 0.6s; }
+  .oi-lens { opacity: 0; transition: opacity 0.5s; }
+  .oi-glass { fill: rgba(7, 188, 212, 0.1) !important; }
+  .oi-ring { stroke: var(--cyan); stroke-width: 2.5; }
+  .oi-inner { stroke: var(--cyan); stroke-width: 1; stroke-dasharray: 2 4; }
+  .oi-cross { stroke: var(--on-stone); stroke-width: 1.5; }
+
+  /* the beats (the script sets data-stage; "all" is the still picture). Looking in, what the site gives off is
+     already out there, ghosted: the inside view does not see it */
+  .oi[data-stage='1'] .oi-tag { opacity: 0.28; }
+  .oi[data-stage='1'] .oi-page { opacity: 0.35; }
+  .oi[data-stage='1'] .oi-chev { opacity: 1; }
+  .oi[data-stage='1'] .oi-sq { animation: oi-in 2.4s linear infinite; animation-delay: calc(var(--i) * -0.8s); }
+  .oi:is([data-stage='2'], [data-stage='3'], [data-stage='all']) :is(.oi-out-line, .oi-out-head) { opacity: 1; }
+  .oi[data-stage='3'] :is(.oi-out-line, .oi-out-head) { opacity: 0.3; }
+  .oi:is([data-stage='2'], [data-stage='3'], [data-stage='all']) .oi-leaks path { stroke-dashoffset: 0; }
+  .oi:is([data-stage='2'], [data-stage='3'], [data-stage='all']) .oi-tag { opacity: 1; }
+  .oi:is([data-stage='3'], [data-stage='all']) :is(.oi-lens, .oi-orbit) { opacity: 1; }
+  .oi[data-stage='2'] .oi-out-line { animation: oi-march 1.2s linear infinite; }
+  @keyframes oi-in { 0% { transform: scale(1); opacity: 0; } 12% { opacity: 0.6; } 100% { transform: scale(0.1); opacity: 0; } }
+  @keyframes oi-march { to { stroke-dashoffset: -18; } }
+
+  /* the still picture: one square looking in, every label lit */
+  .oi[data-stage='all'] .oi-sq:first-child { opacity: 0.45; transform: scale(0.62); }
+  .oi[data-stage='all'] .oi-tag text { fill: var(--on-stone); }
+  .oi[data-stage='all'] .oi-mk { fill: var(--cyan); stroke: var(--cyan); }
+
+  /* small screens: the labels set larger so they still read */
+  @media (max-width: 700px) {
+    .oi-tag text { font-size: 22px; }
+    .oi-tag.mono text { font-size: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .oi * { animation: none !important; transition: none !important; }
+  }
+</style>

@@ -1,0 +1,51 @@
+---
+// Phases in time, left to right; the last phase ("now") is lit. The track fills as it scrolls into view.
+export interface Phase { when: string; title: string; text: string }
+interface Props { items: Phase[]; class?: string }
+const { items, class: cls } = Astro.props;
+---
+<ol class:list={['tl', cls]} data-timeline data-reveal-group style={`--n:${items.length}`}>
+  {items.map((p, i) => (
+    <li class:list={['ph', { now: i === items.length - 1 }]} data-reveal>
+      <span class="when">{p.when}</span>
+      <span class="dot" aria-hidden="true"></span>
+      <h3 class="title">{p.title}</h3>
+      <p class="text">{p.text}</p>
+    </li>
+  ))}
+  <li class="track" aria-hidden="true"><i data-timeline-fill></i></li>
+</ol>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  gsap.registerPlugin(ScrollTrigger);
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll<HTMLElement>('[data-timeline]').forEach((tl) => {
+      const fill = tl.querySelector('[data-timeline-fill]');
+      if (fill) gsap.fromTo(fill, { scaleX: 0 }, { scaleX: 1, ease: 'none', scrollTrigger: { trigger: tl, start: 'top 80%', end: 'bottom 55%', scrub: true } });
+    });
+  }
+</script>
+
+<style>
+  .tl { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: var(--gap); position: relative; }
+  .ph { display: grid; grid-template-rows: auto 28px auto 1fr; gap: 12px; align-content: start; padding-right: 12px; }
+  .when { font-size: 16px; color: var(--muted); font-weight: 500; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; background: var(--bg-4); align-self: center; position: relative; z-index: 1; }
+  .now .dot { background: var(--accent); box-shadow: 0 0 0 6px rgba(7, 188, 212, 0.18); }
+  .now .when { color: var(--accent-hi); }
+  .title { font-size: clamp(24px, 2.2vw, 34px); letter-spacing: -0.03em; }
+  .text { color: var(--muted); font-size: 17px; max-width: 34ch; }
+  .track { position: absolute; left: 7px; right: 0; top: calc(16px * 1.55 + 12px + 13px); height: 2px; background: var(--bg-3); }
+  .track i { display: block; height: 100%; background: var(--accent); transform-origin: left; }
+  @media (max-width: 860px) {
+    .tl { grid-template-columns: 1fr; gap: 36px; padding-left: 32px; }
+    .ph { grid-template-rows: auto; gap: 8px; }
+    .dot { position: absolute; left: 0; margin-top: 6px; }
+    .ph { position: relative; }
+    .ph .dot { left: -32px; top: 0; }
+    .track { left: 6px; right: auto; top: 6px; bottom: 0; width: 2px; height: auto; }
+    .track i { width: 100%; height: 100%; transform-origin: top; }
+  }
+</style>

@@ -1,0 +1,272 @@
+---
+// Three.js coverage globe. Land is a dot matrix sampled from Natural Earth (scripts/build-globe.mjs);
+// an observer ring orbits outside it (outside-in); markers sit on jurisdictions whose statutes the site
+// discusses. Choosing a jurisdiction in the legend turns the globe to it. Three.js loads only when the
+// globe nears the viewport; without WebGL the legend still reads.
+interface Props { class?: string; legend?: boolean }
+const { class: cls, legend = true } = Astro.props;
+const markers = [
+  { key: 'ca', name: 'California', law: 'CCPA / CPRA Â· CIPA', lat: 36.8, lon: -119.4 },
+  { key: 'il', name: 'Illinois', law: 'BIPA', lat: 40.0, lon: -89.2 },
+  { key: 'us', name: 'United States', law: 'VPPA Â· COPPA', lat: 38.9, lon: -77.0 },
+  { key: 'co', name: 'Colorado Â· Virginia Â· Texas', law: 'State privacy laws', lat: 39.0, lon: -105.5 },
+  { key: 'eu', name: 'European Union', law: 'GDPR Â· ePrivacy Â· EU AI Act', lat: 50.85, lon: 4.35 },
+  { key: 'uk', name: 'United Kingdom', law: 'UK GDPR Â· ICO', lat: 51.5, lon: -0.12 },
+  { key: 'br', name: 'Brazil', law: 'LGPD', lat: -15.8, lon: -47.9 },
+];
+---
+<div class:list={['cg', cls]} data-globe-root>
+  <div class="stage" data-globe data-markers={JSON.stringify(markers)} role="img" aria-label="A globe of dots marking Privaini's coverage of 90 countries and 20 US states, with an observer ring orbiting outside it.">
+    <canvas aria-hidden="true"></canvas>
+  </div>
+  {legend && (
+    <ul role="list" class="legend" aria-label="Jurisdictions shown on the globe">
+      {markers.map((m, i) => (
+        <li>
+          <button type="button" data-goto={i} aria-pressed={i === 0 ? 'true' : 'false'}>
+            <span class="name">{m.name}</span>
+            <span class="law">{m.law}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
+<script>
+  type Marker = { key: string; name: string; law: string; lat: number; lon: number };
+
+  const DEG = Math.PI / 180;
+  const toXYZ = (lat: number, lon: number, r = 1) => {
+    const phi = (90 - lat) * DEG;
+    const theta = (lon + 180) * DEG;
+    return [-r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta)] as const;
+  };
+  const yawFor = (lon: number) => -Math.atan2(Math.cos(lon * DEG), -Math.sin(lon * DEG));
+
+  async function mount(root: HTMLElement) {
+    const stage = root.querySelector<HTMLElement>('[data-globe]')!;
+    const canvas = stage.querySelector('canvas')!;
+    const markers: Marker[] = JSON.parse(stage.dataset.markers!);
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-goto]')];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const probe = document.createElement('canvas');
+    if (!(probe.getContext('webgl2') || probe.getContext('webgl'))) { root.classList.add('no-gl'); return; }
+
+    const [THREE, land] = await Promise.all([import('three'), import('@/data/globe-land.json').then((m) => m.default as number[][])]);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 50);
+    camera.position.set(0, 0, 4.6);
+
+    // colours come from the theme tokens and are re-read when the theme switches
+    const col = (name: string, fallback: string) => new THREE.Color((getComputedStyle(root).getPropertyValue(name) || fallback).trim());
+
+    const globe = new THREE.Group();
+    globe.rotation.x = 0.32;
+    scene.add(globe);
+
+    // the body: hides the far side so only the near hemisphere of dots shows
+    const bodyMat = new THREE.MeshBasicMaterial({ color: col('--globe-body', '#0a222c') });
+    globe.add(new THREE.Mesh(new THREE.SphereGeometry(0.985, 64, 48), bodyMat));
+
+    // land dots
+    const pos = new Float32Array(land.length * 3);
+    land.forEach(([lat, lon], i) => pos.set(toXYZ(lat, lon), i * 3));
+    const landGeo = new THREE.BufferGeometry();
+    landGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const dotMat = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      uniforms: { uSize: { value: 2.3 }, uScale: { value: 1 }, uColor: { value: col('--globe-dot', '#aaeefa') } },
+      vertexShader: `
+        uniform float uSize; uniform float uScale; varying float vFacing;
+        void main() {
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          vFacing = normalize(normalMatrix * position).z;
+          gl_PointSize = uSize * uScale * (4.6 / -mv.z);
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `
+        uniform vec3 uColor; varying float vFacing;
+        void main() {
+          float d = length(gl_PointCoord - 0.5);
+          if (d > 0.5) discard;
+          float a = smoothstep(0.5, 0.3, d) * mix(0.12, 0.78, smoothstep(0.0, 0.55, vFacing));
+          gl_FragColor = vec4(uColor, a);
+        }`,
+    });
+    globe.add(new THREE.Points(landGeo, dotMat));
+
+    // markers: a bright core with a ring that keeps widening
+    const mPos = new Float32Array(markers.length * 3);
+    const mPhase = new Float32Array(markers.length);
+    markers.forEach((m, i) => { mPos.set(toXYZ(m.lat, m.lon, 1.004), i * 3); mPhase[i] = i / markers.length; });
+    const mGeo = new THREE.BufferGeometry();
+    mGeo.setAttribute('position', new THREE.BufferAttribute(mPos, 3));
+    mGeo.setAttribute('aPhase', new THREE.BufferAttribute(mPhase, 1));
+    const markerMat = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      uniforms: { uTime: { value: 0 }, uScale: { value: 1 }, uActive: { value: 0 }, uColor: { value: col('--globe-mark', '#5ee6f5') } },
+      vertexShader: `
+        attribute float aPhase; uniform float uScale; uniform float uActive;
+        varying float vFacing; varying float vPhase; varying float vActive;
+        void main() {
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          vFacing = normalize(normalMatrix * position).z;
+          vPhase = aPhase;
+          vActive = 1.0 - step(0.5, abs(float(gl_VertexID) - uActive));
+          gl_PointSize = (30.0 + 14.0 * vActive) * uScale * (4.6 / -mv.z);
+          gl_Position = projectionMatrix * mv;
+        }`,
+      fragmentShader: `
+        uniform float uTime; uniform vec3 uColor;
+        varying float vFacing; varying float vPhase; varying float vActive;
+        void main() {
+          if (vFacing < 0.02) discard;
+          float d = length(gl_PointCoord - 0.5) * 2.0;
+          float core = smoothstep(0.2, 0.12, d);
+          float t = fract(uTime * 0.45 + vPhase);
+          float r = mix(0.2, 0.98, t);
+          float ring = smoothstep(0.07, 0.0, abs(d - r)) * (1.0 - t);
+          float a = (core + ring * (0.55 + 0.45 * vActive)) * smoothstep(0.02, 0.3, vFacing);
+          gl_FragColor = vec4(uColor, a);
+        }`,
+    });
+    globe.add(new THREE.Points(mGeo, markerMat));
+
+    // the observer: an orbit ring outside the globe and the probe that travels it
+    const orbit = new THREE.Group();
+    orbit.rotation.set(1.1, 0, 0.42);
+    scene.add(orbit);
+    const ringPts: number[] = [];
+    for (let i = 0; i <= 256; i++) { const a = (i / 256) * Math.PI * 2; ringPts.push(Math.cos(a) * 1.32, 0, Math.sin(a) * 1.32); }
+    const ringGeo = new THREE.BufferGeometry();
+    ringGeo.setAttribute('position', new THREE.Float32BufferAttribute(ringPts, 3));
+    const orbitMat = new THREE.LineBasicMaterial({ color: col('--accent', '#07bcd4'), transparent: true, opacity: 0.35 });
+    orbit.add(new THREE.Line(ringGeo, orbitMat));
+    const probeGeo = new THREE.BufferGeometry();
+    probeGeo.setAttribute('position', new THREE.Float32BufferAttribute([1.32, 0, 0], 3));
+    const probeMat = new THREE.PointsMaterial({ color: col('--globe-mark', '#5ee6f5'), size: 7, sizeAttenuation: false, transparent: true });
+    const probePt = new THREE.Points(probeGeo, probeMat);
+    orbit.add(probePt);
+    // the probe's line of sight to the surface
+    const beamGeo = new THREE.BufferGeometry();
+    beamGeo.setAttribute('position', new THREE.Float32BufferAttribute([1.32, 0, 0, 1.0, 0, 0], 3));
+    const beamMat = new THREE.LineBasicMaterial({ color: col('--globe-mark', '#5ee6f5'), transparent: true, opacity: 0.5 });
+    const beam = new THREE.Line(beamGeo, beamMat);
+    addEventListener('privaini:theme', () => {
+      bodyMat.color.copy(col('--globe-body', '#0a222c'));
+      dotMat.uniforms.uColor.value.copy(col('--globe-dot', '#aaeefa'));
+      markerMat.uniforms.uColor.value.copy(col('--globe-mark', '#5ee6f5'));
+      orbitMat.color.copy(col('--accent', '#07bcd4'));
+      probeMat.color.copy(col('--globe-mark', '#5ee6f5'));
+      beamMat.color.copy(col('--globe-mark', '#5ee6f5'));
+      renderer.render(scene, camera);
+    });
+    orbit.add(beam);
+
+    // size
+    const resize = () => {
+      const w = stage.clientWidth, h = stage.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      const scale = (h / 600) * renderer.getPixelRatio();
+      dotMat.uniforms.uScale.value = scale;
+      markerMat.uniforms.uScale.value = scale;
+    };
+    new ResizeObserver(resize).observe(stage);
+    resize();
+
+    // motion: auto-turn, drag to turn, legend turns to a jurisdiction
+    let yaw = yawFor(-40), pitch = 0.32, targetYaw = yaw, targetPitch = pitch;
+    let dragging = false, lastX = 0, lastY = 0, idleUntil = 0, active = 0;
+    const select = (i: number, turn = true) => {
+      active = i;
+      markerMat.uniforms.uActive.value = i;
+      buttons.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+      if (turn) {
+        const want = yawFor(markers[i].lon);
+        const twoPi = Math.PI * 2;
+        targetYaw = yaw + ((((want - yaw) % twoPi) + twoPi * 1.5) % twoPi - Math.PI);
+        targetPitch = Math.max(-0.5, Math.min(0.8, markers[i].lat * DEG * 0.8));
+        idleUntil = performance.now() + 6000;
+      }
+    };
+    buttons.forEach((b) => {
+      const go = () => select(+b.dataset.goto!);
+      b.addEventListener('click', go);
+      b.addEventListener('pointerenter', go);
+      b.addEventListener('focus', go);
+    });
+    stage.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; stage.setPointerCapture(e.pointerId); });
+    stage.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      targetYaw += (e.clientX - lastX) * 0.006;
+      targetPitch = Math.max(-0.7, Math.min(0.9, targetPitch + (e.clientY - lastY) * 0.004));
+      lastX = e.clientX; lastY = e.clientY;
+      idleUntil = performance.now() + 4000;
+    });
+    const end = () => { dragging = false; };
+    stage.addEventListener('pointerup', end);
+    stage.addEventListener('pointercancel', end);
+
+    let visible = false, raf = 0, last = performance.now(), clock = 0, cycleAt = 0;
+    const frame = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 1 / 20);
+      last = now;
+      clock += dt;
+      if (!dragging && now > idleUntil) {
+        targetYaw += dt * 0.12;
+        if (buttons.length && now > cycleAt) { cycleAt = now + 4200; select((active + 1) % markers.length, false); }
+      }
+      const k = 1 - Math.exp(-dt / 0.35);
+      yaw += (targetYaw - yaw) * k;
+      pitch += (targetPitch - pitch) * k;
+      globe.rotation.set(pitch, yaw, 0);
+      orbit.rotation.y = clock * 0.5;
+      markerMat.uniforms.uTime.value = clock;
+      renderer.render(scene, camera);
+      raf = visible && !reduce ? requestAnimationFrame(frame) : 0;
+    };
+    new IntersectionObserver(([e]) => {
+      visible = e.isIntersecting;
+      if (visible && !raf) { last = performance.now(); raf = requestAnimationFrame(frame); }
+    }, { rootMargin: '100px' }).observe(stage);
+    select(0, false);
+    root.classList.add('ready');
+    renderer.render(scene, camera);
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-globe-root]').forEach((root) => {
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      mount(root).catch(() => root.classList.add('no-gl'));
+    }, { rootMargin: '400px' });
+    io.observe(root);
+  });
+</script>
+
+<style>
+  .cg { display: grid; gap: 24px; }
+  .stage { position: relative; width: 100%; aspect-ratio: 1; cursor: grab; touch-action: pan-y; }
+  .stage:active { cursor: grabbing; }
+  canvas { width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s var(--ease-out); }
+  .ready canvas { opacity: 1; }
+  .no-gl .stage { display: none; }
+  .legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 4px; list-style: none; padding: 0; margin: 0; }
+  .legend button {
+    width: 100%; text-align: left; display: grid; gap: 2px; padding: 10px 12px; border-radius: var(--radius);
+    transition: background-color 0.25s;
+  }
+  .legend button:hover, .legend button[aria-pressed='true'] { background: var(--bg-3); }
+  .legend .name { font-size: 15px; font-weight: 600; }
+  .legend .law { font-size: 14px; color: var(--muted); }
+  .legend button[aria-pressed='true'] .name { color: var(--accent-hi); }
+</style>

@@ -1,0 +1,90 @@
+---
+import '@fontsource-variable/urbanist';
+import '@fontsource-variable/jetbrains-mono';
+import '@fontsource/bruno-ace-sc';
+import '@/styles/global.css';
+import '@/styles/folio.css';
+import Nav from '@/components/Nav.astro';
+import Footer from '@/components/Footer.astro';
+import FocusCursor from '@/components/FocusCursor.astro';
+import type { NavGroup, NavLink } from '@/data/site';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  noindex?: boolean;
+  bodyClass?: string;
+  /** Folio design language (docs/DESIGN-LANGUAGE.md): its palette, the editorial motion layer, no autofocus cursor */
+  folio?: boolean;
+  /** the nav's top-level entries, when a page needs its own (default: the site's) */
+  nav?: (NavGroup | NavLink)[];
+}
+
+const {
+  title,
+  description = 'See privacy and AI risk the way regulators and litigators do, outside-in, from your domain alone. Continuous monitoring across 90 countries and 20 US states.',
+  image = '/og-default.png',
+  noindex = false,
+  bodyClass,
+  folio = false,
+  nav,
+} = Astro.props;
+
+const fullTitle = title.includes('Privaini') ? title : `${title} | Privaini`;
+const canonical = new URL(Astro.url.pathname.replace(/\.html$/, ''), Astro.site);
+const ogImage = new URL(image, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-48.png" type="image/png" sizes="48x48" />
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Privaini" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      // theme before first paint: ?theme= overrides the saved choice; light is the default
+      (function () {
+        var t = 'light';
+        try {
+          var q = new URLSearchParams(location.search).get('theme');
+          var s = localStorage.getItem('privaini-theme');
+          t = q === 'dark' || q === 'light' ? q : s === 'dark' || s === 'light' ? s : 'light';
+          if (q === 'dark' || q === 'light') localStorage.setItem('privaini-theme', q);
+        } catch (e) {}
+        document.documentElement.dataset.theme = t;
+        var m = document.querySelector('meta[name="theme-color"]');
+        if (m) m.setAttribute('content', t === 'light' ? '#ffffff' : '#061923');
+      })();
+      document.documentElement.classList.add('js');
+      setTimeout(function () { if (!window.__motion) document.documentElement.classList.remove('js'); }, 2500);
+    </script>
+    <slot name="head" />
+  </head>
+  <body class:list={[bodyClass, { folio }]} data-motion={folio ? 'editorial' : undefined}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Nav items={nav} />
+    <main id="main">
+      <slot />
+    </main>
+    {Astro.slots.has('footer') ? <slot name="footer" /> : <Footer />}
+    {!folio && <FocusCursor />}
+    <script>
+      import '@/scripts/motion';
+    </script>
+  </body>
+</html>

@@ -1,0 +1,59 @@
+---
+// An argument beside the product evidence for it: heading, sentence and a short list of points on one
+// side; a product fragment (default slot) lying on a one-step-lighter stage on the other.
+// Slot "after" takes a link under the points.
+interface Props {
+  id: string;
+  heading: string;
+  text?: string;
+  points?: { title: string; text: string }[];
+  flip?: boolean;
+  tone?: 'plain' | 'raised';
+}
+const { id, heading, text, points = [], flip = false, tone = 'plain' } = Astro.props;
+---
+<section class:list={['fs section', { 'section--raised': tone === 'raised', flip }]} aria-labelledby={id}>
+  <div class="wrap grid">
+    <div class="copy" data-reveal-group>
+      <h2 id={id} data-split>{heading}</h2>
+      {text && <p class="text" data-reveal>{text}</p>}
+      {points.length > 0 && (
+        <dl class="points">
+          {points.map((p) => (
+            <div class="pt" data-reveal>
+              <dt>{p.title}</dt>
+              <dd>{p.text}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <slot name="after" />
+    </div>
+    <div class="stage" data-reveal>
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: center; row-gap: 40px; }
+  .copy { grid-column: 1 / span 5; display: grid; gap: 24px; justify-items: start; }
+  .copy h2 { font-size: clamp(30px, 3.2vw, 50px); }
+  .text { color: var(--muted); font-size: 18px; max-width: 42ch; }
+  .points { display: grid; gap: 28px; margin: 16px 0 8px; }
+  .pt dt { font-size: clamp(20px, 1.6vw, 24px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; max-width: 26ch; }
+  .pt dd { margin: 8px 0 0; color: var(--muted); font-size: 17px; line-height: 1.55; max-width: 44ch; }
+  .stage {
+    grid-column: 7 / span 6; background: var(--bg-2); border-radius: var(--radius);
+    padding: clamp(24px, 4vw, 64px) clamp(20px, 3.4vw, 56px); display: grid; justify-items: center;
+  }
+  .section--raised .stage { background: var(--bg); }
+  .flip .copy { grid-column: 8 / span 5; grid-row: 1; }
+  .flip .stage { grid-column: 1 / span 6; grid-row: 1; }
+  @media (max-width: 960px) {
+    .copy, .flip .copy, .stage, .flip .stage { grid-column: 1 / -1; grid-row: auto; }
+  }
+  @media (max-width: 480px) {
+    .stage { padding: 16px; margin-inline: calc(var(--margin) * -1); border-radius: 0; }
+  }
+</style>

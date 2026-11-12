@@ -1,0 +1,96 @@
+---
+// Folio · the home page's opening: an ordinary website with the Privaini lens touring it (Xray). On a wide screen
+// the scroll then draws the lens to the middle of the screen and opens it: "The (lens) lens." The scene and the
+// tour are mounted by mountFolioHero (src/scripts/folio-kit.ts). Shared by /v3 and /v4 so the two stay identical.
+import Xray from './Xray.astro';
+import Lines from './Lines.astro';
+import { lensIntro } from '@/data/lens-acts';
+
+interface Link { label: string; href: string }
+interface Props {
+  primary?: Link;
+  secondary?: Link;
+}
+const {
+  primary = { label: 'See your exposure', href: '#brief' },
+  secondary = { label: 'Look through the lens', href: '#findings' },
+} = Astro.props;
+const [h1a, h1b] = ['See what regulators & litigators detect,', 'before they do.'];
+---
+<section class="hero is-night has-lines" data-hero data-nav-dark aria-labelledby="hero-h">
+  <Lines kind="requests" class="hero-lines" />
+  <div class="wrap hero-grid">
+    <div class="hero-copy" data-hero-copy>
+      <h1 id="hero-h" class="f-display" data-split data-split-now>{h1a}<br /><em>{h1b}</em></h1>
+      <p class="f-lead" data-reveal>{lensIntro.lead}</p>
+      <div class="hero-btns" data-reveal>
+        <a class="f-btn f-btn--cyan" href={primary.href}>{primary.label}</a>
+        <a class="f-btn f-btn--line" href={secondary.href}>{secondary.label}</a>
+      </div>
+    </div>
+    <div class="hero-visual" data-hero-visual>
+      <Xray />
+      <p class="f-caption hero-cap" data-hero-cap>A sample website, as its visitors see it and through the Privaini lens</p>
+    </div>
+  </div>
+  <div class="arch-words" aria-hidden="true">
+    <span class="f-display aw-l" data-arch-l>The</span>
+    <span class="f-display aw-r" data-arch-r><em>lens.</em></span>
+    <span class="f-caption aw-cap" data-arch-cap><span class="aw-shine" data-text="Privacy & AI risk intelligence">Privacy &amp; AI risk intelligence</span></span>
+  </div>
+</section>
+
+<style>
+  /* the copy on the left, the x-ray on the right */
+  /* --ring: the lens's radius once the scroll has opened it (src/scripts/xray.ts uses the same sum) */
+  .hero { position: relative; height: 100svh; min-height: 680px; overflow: hidden; --ring: min(34svh, 19vw); }
+  .hero-grid {
+    position: relative; z-index: 1; height: 100%; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--gap); align-items: center; padding-block: calc(var(--nav-h) + 32px) clamp(40px, 7svh, 80px);
+  }
+  .hero-copy { grid-column: 1 / span 5; align-self: end; display: grid; gap: 28px; justify-items: start; }
+  .hero-copy .f-lead { max-width: 40ch; }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-visual { grid-column: 6 / -1; position: relative; margin-right: calc(var(--margin) * -0.5); }
+  .hero-cap { margin-top: 16px; text-align: right; }
+  /* the chapter's hairline: the sample page's requests as a waterfall, in the dark above the headline; it runs on
+     under the x-ray, which covers it */
+  .hero :global(.hero-lines) { left: var(--inset); top: calc(var(--nav-h) + clamp(28px, 7svh, 88px)); width: min(46vw, 720px); height: 150px; }
+  /* "The ( lens ) lens.": the words close in on either side of the opened lens */
+  .arch-words { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+  .aw-l, .aw-r { position: absolute; top: 50%; font-size: clamp(56px, 7.6vw, 132px); translate: 0 -50%; opacity: 0; }
+  .aw-l { right: calc(50% + var(--ring) + 3vw); }
+  .aw-r { left: calc(50% + var(--ring) + 3vw); }
+  .aw-cap { position: absolute; left: 0; right: 0; bottom: 5%; text-align: center; opacity: 0; color: var(--on-night-muted); font-size: clamp(36px, 2.5vw, 44px); line-height: 1.2; letter-spacing: -0.01em; }
+  /* the caption's light: a soft band runs through it from its left end to its right, then rests. Two copies of the
+     text sit over the (now clear) caption: a blurred cyan band behind for the faint glow, and on top the text
+     itself, which brightens where the band passes. Under reduced motion it is the plain caption. */
+  .aw-shine { position: relative; display: inline-block; }
+  @media (prefers-reduced-motion: no-preference) {
+    .aw-shine { color: transparent; }
+    .aw-shine::before, .aw-shine::after {
+      content: attr(data-text); position: absolute; inset: 0; pointer-events: none; white-space: nowrap;
+      background-size: 260% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: aw-shine 6s cubic-bezier(0.45, 0, 0.35, 1) 1s infinite;
+    }
+    .aw-shine::before {
+      background-image: linear-gradient(100deg, transparent 43%, rgba(103, 214, 230, 0.9) 50%, transparent 57%);
+      filter: blur(9px); opacity: 0.6;
+    }
+    .aw-shine::after {
+      background-image: linear-gradient(100deg, var(--on-night-muted) 42%, #f2fbfc 50%, var(--on-night-muted) 58%);
+    }
+  }
+  @keyframes aw-shine { 0% { background-position: 100% 0; } 55%, 100% { background-position: 0% 0; } }
+
+  /* one column: the x-ray on top, the copy under it, and no scene */
+  @media (max-width: 899px) {
+    .hero { height: auto; min-height: 100svh; }
+    .hero-grid { grid-template-columns: minmax(0, 1fr); align-content: space-between; row-gap: 40px; padding-block: calc(var(--nav-h) + 16px) 40px; }
+    .hero-visual { grid-column: 1; order: -1; margin-right: 0; }
+    .hero-copy { grid-column: 1; }
+    .hero-copy h1 { font-size: clamp(36px, 9vw, 56px); }
+    .hero-cap { text-align: left; }
+    .arch-words, .hero :global(.hero-lines) { display: none; }
+  }
+</style>

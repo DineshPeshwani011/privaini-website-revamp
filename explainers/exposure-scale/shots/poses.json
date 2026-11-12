@@ -1,0 +1,7 @@
+[
+  ["wait", 800],
+  ["key", "1"], ["wait", 2600], ["lines", "explainers/exposure-scale/shots/lines-p1.png"], ["shot", "explainers/exposure-scale/shots/pose-p1.png"],
+  ["key", "2"], ["wait", 2600], ["lines", "explainers/exposure-scale/shots/lines-p2.png"], ["shot", "explainers/exposure-scale/shots/pose-p2.png"],
+  ["key", "3"], ["wait", 2600], ["lines", "explainers/exposure-scale/shots/lines-p3.png"], ["shot", "explainers/exposure-scale/shots/pose-p3.png"],
+  ["eval", "document.querySelector('.iso-stage').getAttribute('aria-valuetext')"]
+]

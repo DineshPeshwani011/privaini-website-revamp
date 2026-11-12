@@ -1,0 +1,206 @@
+---
+// Flat (/v5) · the risk picture, simplified: many signals in, one lens, one briefing, a few decisions out. The
+// live page's illustration, every label kept, drawn so its shape says it: twenty things your website gives off
+// narrow through the Privaini lens (and what it brings to bear) into one briefing, which opens out into five
+// decisions. Wide (1100px and up) it runs left to right, its wires drawn by src/scripts/flat-v5.ts from where the
+// parts sit; narrower, the parts stack, joined by short rules. It plays once as it comes into view, then the
+// wires keep carrying packets and the lens keeps turning. Square everywhere but the lens.
+
+const signals: [string, boolean?][] = [
+  ['Cookies'], ['Meta pixels'], ['GLBA'], ['CIPA'], ['VPPA', true], ['Policy Gaps'], ['LGPD'], ['Digital Properties'], ['CPRA'], ['GDPR'],
+  ['CCPA'], ['CTDPA'], ['Device Fingerprints'], ['PIPEDA'], ['HIPAA'], ['BIPA', true], ['Dark Patterns'], ['Wiretap'], ['EU AI Act'], ['Wrongful Collection'],
+];
+const capsTop = ['Regulatory Repository', 'Technology Detection', 'Market Observations', 'AI Transparency'];
+const capsBottom = ['Jurisdiction Mapping', 'Evidence Collection', 'Litigation Patterns'];
+const decisions = ['Fix what matters first', 'Quantify exposure', 'Brief the board', 'Price or transfer risk', 'Deal Diligence'];
+const bars = [26, 42, 34, 64, 88];
+const R = 100;
+---
+<div class="pl" data-pl role="img" aria-label="From your company's website, twenty signals it gives off (cookies, pixels, policies and the statutes they meet, among them VPPA and BIPA) narrow through the Privaini lens, which brings a regulatory repository, technology detection, market observations, AI transparency, jurisdiction mapping, evidence collection and litigation patterns to bear, into one Privaini risk briefing: findings, exposure, evidence and remediation. It opens out into your next decisions: fix what matters first, quantify exposure, brief the board, price or transfer risk, deal diligence.">
+  <svg class="pl-wires" data-pl-wires aria-hidden="true"></svg>
+
+  <div class="pl-src" aria-hidden="true">
+    <p class="pl-company fx-chip" data-pl-company data-in>Your Company</p>
+    <ul class="pl-sigs" role="list" data-pl-sigs>
+      {signals.map(([s, hot]) => <li class:list={{ hot }} data-pl-sig>{s}</li>)}
+    </ul>
+  </div>
+
+  <div class="pl-lens" aria-hidden="true">
+    <ul class="pl-caps pl-caps--top" role="list">{capsTop.map((c) => <li data-pl-cap>{c}</li>)}</ul>
+    <div class="pl-ring" data-pl-ring>
+      <svg viewBox={`0 0 ${R * 2} ${R * 2}`}>
+        <circle class="pr-orbit" cx={R} cy={R} r="96" />
+        <g data-pl-ticks><g class="pr-spin"><circle class="pr-ticks" cx={R} cy={R} r="84" pathLength="96" /></g></g>
+        <circle class="pr-ring" cx={R} cy={R} r="70" />
+        <g class="pr-spin pr-spin--in"><circle class="pr-inner" cx={R} cy={R} r="54" /></g>
+        <circle class="pr-core" cx={R} cy={R} r="38" />
+        <path class="pr-cross" d="M100 22V30M100 170V178M22 100H30M170 100H178" />
+      </svg>
+      <span class="pl-mark">priv<b>ai</b>ni</span>
+    </div>
+    <ul class="pl-caps pl-caps--bot" role="list">{capsBottom.map((c) => <li data-pl-cap>{c}</li>)}</ul>
+  </div>
+
+  <div class="pl-brief" aria-hidden="true" data-pl-brief>
+    <p class="pl-chip fx-chip" data-pl-chip><span data-pl-events>14</span> events captured</p>
+    <div class="pl-card" data-pl-card>
+      <p class="pl-bhead"><i></i>Privaini Risk Briefing</p>
+      <div class="pl-tiles">
+        <div class="pl-tile" data-pl-tile>
+          <p class="pl-t">Findings</p>
+          <p class="pl-tags"><span class="pl-tag pl-tag--fill">High</span><span class="pl-tag">VPPA</span></p>
+          <p class="pl-mono">US-CA<br />US-IL</p>
+        </div>
+        <div class="pl-tile" data-pl-tile>
+          <p class="pl-t">Exposure</p>
+          <p class="pl-fig">$<span data-pl-exposure>22.5</span>M</p>
+          <p class="pl-bars">{bars.map((h, i) => <i style={`--h: ${h}%; --i: ${i}`}></i>)}</p>
+        </div>
+        <div class="pl-tile" data-pl-tile>
+          <p class="pl-t">Evidence</p>
+          <svg class="pl-trace" viewBox="0 0 100 36"><path d="M0 32H14V26H28V29H42V18H56V21H70V8H84V12H100" pathLength="1" /><path class="pl-base" d="M0 35.5H100" /></svg>
+        </div>
+        <div class="pl-tile" data-pl-tile>
+          <p class="pl-t">Remediation</p>
+          <ul class="pl-steps" role="list"><li><i></i>Immediate</li><li class="on"><i></i>Staged</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pl-dec" aria-hidden="true">
+    <p class="pl-dhead fx-chip" data-in>Your Next Decisions</p>
+    <ul role="list" data-pl-decs>
+      {decisions.map((d) => (
+        <li data-pl-dec><i class="pl-box"><svg viewBox="0 0 12 12"><path d="M2.5 6.5 5 9 9.5 3" pathLength="1" /></svg></i>{d}</li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<style>
+  /* the wordmark is typed in lower case: Bruno Ace SC sets it in its own capitals */
+  .pl { --row: 40px; position: relative; color: var(--on-night); }
+  .pl p, .pl ul { margin: 0; padding: 0; list-style: none; }
+  .pl-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .pl-wires :global(path) { fill: none; stroke-width: 1; }
+  .pl-wires :global(.w) { stroke: var(--on-night-line-2); stroke-dasharray: 1 1; }
+  .pl-wires :global(.w.hot) { stroke: var(--cyan); }
+  .pl-wires :global(.w.link), .pl-wires :global(.w.out) { stroke: var(--cyan); }
+  .pl-wires :global(.pk) { stroke: var(--on-night); stroke-width: 2; stroke-dasharray: 0.04 2; stroke-dashoffset: 0.2; opacity: 0; }
+  .pl-wires :global(.pk.hot), .pl-wires :global(.pk.link), .pl-wires :global(.pk.out) { stroke: var(--cyan); }
+
+  /* the company and what it gives off */
+  /* "Your Company", "Your Next Decisions" and the events count are chips (folio.css .fx-chip): a cyan bar, a square, mono capitals */
+  .pl-company { font-size: 12.5px; }
+  /* (the component's own reset of p and ul padding would otherwise flatten the chips) */
+  .pl p.fx-chip { padding: 8px 14px 8px 10px; }
+  .pl .pl-sigs { display: grid; grid-template-columns: max-content max-content; grid-auto-rows: var(--row); column-gap: 24px; margin-top: 24px; padding-left: 24px; }
+  .pl-sigs li { display: flex; align-items: center; gap: 8px; font: 400 14.5px/1.2 var(--font); color: var(--on-night); white-space: nowrap; transition: color 0.4s, opacity 0.4s; }
+  .pl-sigs li::before { content: ''; flex: none; width: 5px; height: 5px; background: currentColor; }
+  .pl-sigs li.hot { color: var(--cyan); }
+
+  /* the lens: the one round thing */
+  .pl-lens { display: grid; justify-items: center; gap: 16px; }
+  .pl-ring { position: relative; width: 210px; aspect-ratio: 1; }
+  .pl-ring svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .pl-ring circle, .pl-ring path { fill: none; }
+  .pr-orbit { stroke: var(--on-night-line); stroke-dasharray: 2 6; }
+  .pr-ticks { stroke: var(--on-night-muted); stroke-width: 6; stroke-dasharray: 0.08 0.92; }
+  .pr-ring { stroke: var(--cyan); stroke-width: 2; }
+  .pr-inner { stroke: var(--on-night-line-2); stroke-dasharray: 3 5; }
+  .pr-core { fill: var(--cyan-wash) !important; }
+  .pr-cross { stroke: var(--cyan); stroke-width: 1.5; }
+  .pr-spin { transform-box: view-box; transform-origin: 50% 50%; }
+  .pl-mark { position: absolute; left: 50%; top: 50%; translate: -50% -50%; font: 400 18px/1 var(--logo); color: var(--on-night); }
+  .pl-mark b { font-weight: 400; color: var(--cyan); }
+  .pl :is(a, button):focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+  .pl :is(a, button):active { opacity: 0.8; }
+  .pl-caps { display: grid; justify-items: start; gap: 8px; }
+  .pl-caps li { display: flex; align-items: center; gap: 8px; font: 500 14px/1.2 var(--font); color: var(--on-night); white-space: nowrap; transition: opacity 0.4s, color 0.4s; }
+  .pl-caps li::before { content: ''; width: 5px; height: 5px; background: var(--cyan); transition: background-color 0.4s; }
+
+  /* the briefing */
+  .pl-brief { position: relative; }
+  .pl-chip { position: absolute; right: 0; top: -40px; transition: opacity 0.4s, clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1); }
+  .pl-chip span { font-variant-numeric: tabular-nums; }
+  /* the briefing is a piece of the product: a white card on the dark panel, its tiles one tone step down */
+  .pl-card { display: grid; gap: 12px; padding: 16px; background: var(--stone); color: var(--night); }
+  .pl-bhead { display: flex; align-items: center; gap: 8px; padding-bottom: 12px; font: 600 15px/1.2 var(--font); }
+  .pl-bhead i { width: 8px; height: 8px; background: var(--cyan); }
+  .pl-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pl-tile { display: grid; align-content: start; gap: 12px; min-height: 120px; padding: 12px; background: var(--stone-2); transition: opacity 0.5s, translate 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  .pl-t { font: 600 13px/1 var(--font); color: var(--on-stone-muted); }
+  .pl-tags { display: flex; gap: 4px; }
+  .pl-tag { padding: 4px 8px; border: 1px solid var(--night); font: 700 12px/1 var(--font); }
+  .pl-tag--fill { background: var(--night); color: var(--stone); }
+  .pl-mono { font: 400 12px/1.5 var(--mono); color: var(--on-stone-muted); }
+  .pl-fig { font: 400 32px/1 var(--font); letter-spacing: -0.045em; color: var(--night); font-variant-numeric: tabular-nums; }
+  .pl-bars { display: flex; align-items: flex-end; gap: 8px; height: 34px; }
+  .pl-bars i { flex: 1; height: var(--h); border: 1px solid var(--cyan); transform-origin: bottom; transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i) * 70ms + 200ms); }
+  .pl-bars i:last-child { background: var(--cyan); }
+  .pl-trace { display: block; width: 100%; height: auto; overflow: visible; }
+  .pl-trace path { fill: none; stroke: var(--cyan); stroke-width: 1.2; stroke-dasharray: 1 1; transition: stroke-dashoffset 1.2s linear 0.2s; }
+  .pl-trace .pl-base { stroke: var(--on-stone-line); stroke-dasharray: none; }
+  .pl-steps { display: grid; gap: 8px; }
+  .pl-steps li { display: flex; align-items: center; gap: 8px; font: 500 13px/1 var(--font); }
+  .pl-steps i { width: 10px; height: 10px; border: 1px solid var(--on-night-muted); transition: background-color 0.3s 0.6s, border-color 0.3s 0.6s; }
+  .pl-steps .on i { background: var(--cyan); border-color: var(--cyan); }
+
+  /* the decisions */
+  .pl-dec { display: grid; gap: 16px; justify-items: start; }
+  .pl-dhead { font-size: 12.5px; }
+  .pl-dec ul { display: grid; grid-auto-rows: var(--row); }
+  .pl-dec li { display: flex; align-items: center; gap: 12px; font: 400 15px/1.2 var(--font); white-space: nowrap; transition: color 0.4s; }
+  .pl-box { flex: none; display: grid; place-items: center; width: 17px; height: 17px; border: 1px solid var(--cyan); background: var(--cyan); transition: background-color 0.3s; }
+  .pl-box svg { width: 80%; height: 80%; overflow: visible; }
+  .pl-box path { fill: none; stroke: var(--night); stroke-width: 1.8; stroke-linecap: square; stroke-dasharray: 1 1; transition: stroke-dashoffset 0.35s 0.1s; }
+
+  /* armed (the script, once motion is allowed): each part waits for its turn */
+  .pl.is-armed .pl-sigs li:not(.on) { opacity: 0.2; }
+  .pl.is-armed .pl-caps li:not(.on) { opacity: 0.25; }
+  .pl.is-armed .pl-caps li:not(.on)::before { background: var(--on-night-muted); }
+  .pl.is-armed .pl-chip:not(.on) { opacity: 0; }
+  .pl.is-armed .pl-card:not(.on) { opacity: 0.3; }
+  .pl.is-armed .pl-tile:not(.on) { opacity: 0; translate: 0 10px; }
+  .pl.is-armed .pl-tile:not(.on) .pl-bars i { transform: scaleY(0); }
+  .pl.is-armed .pl-tile:not(.on) .pl-trace path:first-child { stroke-dashoffset: 1; }
+  .pl.is-armed .pl-tile:not(.on) .pl-steps .on i { background: transparent; border-color: var(--on-night-muted); }
+  .pl.is-armed .pl-dec li:not(.on) { color: var(--on-night-muted); }
+  .pl.is-armed .pl-dec li:not(.on) .pl-box { background: transparent; }
+  .pl.is-armed .pl-dec li:not(.on) .pl-box path { stroke-dashoffset: 1; }
+  /* and once it has played, it keeps running */
+  @media (prefers-reduced-motion: no-preference) {
+    .pl.is-live .pl-wires :global(.pk) { opacity: 1; animation: pl-run var(--t, 2.6s) linear var(--d, 0s) infinite; }
+    .pl.is-live .pr-spin { animation: pl-spin 60s linear infinite; }
+    .pl.is-live .pr-spin--in { animation-duration: 24s; animation-direction: reverse; }
+    .pl:not(.is-vis) :is(.pr-spin, .pl-wires :global(.pk)) { animation-play-state: paused; }
+  }
+  @keyframes pl-run { from { stroke-dashoffset: 0.2; } to { stroke-dashoffset: -1; } }
+  @keyframes pl-spin { to { transform: rotate(360deg); } }
+
+  /* wide: left to right, every part centred on one line */
+  @media (min-width: 1280px) {
+    .pl { display: grid; grid-template-columns: max-content minmax(48px, 1fr) 216px minmax(36px, 0.7fr) 246px minmax(44px, 0.8fr) max-content; align-items: center; min-height: 520px; }
+    .pl-src { grid-column: 1; }
+    .pl-lens { grid-column: 3; }
+    .pl-brief { grid-column: 5; }
+    .pl-dec { grid-column: 7; }
+    /* the decisions' list sits on the centre line; its head sits above it */
+    .pl-dec { position: relative; }
+    .pl-dhead { position: absolute; left: 0; bottom: calc(100% + 18px); }
+  }
+  /* narrower: stacked, joined by short rules */
+  @media (max-width: 1279px) {
+    .pl-wires { display: none; }
+    .pl { display: grid; justify-items: center; gap: 64px; }
+    .pl-src { display: grid; justify-items: center; }
+    .pl-sigs { grid-template-columns: repeat(2, minmax(0, auto)); column-gap: 28px; }
+    .pl-lens, .pl-brief, .pl-dec { position: relative; }
+    .pl-lens::before, .pl-brief::before, .pl-dec::before { content: ''; position: absolute; left: 50%; top: -52px; width: 1px; height: 40px; background: var(--cyan); }
+    .pl-brief { width: min(100%, 380px); margin-top: 36px; }
+    .pl-brief::before { top: -88px; }
+    .pl-chip { right: 8px; }
+  }
+</style>

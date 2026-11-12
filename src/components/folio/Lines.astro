@@ -1,0 +1,92 @@
+---
+// Folio · a chapter's one hairline drawing: faint, straight-lined, behind the chapter's content (the chapter takes
+// .has-lines; base styles in src/styles/folio.css). One per chapter at most.
+//   requests  the third-party requests a page fires as it loads, as a network waterfall: fourteen, as in the
+//             x-ray's address bar. The hero: the bars run out one after another when it comes into view.
+//   ruler     a measured line the findings travel along. src/scripts/folio-home.ts slides its ticks with the cards.
+//   trace     a signal along the foot of a chapter, square-edged, as a domain emits it (the contact chapter). It
+//             draws from left to right when it comes into view.
+//   stairs    a staircase whose steps grow taller as it climbs: a cost that recurs and accelerates (the /v4
+//             enforcement chapter). It draws from left to right.
+//   lens      the lens itself, a hairline ring with its ticks: the one round drawing, as the lens is the one round
+//             thing (the /v4 closing chapter). The ring draws round from the top.
+// Place and size it from the chapter's own styles through `class`.
+interface Props {
+  kind: 'requests' | 'ruler' | 'trace' | 'stairs' | 'lens';
+  class?: string;
+}
+const { kind, class: cls } = Astro.props;
+const uid = `fl-${kind}-${Math.random().toString(36).slice(2, 7)}`;
+
+// the waterfall: [start, length] of each request, in hundredths of the drawing's width
+const reqs = [[0, 18], [2, 9], [4, 26], [7, 12], [9, 33], [13, 15], [16, 22], [20, 8], [23, 29], [27, 14], [31, 19], [36, 10], [40, 24], [45, 16]];
+const axis = Array.from({ length: 21 }, (_, i) => i * 5);
+// the trace: [x, width] of each pulse, in thousandths of the drawing's width
+// the stairs: twelve treads of equal width; each riser taller than the last (in a 600 by 300 drawing)
+const risers = Array.from({ length: 12 }, (_, i) => 0.415 * (i + 1) ** 2);
+let sy = 296;
+const stairs = `M0 ${sy}` + risers.map((r, i) => { sy -= r; return `H${(i + 1) * 50 - 50 + 50}V${sy.toFixed(1)}`; }).join('') + 'H600';
+const pulses = [[30, 8], [52, 3], [61, 3], [110, 40], [168, 4], [180, 4], [236, 22], [300, 6], [340, 60], [420, 3], [428, 3], [436, 3], [470, 30], [560, 10], [590, 4], [640, 48], [720, 3], [730, 12], [800, 26], [860, 4], [870, 4], [900, 36], [960, 6]];
+---
+{kind === 'requests' && (
+  <svg class:list={['f-lines', 'fl-requests', cls]} data-lines viewBox="0 0 100 150" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path class="fl-axis" d={`M0 0.5H100${axis.map((x) => `M${x} 0.5V${x % 25 === 0 ? 9 : 4.5}`).join('')}`} />
+    <path class="fl-load" d="M58 0.5V150" />
+    {reqs.map(([x, w], i) => <path class="fl-grow" style={`--i: ${i}`} d={`M${x} ${24 + i * 9.4}h${w}`} />)}
+  </svg>
+)}
+{kind === 'ruler' && (
+  <svg class:list={['f-lines', 'fl-ruler', cls]} data-lines aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id={uid} data-lines-shift width="120" height="14" patternUnits="userSpaceOnUse">
+        <path d={`M0.5 0V12M60.5 0V8${Array.from({ length: 10 }, (_, i) => (i === 0 || i === 5 ? '' : `M${i * 12 + 0.5} 0V4.5`)).join('')}`} />
+      </pattern>
+    </defs>
+    <line x1="0" y1="0.5" x2="100%" y2="0.5" />
+    <rect width="100%" height="14" fill={`url(#${uid})`} />
+  </svg>
+)}
+{kind === 'trace' && (
+  <svg class:list={['f-lines', 'fl-trace', cls]} data-lines viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path d={`M0 32${pulses.map(([x, w]) => `H${x}V8H${x + w}V32`).join('')}H1000`} />
+  </svg>
+)}
+{kind === 'stairs' && (
+  <svg class:list={['f-lines', 'fl-stairs', 'fl-wipe', cls]} data-lines viewBox="0 0 600 300" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path class="fl-grid" d="M0 75H600M0 150H600M0 225H600" />
+    <path d={stairs} />
+  </svg>
+)}
+{kind === 'lens' && (
+  <svg class:list={['f-lines', 'fl-lens', cls]} data-lines viewBox="-10 -10 420 420" aria-hidden="true" focusable="false">
+    <circle class="fl-ring" cx="200" cy="200" r="190" pathLength="1" transform="rotate(-90 200 200)" />
+    <circle class="fl-ticks" cx="200" cy="200" r="176" pathLength="120" />
+    <circle class="fl-inner" cx="200" cy="200" r="150" />
+    <path class="fl-cross" d="M200 -6V6M200 394V406M-6 200H6M394 200H406" />
+  </svg>
+)}
+
+<style>
+  .f-lines path, .f-lines line, .f-lines circle { fill: none; stroke: currentColor; stroke-width: 1px; }
+  .f-lines rect { stroke: none; }
+  .fl-requests .fl-axis { opacity: 0.8; }
+  .fl-requests .fl-load { stroke-dasharray: 2 5; opacity: 0.7; }
+  /* the script arms a drawing, then sets .on when it comes into view: without the script it is simply there */
+  .f-lines { transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1); }
+  .f-lines.is-armed:not(.on) { opacity: 0; }
+  .fl-grow { transform-box: fill-box; transform-origin: 0 50%; transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i) * 80ms + 250ms); }
+  .f-lines.is-armed:not(.on) .fl-grow { transform: scaleX(0); }
+  .fl-trace, .fl-wipe { clip-path: inset(0 0 0 0); transition: opacity 0.6s, clip-path 2.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; }
+  .fl-trace.is-armed:not(.on), .fl-wipe.is-armed:not(.on) { clip-path: inset(0 100% 0 0); }
+  .fl-stairs .fl-grid { stroke-dasharray: 2 6; opacity: 0.6; }
+  /* the lens scales with its box, so it strokes in its own units (a scaling stroke would throw the dashes off) */
+  .fl-lens { transition: opacity 0.8s; }
+  .fl-lens circle, .fl-lens path { stroke-width: 1px; }
+  .fl-lens .fl-ring { stroke-dasharray: 1 1; transition: stroke-dashoffset 2.8s cubic-bezier(0.22, 1, 0.36, 1) 0.2s; }
+  .fl-lens.is-armed:not(.on) .fl-ring { stroke-dashoffset: 1; }
+  .fl-lens .fl-ticks { stroke-width: 6px; stroke-dasharray: 0.06 0.94; opacity: 0.7; }
+  .fl-lens .fl-inner { stroke-dasharray: 2 7; opacity: 0.6; }
+  @media (prefers-reduced-motion: reduce) {
+    .f-lines, .fl-grow, .fl-trace, .fl-wipe, .fl-lens .fl-ring { transition: none; }
+  }
+</style>

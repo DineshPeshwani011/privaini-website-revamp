@@ -1,0 +1,46 @@
+---
+// Four figures with their sources. On a wide screen they stand side by side on tone tiles; once the row
+// gets narrow they become a ledger (figure left, label and source right) instead of a 2×2 stack, so each
+// source link stays beside its own figure rather than sitting over the next one.
+import type { Fact } from '@/components/FactGrid.astro';
+interface Props { items: Fact[]; accent?: boolean }
+const { items, accent = true } = Astro.props;
+---
+<dl class:list={['band', { accent }]} data-reveal-group>
+  {items.map((f) => (
+    <div class="fig" data-reveal>
+      <dt class="sr-only">{f.label}</dt>
+      <dd class="n nums" data-count={f.count} data-prefix={f.prefix} data-suffix={f.suffix} data-decimals={f.decimals}>{f.figure}</dd>
+      <dd class="meta">
+        <span class="l">{f.label}</span>
+        {f.href && <a class="link" href={f.href}>{f.linkLabel ?? 'Learn more'} <span class="arrow">→</span></a>}
+      </dd>
+    </div>
+  ))}
+</dl>
+
+<style>
+  .band { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; }
+  .fig {
+    background: var(--bg-2); border-radius: var(--radius); padding: clamp(20px, 2.2vw, 32px);
+    display: grid; grid-template-rows: 1fr auto; gap: 28px; min-height: 260px;
+  }
+  :global(.section--raised) .fig { background: var(--bg-3); }
+  .fig dd { margin: 0; }
+  .n { font-size: clamp(52px, 5.4vw, 92px); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; white-space: nowrap; }
+  .accent .fig:first-child .n { color: var(--accent-hi); }
+  .meta { display: grid; gap: 12px; justify-items: start; align-content: end; }
+  .l { font-size: 16px; line-height: 1.45; color: var(--muted); max-width: 26ch; }
+  .meta .link { font-size: 15px; }
+  @media (max-width: 1100px) {
+    .band { grid-template-columns: 1fr; }
+    .fig { grid-template-columns: 13rem minmax(0, 1fr); grid-template-rows: none; align-items: center; min-height: 0; gap: var(--gap); }
+    .n { font-size: clamp(44px, 6vw, 64px); }
+    .meta { align-content: center; }
+  }
+  @media (max-width: 480px) {
+    .fig { grid-template-columns: 9.25rem minmax(0, 1fr); padding: 20px 18px; }
+    .n { font-size: 42px; }
+    .l { font-size: 15.5px; }
+  }
+</style>

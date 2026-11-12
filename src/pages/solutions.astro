@@ -1,0 +1,108 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import AudienceIndex from '@/components/AudienceIndex.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import FigureSplit from '@/components/solutions/FigureSplit.astro';
+import { solutions } from '@/data/site';
+import { panels, panelOrder } from '@/data/solutions-panels';
+
+// What each audience page says about itself (privaini.com/solutions), with the shorter line the menu uses beneath it.
+const said: Record<string, string> = {
+  '/enterprises': 'Verify your program performs as documented, from the same vantage point regulators use.',
+  '/insurers': 'Price what security ratings miss. Privacy litigation is the fastest-growing driver of cyber claims.',
+  '/brokers': 'Walk into every placement with outside-in risk data your competitors don’t have.',
+  '/law-firms': 'The evidence layer plaintiffs’ counsel already has: observable, statute-anchored, timestamped.',
+  '/ma-advisors': 'Assess any target from the outside: privacy and AI risk, no cooperation required.',
+  '/risk-advisors': 'Assess any company from the outside: regulator-grade intelligence, no questionnaires.',
+};
+const audiences = solutions.map((s) => ({ label: s.label, href: s.href, note: said[s.href], sees: s.note }));
+
+// The six hero panels, set out in three columns; the middle one drifts against the scroll.
+const columns = [
+  [panels.enterprises, panels['law-firms']],
+  [panels.insurers, panels['ma-advisors']],
+  [panels.brokers, panels['risk-advisors']],
+];
+// Stacked on narrower screens, the panels fall back into the audiences' own order.
+const order = (key: string) => (panelOrder as readonly string[]).indexOf(key);
+---
+<Base
+  title="Solutions | Privaini"
+  description="One platform, built for every team with privacy exposure: enterprises, insurers, brokers, law firms, and advisors."
+>
+  <PageHero
+    title="One platform for every team."
+    lead="Outside-in privacy and AI risk intelligence for every team with privacy exposure: each use case surfaces different signals from the same assessment."
+  >
+    <StatusPanel
+      title="Use cases"
+      subject="one platform"
+      rows={[
+        { label: 'Enterprises & Insurers', value: 'Covered', state: 'ok' },
+        { label: 'Brokers & Advisors', value: 'Covered', state: 'ok' },
+        { label: 'Law Firms & M&A', value: 'Covered', state: 'ok' },
+      ]}
+      total={{ label: 'Same assessment', value: 'One platform' }}
+    />
+  </PageHero>
+
+  <AudienceIndex items={audiences} />
+
+  <section class="section section--raised wall" aria-labelledby="signals-h">
+    <div class="wrap">
+      <div class="head" data-reveal-group>
+        <h2 id="signals-h" data-split>Different signals. Same assessment.</h2>
+        <p data-reveal>Each use case surfaces different signals from the same outside-in assessment. Here is what each team sees first.</p>
+      </div>
+      <div class="cols">
+        {columns.map((col, i) => (
+          <ul role="list" class:list={['col', `col--${i}`]} data-reveal-group data-parallax={i === 1 ? '0.14' : undefined}>
+            {col.map((panel) => (
+              <li data-reveal style={`--o: ${order(panel.key)}`}>
+                <a class="who link" href={panel.href}>{panel.audience} <span class="arrow">→</span></a>
+                <StatusPanel title={panel.title} subject={panel.subject} rows={panel.rows} total={panel.total} />
+              </li>
+            ))}
+          </ul>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <FigureSplit
+    id="coverage-h"
+    heading="One assessment, complete coverage."
+    text="From a company name to statute-mapped findings with exposure ranges: complete outside-in coverage, and the same engine behind every use case."
+    items={[
+      { figure: '90', count: 90, label: 'countries covered' },
+      { figure: '20', count: 20, label: 'US states with privacy statutes' },
+      { figure: '8', count: 8, label: 'finding categories, each statute-mapped', href: '/what-we-find', linkLabel: 'What we find' },
+      { figure: '4', count: 4, label: 'exposure vectors per finding' },
+    ]}
+  />
+
+  <CtaBlank />
+</Base>
+
+<style>
+  .head { display: grid; gap: 20px; max-width: 760px; margin-bottom: clamp(48px, 6vw, 96px); }
+  .head p { color: var(--muted); font-size: clamp(17px, 1.25vw, 20px); line-height: 1.5; max-width: 52ch; }
+  .cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); align-items: start; }
+  .col { display: grid; gap: clamp(40px, 5vw, 72px); }
+  .col--1 { margin-top: clamp(48px, 7vw, 120px); }
+  .col--2 { margin-top: clamp(16px, 2.4vw, 40px); }
+  .col li { display: grid; gap: 14px; justify-items: start; }
+  .who { font-size: clamp(20px, 1.6vw, 24px); letter-spacing: -0.02em; }
+  .col :global(.panel) { max-width: none; }
+  @media (max-width: 1100px) {
+    .cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .col { display: contents; }
+    .col--1, .col--2 { margin-top: 0; }
+    .col li { margin-bottom: clamp(32px, 5vw, 56px); order: var(--o); }
+  }
+  @media (max-width: 640px) {
+    .cols { grid-template-columns: 1fr; }
+  }
+</style>

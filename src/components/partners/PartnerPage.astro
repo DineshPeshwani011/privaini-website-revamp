@@ -1,0 +1,75 @@
+---
+// One insurer or broker partner page, composed from src/data/partners-pages.ts:
+// co-branded hero → (argument band) → what policyholders unlock → tiers → pricing → proof → questions → closing CTA.
+// Sections alternate plain and raised ground after the hero.
+import Base from '@/layouts/Base.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import PartnerHero from './PartnerHero.astro';
+import GapStatement from './GapStatement.astro';
+import Capabilities from './Capabilities.astro';
+import TierTable from './TierTable.astro';
+import OfferSection from './OfferSection.astro';
+import ProofSection from './ProofSection.astro';
+import PartnerFaq from './PartnerFaq.astro';
+import { partnerPages, type PartnerKey } from '@/data/partners-pages';
+
+interface Props { partner: PartnerKey }
+const p = partnerPages[Astro.props.partner];
+
+const order = (['gap', 'capabilities', 'tiers', 'offer', 'proof', 'faq'] as const).filter((k) => p[k]);
+const offset = p.gap ? 1 : 0;
+const tone = (k: (typeof order)[number]) => ((order.indexOf(k) + offset) % 2 ? 'raised' : 'plain') as 'plain' | 'raised';
+
+const faqLd = p.faq && JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: p.faq.items.map((i) => ({ '@type': 'Question', name: i.q, acceptedAnswer: { '@type': 'Answer', text: i.a } })),
+});
+---
+<Base title={p.meta.title} description={p.meta.description}>
+  {faqLd && <script type="application/ld+json" slot="head" is:inline set:html={faqLd} />}
+
+  <PartnerHero
+    title={p.hero.title}
+    lead={p.hero.lead}
+    primary={p.hero.primary}
+    secondary={p.hero.secondary}
+  >
+    <StatusPanel title={p.panel.title} subject={p.panel.subject} rows={p.panel.rows} total={p.panel.total} />
+  </PartnerHero>
+
+  {p.gap && <GapStatement id="gap-h" title={p.gap.title} lit={p.gap.lit} link={p.gap.link} tone={tone('gap')} />}
+
+  {p.capabilities && (
+    <Capabilities
+      id="unlock-h"
+      heading={p.capabilities.heading}
+      items={p.capabilities.items}
+      figure={p.capabilities.figure}
+      note={p.capabilities.note}
+      fine={p.capabilities.fine}
+      tone={tone('capabilities')}
+    />
+  )}
+
+  {p.tiers && (
+    <TierTable
+      id="tiers-h"
+      heading={p.tiers.heading}
+      label={p.tiers.label}
+      sizes={p.tiers.sizes}
+      rows={p.tiers.rows}
+      note={p.tiers.note}
+      tone={tone('tiers')}
+    />
+  )}
+
+  {p.offer && <OfferSection id="offer-h" heading={p.offer.heading} text={p.offer.text} figures={p.offer.figures} tone={tone('offer')} />}
+
+  {p.proof && <ProofSection id="proof-h" heading={p.proof.heading} quote={p.proof.quote} figures={p.proof.figures} tone={tone('proof')} />}
+
+  {p.faq && <PartnerFaq id="faq-h" heading={p.faq.heading} items={p.faq.items} tone={tone('faq')} />}
+
+  <CtaBlank />
+</Base>

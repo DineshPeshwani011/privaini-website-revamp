@@ -1,0 +1,194 @@
+/* Folio: the editorial language for Privaini (docs/DESIGN-LANGUAGE.md). Chapters alternate between night and
+   stone; Urbanist carries everything, headlines set large and tight with a light italic accent line; brand cyan
+   is the accent (buttons, italic lines on night), deep teal its counterpart on stone. Every corner is square:
+   the lens is the only round thing on a Folio page.
+   Scoped to body.folio (set by <Base folio>). The palette is fixed: chapters are night or stone by design. */
+
+body.folio {
+  --night: #0b0f10;
+  --night-2: #121819;
+  --night-3: #1a2224;
+  --stone: #e8ece9;
+  --stone-2: #dde3e0;
+  --on-night: #e8ece9;
+  --on-night-muted: #98a3a2;
+  --on-night-line: rgba(232, 236, 233, 0.16);
+  --on-stone: #0b0f10;
+  --on-stone-muted: #55625f;
+  --on-stone-line: rgba(11, 15, 16, 0.14);
+  --cyan: #07bcd4;
+  --cyan-soft: #67d6e6;        /* italic lines and links on night */
+  --teal: #0a4652;             /* italic lines and links on stone */
+  --ease-edit: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* the shared token names, so the nav and footer follow: light paper by default */
+  --bg: var(--stone);
+  --bg-2: var(--stone-2);
+  --bg-3: #d3dad7;
+  --bg-4: #c8d0cd;
+  --bg-clear: rgba(232, 236, 233, 0);
+  --page-glow: none;
+  --ink: var(--on-stone);
+  --strong: #000;
+  --muted: var(--on-stone-muted);
+  --faint: #7d8a87;
+  --accent: var(--cyan);
+  --accent-hi: var(--teal);
+  --accent-ink: var(--night);
+  --glow: none;
+  --ui-line: var(--on-stone-line);
+  --ui-shadow: none;
+  --low: var(--cyan);
+  --radius: 0px;
+  --ui-radius: 0px;
+
+  background: var(--night);
+  color: var(--on-night);
+}
+
+/* the colour of a chapter */
+.folio .is-night { background: var(--night); color: var(--on-night); --ink: var(--on-night); --muted: var(--on-night-muted); --line: var(--on-night-line); --em: var(--cyan-soft); }
+.folio .is-stone { background: var(--stone); color: var(--on-stone); --ink: var(--on-stone); --muted: var(--on-stone-muted); --line: var(--on-stone-line); --em: var(--teal); }
+
+/* ---- type ---- */
+/* one family: the headline is Urbanist set large and tight; its second line turns light, italic and coloured */
+.folio .f-display, .folio .f-h2, .folio .f-title, .folio .f-figure {
+  font-family: var(--font); font-weight: 400; color: var(--ink); text-wrap: balance;
+}
+.folio .f-display { font-size: clamp(40px, 4.4vw, 70px); line-height: 1.02; letter-spacing: -0.045em; }
+.folio .f-h2 { font-size: clamp(38px, 5.6vw, 88px); line-height: 1; letter-spacing: -0.05em; }
+.folio .f-title { font-size: clamp(26px, 2.5vw, 38px); line-height: 1.1; letter-spacing: -0.03em; }
+.folio .f-figure { font-size: clamp(120px, 19vw, 300px); font-weight: 200; line-height: 0.82; letter-spacing: -0.065em; font-variant-numeric: lining-nums; }
+.folio .f-display em, .folio .f-h2 em, .folio .f-title em, .folio .f-em {
+  font-family: var(--font); font-style: italic; font-weight: 300; color: var(--em, var(--cyan-soft));
+}
+.folio .f-lead { font-size: clamp(17px, 1.2vw, 19px); line-height: 1.6; color: var(--muted); max-width: 46ch; text-wrap: pretty; }
+.folio .f-small { font-size: 14px; line-height: 1.5; color: var(--muted); }
+
+.folio .f-caption { font-size: 12.5px; letter-spacing: 0.02em; color: var(--muted); }
+
+/* ---- buttons: square, like every corner on the page ---- */
+.folio .f-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 52px; padding: 0 28px; border-radius: 0; border: 1px solid transparent;
+  font: 500 15px/1 var(--font); letter-spacing: 0.01em; white-space: nowrap;
+  transition: background-color 0.35s var(--ease-edit), color 0.35s, border-color 0.35s, transform 0.35s var(--ease-edit);
+}
+.folio .f-btn--cyan { background: var(--cyan); color: var(--night); }
+.folio .f-btn--cyan:hover { background: #3fd0e3; }
+.folio .f-btn--line { border-color: color-mix(in srgb, var(--ink) 40%, transparent); color: var(--ink); }
+.folio .f-btn--line:hover { border-color: var(--ink); }
+.folio .f-btn--ink { background: var(--ink); color: var(--stone); }
+.folio .f-btn:active { transform: scale(0.98); }
+.folio .f-link {
+  display: inline-flex; gap: 10px; align-items: center; padding-bottom: 4px; color: var(--em);
+  background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  transition: background-size 0.45s var(--ease-edit);
+}
+.folio .f-link:hover { background-size: 0% 1px; background-position: 100% 100%; }
+
+/* ---- frame ---- */
+/* the page column's left edge (as .wrap's content), for things that run full width but start on the column */
+.folio [data-folio] { --inset: max(var(--margin), calc((100% - var(--max)) / 2 + var(--margin))); }
+.folio .f-section { position: relative; padding-block: clamp(96px, 11vw, 176px); }
+/* a chapter's one hairline drawing (src/components/folio/Lines.astro), behind its content: the chapter isolates
+   so the drawing sits over the chapter's ground and under everything in it */
+.folio .has-lines { position: relative; isolation: isolate; }
+.folio .f-lines { position: absolute; z-index: -1; pointer-events: none; overflow: visible; color: var(--line); }
+.folio .f-lines:not(.fl-lens) * { vector-effect: non-scaling-stroke; }
+.folio .f-head { display: grid; gap: 26px; margin-bottom: clamp(56px, 6vw, 96px); }
+.folio .f-head--split { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); align-items: end; column-gap: var(--gap); }
+@media (max-width: 960px) { .folio .f-head--split { grid-template-columns: 1fr; row-gap: 24px; } }
+
+/* ---- the nav and footer on Folio pages ---- */
+.folio .theme, .folio [data-theme-toggle], .folio [data-theme-next] { display: none !important; }
+/* the shared nav and footer keep their own corner sizes; on a Folio page they are square too */
+.folio .nav *, .folio .footer *, .folio :focus-visible { border-radius: 0 !important; }
+.folio .nav .btn { border-radius: 0; min-height: 42px; padding: 0 20px; --btn-bg: var(--cyan); --btn-ink: var(--night); box-shadow: none; }
+.folio .nav .btn:hover { --btn-bg: #3fd0e3; box-shadow: none; }
+.folio .nav.scrolled { box-shadow: 0 1px 0 var(--on-stone-line); }
+.folio .nav.theme-dark.scrolled { box-shadow: 0 1px 0 var(--on-night-line); }
+.folio .footer {
+  --bg: var(--night); --ink: var(--on-night); --muted: var(--on-night-muted); --accent-hi: var(--cyan-soft);
+  background: var(--night); color: var(--on-night); border-top: 1px solid var(--on-night-line);
+}
+.folio .footer .pitch { font-weight: 400; font-size: clamp(24px, 2vw, 32px); letter-spacing: -0.035em; }
+
+/* ---- Flat (/v5, <Base folio bodyClass="flat">): white paper, charcoal chapters and one brand cyan, about
+   60 / 30 / 10. Flat: solid fills only, no shadows or glows; corners square but the lens's. The neutrals are cool
+   and slightly green (after carta.com, 2026-11-11): charcoal rather than black, slate for panels on it. ---- */
+body.folio.flat {
+  --night: #1a1a1a;            /* charcoal: the dark chapters */
+  --night-2: #394040;          /* slate: panels and bands on charcoal */
+  --night-3: #4a5252;          /* slate, raised */
+  --night-4: #2b3030;          /* a bar's empty track on slate */
+  --stone: #ffffff;
+  --stone-2: #f1f1f1;          /* the one tone step on white */
+  --stone-3: #e5e5e5;          /* a grey cell under the pointer */
+  --on-night: #ffffff;
+  --on-night-muted: #a7aaaa;
+  --on-night-line: rgba(255, 255, 255, 0.14);
+  --on-night-line-2: rgba(255, 255, 255, 0.26);
+  --on-stone: #1a1a1a;
+  --on-stone-muted: #656b6b;
+  --on-stone-line: rgba(26, 26, 26, 0.14);
+  --dot: #dedfdf;              /* a dot field's dots on white */
+  --dot-on-tone: #d3d5d5;      /* and on the tone step */
+  --cyan-wash: rgba(7, 188, 212, 0.12);
+  --cyan-dot: rgba(7, 188, 212, 0.55);
+  --cyan-soft: #07bcd4;        /* on charcoal the accent is the brand cyan itself */
+  --teal: #0a7f91;             /* the cyan, deepened to read as small text on white (4.7:1) */
+  --bg-3: #efefef;
+  --bg-4: #e4e4e4;
+  --faint: #8a8a8a;
+  /* the shapes the small marks are cut from (masks, so the colour stays a token) */
+  --sq: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8'/%3E%3C/svg%3E");
+  --dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15'%3E%3Crect width='3' height='3'/%3E%3C/svg%3E");
+  --dots-wide: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Crect x='22' y='22' width='4' height='4'/%3E%3C/svg%3E");
+  background: var(--stone);
+  color: var(--on-stone);
+}
+
+/* ---- Flat's small marks ---- */
+/* a dot field: 3px square dots every 15px (or 4px every 48px, --wide), laid behind the element's content */
+.flat .fx-dots { position: relative; isolation: isolate; }
+.flat .fx-dots::before {
+  content: ''; position: absolute; inset: var(--dots-inset, 0); z-index: -1; pointer-events: none; background: var(--dot-c, var(--dot));
+  -webkit-mask: var(--dots) 0 0 / 15px 15px; mask: var(--dots) 0 0 / 15px 15px;
+}
+.flat .fx-dots--wide::before { -webkit-mask: var(--dots-wide) 0 0 / 48px 48px; mask: var(--dots-wide) 0 0 / 48px 48px; }
+/* selection handles: a small square at each corner of a group, as if it were selected */
+.flat .fx-hd { position: relative; }
+.flat .fx-hd::after {
+  content: ''; position: absolute; inset: calc(var(--hd-gap, 8px) * -1); pointer-events: none; background: var(--hd-c, var(--ink));
+  -webkit-mask: var(--sq) left top / 5px 5px no-repeat, var(--sq) right top / 5px 5px no-repeat, var(--sq) left bottom / 5px 5px no-repeat, var(--sq) right bottom / 5px 5px no-repeat;
+  mask: var(--sq) left top / 5px 5px no-repeat, var(--sq) right top / 5px 5px no-repeat, var(--sq) left bottom / 5px 5px no-repeat, var(--sq) right bottom / 5px 5px no-repeat;
+}
+/* a label: a cyan square, then a word or two in small capitals of the mono face */
+.flat .fx-label {
+  display: inline-flex; align-items: center; gap: 12px; margin: 0; color: var(--ink);
+  font: 500 12.5px/1.2 var(--mono); letter-spacing: 0.06em; text-transform: uppercase;
+  transition: clip-path 0.6s ease-in-out;
+}
+.flat .fx-label::before { content: ''; flex: none; width: 8px; height: 8px; background: var(--cyan); }
+/* a chip: the same, set on a cyan bar */
+.flat .fx-chip {
+  display: inline-flex; align-items: center; gap: 8px; width: max-content; padding: 8px 14px 8px 10px; background: var(--cyan); color: var(--night);
+  font: 500 12px/1 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
+  transition: clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.flat .fx-chip::before { content: ''; flex: none; width: 8px; height: 8px; background: var(--night); }
+/* arriving (the page script adds .in): a label wipes in; a chip's bar wipes across, then its square pops */
+html.js .flat [data-in]:not(.in) :is(.fx-label, .fx-chip), html.js .flat :is(.fx-label, .fx-chip)[data-in]:not(.in) { clip-path: inset(0 100% 0 0); }
+.flat .in .fx-chip::before, .flat .fx-chip.in::before { animation: fx-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.35s both; }
+@keyframes fx-pop { from { transform: scale(0); } }
+@media (prefers-reduced-motion: reduce) {
+  html.js .flat [data-in]:not(.in) :is(.fx-label, .fx-chip), html.js .flat :is(.fx-label, .fx-chip)[data-in]:not(.in) { clip-path: none; }
+  .flat :is(.fx-label, .fx-chip) { transition: none; }
+  .flat .fx-chip::before { animation: none !important; }
+}
+body.folio.flat .nav.theme-dark {
+  --bg: var(--night); --bg-2: var(--night-2); --bg-3: var(--night-3); --bg-4: #2a2a2a;
+  --ink: var(--on-night); --muted: var(--on-night-muted); --accent-hi: var(--cyan); --ui-line: var(--on-night-line);
+}
+body.folio.flat .nav .menu-inner { box-shadow: none; border: 1px solid var(--ui-line); }

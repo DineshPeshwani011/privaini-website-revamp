@@ -1,0 +1,101 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PointList from '@/components/PointList.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import CookieReadout from '@/components/partners/CookieReadout.astro';
+
+// Every claim on this page is about this website build only: it sets no cookies, writes nothing to
+// browser storage and makes no third-party requests. Re-check this page if any of that changes.
+const stores = [
+  {
+    title: 'No cookies',
+    text: 'This website sets no cookies, first-party or third-party. That is why there is no consent banner and nothing to accept or decline.',
+  },
+  {
+    title: 'No browser storage',
+    text: 'Nothing is written to local storage, session storage or IndexedDB. Smooth scrolling and the page animations keep their state in memory and forget it when you leave.',
+  },
+  {
+    title: 'No third-party requests',
+    text: 'Fonts, scripts, images and the interactive figures are all served from this site. No analytics, advertising, tag managers or social widgets are loaded.',
+  },
+];
+---
+<Base title="Cookie Settings | Privaini" description="Manage your cookie preferences for the Privaini website.">
+  <PageHero
+    title="Cookie settings"
+    lead="This website sets no cookies and loads nothing from third parties, so there are no preferences to manage. The panel checks the page you are on, in your browser, right now."
+    primary={{ label: 'Cookies in the Privacy Notice', href: '/privacy-notice#how-to-manage-cookies' }}
+    secondary={false}
+  >
+    <CookieReadout />
+  </PageHero>
+
+  <section class="section" aria-labelledby="stores-h">
+    <div class="wrap">
+      <SectionHead id="stores-h" title="What this site keeps in your browser." />
+      <PointList variant="index" items={stores} />
+    </div>
+  </section>
+
+  <section class="section section--raised gpc" aria-labelledby="gpc-h">
+    <div class="wrap grid">
+      <div class="gpc-copy" data-reveal-group>
+        <h2 id="gpc-h" data-split>Global Privacy Control.</h2>
+        <p data-reveal>
+          GPC is a setting in your browser, or a browser extension, that tells the sites you visit how you want your
+          personal information handled, such as opting out of its sale or sharing.
+        </p>
+        <p data-reveal>
+          Privaini treats the signal as a request to opt out. Because this site sets no cookies and loads no trackers,
+          there is nothing on it that has to be switched off when your browser sends one.
+        </p>
+        <a class="link" href="/privacy-notice#global-privacy-control-gpc" data-reveal>GPC in the Privacy Notice <span class="arrow">→</span></a>
+      </div>
+      <div class="gpc-state" data-reveal>
+        <p class="state" data-gpc-state aria-live="polite">
+          <span class="dot" aria-hidden="true"></span>
+          <span data-gpc-line>Your browser’s signal is read when this page runs JavaScript.</span>
+        </p>
+        <p class="hint" data-gpc-hint></p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBlank />
+</Base>
+
+<script>
+  const state = document.querySelector<HTMLElement>('[data-gpc-state]');
+  if (state) {
+    const on = (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl === true;
+    state.dataset.on = String(on);
+    state.querySelector('[data-gpc-line]')!.textContent = on
+      ? 'Your browser is sending Global Privacy Control. Privaini honors it.'
+      : 'Your browser is not sending Global Privacy Control.';
+    document.querySelector('[data-gpc-hint]')!.textContent = on
+      ? 'Read from your browser on this visit. Nothing about it is stored.'
+      : 'To send it, turn it on in your browser’s privacy settings or install an extension that supports it.';
+  }
+</script>
+
+<style>
+  .gpc .grid { align-items: center; row-gap: 48px; }
+  .gpc-copy { grid-column: 1 / span 5; display: grid; gap: 20px; justify-items: start; }
+  .gpc-copy h2 { font-size: clamp(30px, 3vw, 48px); max-width: 16ch; }
+  .gpc-copy p { font-size: 18px; max-width: 48ch; }
+  .gpc-state { grid-column: 7 / span 6; display: grid; gap: 20px; }
+  .state {
+    display: grid; grid-template-columns: auto 1fr; gap: 0.4em; align-items: baseline;
+    font-size: clamp(22px, 3vw, 48px); line-height: 1.12; letter-spacing: -0.03em; font-weight: 600; text-wrap: balance;
+  }
+  .dot { width: 0.42em; height: 0.42em; border-radius: 50%; background: var(--faint); transform: translateY(-0.08em); }
+  .state[data-on='true'] .dot { background: var(--low); }
+  .state[data-on='false'] .dot { background: var(--muted); }
+  .hint { color: var(--muted); font-size: 17px; max-width: 48ch; padding-left: calc(clamp(22px, 3vw, 48px) * 0.82); }
+  @media (max-width: 960px) {
+    .gpc-copy, .gpc-state { grid-column: 1 / -1; }
+  }
+</style>

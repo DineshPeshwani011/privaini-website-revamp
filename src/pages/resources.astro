@@ -1,0 +1,280 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import StoryIndex from '@/components/StoryIndex.astro';
+import AudienceIndex from '@/components/AudienceIndex.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import PdfShelf from '@/components/company/PdfShelf.astro';
+import { library, featuredReport as report, episodes, articles } from '@/data/company-resources';
+
+// One recent article leads (not the Privacy Risk Gap post, which the featured report above already covers);
+// the rest keep the order the old page gave them.
+const feature = articles.find((a) => a.slug === 'security-ratings-privacy-gap') ?? articles[0];
+const rest = articles.filter((a) => a !== feature);
+const side = rest.slice(0, 4);
+const more = rest.slice(4);
+---
+<Base
+  title="Privacy Risk Resources | Privaini"
+  description="Research, analysis, and interviews on privacy enforcement, cyber insurance market signals, and the regulatory landscape."
+>
+  <PageHero
+    title="Privacy risk intelligence for practitioners."
+    lead="Research, analysis, and interviews on privacy enforcement, cyber insurance market signals, and the regulatory landscape."
+    primary={false}
+    secondary={false}
+    compact
+  />
+
+  <section class="section hub" aria-labelledby="hub-h">
+    <div class="wrap hub-grid">
+      <h2 id="hub-h" data-split>Everything we publish, in one place.</h2>
+      <ul role="list" class="contents" data-reveal-group>
+        {library.map((l) => (
+          <li data-reveal>
+            <a href={l.href} class="entry">
+              <span class="entry-name">{l.name}</span>
+              <span class="entry-meta">{l.meta}</span>
+              <span class="entry-text">{l.text}</span>
+              <span class="entry-go" aria-hidden="true">↓</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--raised anchor" id="featured-report" aria-labelledby="report-h">
+    <div class="wrap report">
+      <div class="report-copy" data-reveal-group>
+        <h2 id="report-h" data-split>{report.title}</h2>
+        <p class="report-sub" data-reveal>{report.subtitle}</p>
+        <p class="report-text" data-reveal>{report.text}</p>
+        <div class="report-act" data-reveal>
+          <a class="btn" href={report.href}>Read the report <span class="arrow">→</span></a>
+          <span class="report-note">{report.note}</span>
+        </div>
+      </div>
+      <dl class="report-figs" data-reveal-group>
+        {report.figures.map((f) => (
+          <div class="fig" data-reveal>
+            <dt class="sr-only">{f.label}</dt>
+            <dd class="fig-n nums" data-count={f.count} data-suffix={f.suffix}>{f.figure}</dd>
+            <dd class="fig-l">{f.label}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="section anchor" id="case-studies" aria-labelledby="cs-h">
+    <div class="wrap">
+      <SectionHead id="cs-h" title="Case studies &amp; use cases." link={{ label: 'All case studies', href: '/case-studies' }} />
+      <StoryIndex />
+      <PdfShelf />
+    </div>
+  </section>
+
+  <section class="section section--raised anchor" id="podcast" aria-labelledby="pod-h">
+    <div class="wrap pod">
+      <div class="pod-head">
+        <SectionHead
+          id="pod-h"
+          title="The Privacy Risk Podcast."
+          text="Conversations with privacy officers, underwriters, regulators, and litigators on the front lines of privacy enforcement."
+        />
+      </div>
+      <ul role="list" class="episodes" data-reveal-group>
+        {episodes.map((e) => (
+          <li data-reveal>
+            {e.href ? (
+              <a class="ep" href={e.href} target="_blank" rel="noopener">
+                <span class="play" aria-hidden="true">
+                  <svg viewBox="0 0 16 16" width="16" height="16"><path d="M5 3.2v9.6L12.6 8z" fill="currentColor" /></svg>
+                </span>
+                <span class="ep-copy">
+                  <span class="ep-meta">{e.meta}</span>
+                  <span class="ep-title">{e.title}</span>
+                </span>
+                <span class="ep-go">Watch on YouTube <span class="arrow" aria-hidden="true">↗</span></span>
+              </a>
+            ) : (
+              <div class="ep ep--quiet">
+                <span class="play play--off" aria-hidden="true"></span>
+                <span class="ep-copy">
+                  <span class="ep-meta">Episode · {e.meta}</span>
+                  <span class="ep-title">{e.title}</span>
+                </span>
+              </div>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section anchor" id="articles" aria-labelledby="art-h">
+    <div class="wrap">
+      <SectionHead id="art-h" title="Latest articles." link={{ label: 'All articles', href: '/blog' }} />
+      <div class="mag">
+        <a class="feat" href={`/post/${feature.slug}`} data-reveal>
+          <span class="feat-img"><img src={feature.hero} alt="" width="1200" height="675" loading="lazy" decoding="async" data-zoom /></span>
+          <h3 class="feat-title">{feature.title}</h3>
+          <span class="sum">{feature.summary}</span>
+          <span class="cat">{feature.category} · {feature.readTime}</span>
+        </a>
+        <ul role="list" class="side" data-reveal-group>
+          {side.map((p) => (
+            <li data-reveal>
+              <a class="srow" href={`/post/${p.slug}`}>
+                <span class="thumb"><img src={p.hero} alt="" width="320" height="180" loading="lazy" decoding="async" /></span>
+                <span class="srow-copy">
+                  <h3 class="srow-title">{p.title}</h3>
+                  <span class="cat">{p.category}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <ul role="list" class="more" data-reveal-group>
+        {more.map((p) => (
+          <li data-reveal>
+            <a class="mrow" href={`/post/${p.slug}`}>
+              <h3 class="mrow-title">{p.title}</h3>
+              <span class="mrow-go" aria-hidden="true">→</span>
+              <span class="cat">{p.category}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="anchor" id="by-role">
+    <AudienceIndex heading="Find by role." />
+  </div>
+
+  <CtaBlank />
+</Base>
+
+<style>
+  .anchor { scroll-margin-top: calc(var(--nav-h) + 16px); }
+
+  /* hub: the library's contents, as jump links */
+  .hub { padding-top: 0; }
+  .hub-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 40px; align-items: start; }
+  .hub-grid h2 { grid-column: 1 / span 6; max-width: 20ch; position: sticky; top: calc(var(--nav-h) + 32px); }
+  .contents { grid-column: 7 / span 6; display: grid; gap: 4px; }
+  .entry {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 20px; row-gap: 6px; align-items: baseline;
+    padding: 20px clamp(16px, 1.6vw, 24px); margin-inline: calc(clamp(16px, 1.6vw, 24px) * -1);
+    border-radius: var(--radius); transition: background-color 0.3s var(--ease-out);
+  }
+  .entry:hover, .entry:focus-visible { background: var(--bg-2); }
+  .entry-name { font-size: clamp(22px, 2vw, 30px); font-weight: 600; letter-spacing: -0.025em; line-height: 1.1; transition: color 0.25s; }
+  .entry-meta { font-size: 15px; color: var(--muted); white-space: nowrap; }
+  .entry-text { color: var(--muted); font-size: 16px; line-height: 1.5; max-width: 52ch; }
+  .entry-go { font-size: 18px; color: var(--muted); justify-self: end; transition: transform 0.35s var(--ease-out), color 0.25s; }
+  .entry:hover .entry-name { color: var(--accent-hi); }
+  .entry:hover .entry-go { transform: translateY(3px); color: var(--ink); }
+
+  /* featured report: the case on the left, its three figures stacked on the right */
+  .report { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 56px; align-items: center; }
+  .report-copy { grid-column: 1 / span 6; display: grid; gap: 22px; justify-items: start; }
+  .report-copy h2 { font-size: clamp(38px, 5vw, 84px); max-width: 14ch; }
+  .report-sub { font-size: clamp(21px, 1.8vw, 28px); line-height: 1.3; letter-spacing: -0.015em; font-weight: 500; max-width: 30ch; }
+  .report-text { color: var(--muted); font-size: 18px; line-height: 1.55; max-width: 52ch; }
+  .report-act { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 8px; }
+  .report-note { font-size: 15px; color: var(--muted); }
+  .report-figs { grid-column: 8 / span 5; display: grid; gap: 8px; margin: 0; }
+  .fig {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap); align-items: end;
+    padding: clamp(20px, 2.2vw, 30px); background: var(--bg-3); border-radius: var(--radius);
+  }
+  .fig dd { margin: 0; }
+  .fig-n { font-size: clamp(52px, 5.4vw, 92px); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; }
+  .fig:first-child .fig-n { color: var(--accent-hi); }
+  .fig-l { font-size: 16px; color: var(--muted); line-height: 1.4; padding-bottom: 4px; }
+
+  /* podcast: heading held on the left, episodes run down the right */
+  .pod { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 16px; align-items: start; }
+  .pod-head { grid-column: 1 / span 5; position: sticky; top: calc(var(--nav-h) + 32px); }
+  .episodes { grid-column: 7 / span 6; display: grid; gap: 6px; }
+  .ep {
+    display: grid; grid-template-columns: 48px minmax(0, 1fr); column-gap: 20px; row-gap: 10px; align-items: start;
+    padding: clamp(18px, 2vw, 26px); border-radius: var(--radius); background: var(--bg-3);
+    transition: background-color 0.3s var(--ease-out);
+  }
+  a.ep:hover { background: var(--bg-4); }
+  .ep--quiet { background: transparent; }
+  .play {
+    width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--ink); color: var(--bg); transition: transform 0.35s var(--ease-out);
+  }
+  .play svg { margin-left: 2px; }
+  a.ep:hover .play { transform: scale(1.08); }
+  .play--off { background: var(--bg-3); }
+  .ep-copy { display: grid; gap: 6px; }
+  .ep-meta { font-size: 15px; color: var(--muted); }
+  .ep-title { font-size: clamp(19px, 1.6vw, 24px); font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+  .ep--quiet .ep-title { color: var(--muted); }
+  .ep-go { grid-column: 2; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .ep-go .arrow { display: inline-block; transition: transform 0.3s var(--ease-out); }
+  a.ep:hover .ep-go { color: var(--accent-hi); }
+  a.ep:hover .ep-go .arrow { transform: translate(2px, -2px); }
+
+  /* articles: one lead story with pictures, four beside it, the rest as a list */
+  .mag { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 40px; align-items: start; }
+  .feat { grid-column: 1 / span 7; display: grid; gap: 14px; align-content: start; }
+  .feat-img { display: block; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius); background: var(--bg-2); margin-bottom: 8px; }
+  .feat-img img { width: 100%; height: 100%; object-fit: cover; }
+  .feat-title { font-size: clamp(24px, 2.4vw, 38px); letter-spacing: -0.03em; line-height: 1.08; max-width: 34ch; text-wrap: balance; transition: color 0.25s; }
+  .feat:hover .feat-title { color: var(--accent-hi); }
+  .sum { color: var(--muted); font-size: 17px; line-height: 1.5; max-width: 58ch; }
+  .cat { font-size: 15px; color: var(--accent-hi); font-weight: 500; }
+  .side { grid-column: 8 / span 5; display: grid; gap: 4px; }
+  .srow {
+    display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 18px; align-items: center;
+    padding: 12px; margin-inline: -12px; border-radius: var(--radius); transition: background-color 0.3s var(--ease-out);
+  }
+  .srow:hover { background: var(--bg-2); }
+  .thumb { display: block; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius); background: var(--bg-2); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-out); }
+  .srow:hover .thumb img { transform: scale(1.05); }
+  .srow-copy { display: grid; gap: 6px; }
+  .srow-title { font-size: clamp(17px, 1.3vw, 20px); letter-spacing: -0.015em; line-height: 1.25; transition: color 0.25s; }
+  .srow:hover .srow-title { color: var(--accent-hi); }
+  .more {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 4px;
+    margin-top: clamp(40px, 5vw, 72px);
+  }
+  .mrow {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 20px; row-gap: 6px; align-items: baseline;
+    padding: 20px; margin-inline: -20px; border-radius: var(--radius); transition: background-color 0.3s var(--ease-out);
+  }
+  .mrow:hover { background: var(--bg-2); }
+  .mrow .cat { grid-column: 1 / -1; }
+  .srow-copy .cat, .mrow .cat, .feat .cat { color: var(--muted); }
+  .mrow-title { font-size: clamp(19px, 1.5vw, 23px); letter-spacing: -0.02em; line-height: 1.22; transition: color 0.25s; }
+  .mrow:hover .mrow-title { color: var(--accent-hi); }
+  .mrow-go { color: var(--muted); font-size: 20px; transition: transform 0.3s var(--ease-out), color 0.25s; }
+  .mrow:hover .mrow-go { transform: translateX(4px); color: var(--ink); }
+
+  @media (max-width: 960px) {
+    .hub-grid h2, .contents, .report-copy, .report-figs, .pod-head, .episodes, .feat, .side { grid-column: 1 / -1; }
+    .hub-grid h2, .pod-head { position: static; }
+    .hub-grid h2 { max-width: 18ch; }
+    .report-figs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .fig { grid-template-columns: 1fr; align-content: space-between; min-height: 180px; }
+  }
+  @media (max-width: 640px) {
+    .report-figs { grid-template-columns: 1fr; }
+    .fig { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 0; }
+    .more { grid-template-columns: 1fr; }
+    .ep { grid-template-columns: 40px minmax(0, 1fr); column-gap: 14px; }
+    .play { width: 40px; height: 40px; }
+    .srow { grid-template-columns: 112px minmax(0, 1fr); }
+  }
+</style>

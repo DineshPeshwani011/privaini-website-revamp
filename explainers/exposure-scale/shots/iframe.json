@@ -1,0 +1,5 @@
+[
+  ["wait", 3000],
+  ["eval", "document.getElementById('log').textContent"],
+  ["shot", "explainers/exposure-scale/shots/iframe.png", "body"]
+]

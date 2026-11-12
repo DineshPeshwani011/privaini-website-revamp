@@ -1,0 +1,112 @@
+---
+import Base from '@/layouts/Base.astro';
+import Toc from '@/components/Toc.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import HairlineField from '@/components/hairline/HairlineField.astro';
+import { posts, related, formatDate, type Post } from '@/data/posts';
+
+export function getStaticPaths() {
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+interface Props { post: Post }
+const { post } = Astro.props;
+const more = related(post, 3);
+const initials = post.author.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+---
+<Base title={`${post.title} | Privaini`} description={post.summary} image={post.hero}>
+  <article>
+    <header class="head has-field">
+      <HairlineField at={{ x: 0.86, y: 0.5 }} signals={[post.category, 'evidence', 'statute', 'enforcement']} />
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb" data-reveal>
+          <a href="/blog">Blog</a><span aria-hidden="true">/</span><a href={`/blog?topic=${encodeURIComponent(post.category)}`}>{post.category}</a>
+        </nav>
+        <h1 data-split data-split-now>{post.title}</h1>
+        <p class="meta" data-reveal>
+          <span>{post.author}</span><span>{formatDate(post.date, post.dateText)}</span><span>{post.readTime}</span>
+        </p>
+      </div>
+    </header>
+
+    {post.hero && (
+      <div class="wrap">
+        <figure class="hero" data-reveal><img src={post.hero} alt="" width="1600" height="900" data-zoom /></figure>
+      </div>
+    )}
+
+    <div class="wrap body">
+      <aside class="side"><Toc headings={post.headings} /></aside>
+      <div class="main">
+        <div class="prose" set:html={post.html} />
+
+        <footer class="author">
+          {post.authorImage ? <img class="face" src={post.authorImage} alt="" width="64" height="64" loading="lazy" /> : <span class="face disc" aria-hidden="true">{initials}</span>}
+          <div>
+            <p class="who">{post.author}</p>
+            {post.authorRole && <p class="role">{post.authorRole}</p>}
+            {post.authorBio && <p class="bio">{post.authorBio}</p>}
+          </div>
+        </footer>
+      </div>
+    </div>
+  </article>
+
+  <section class="more section section--raised" aria-labelledby="more-h">
+    <div class="wrap">
+      <h2 id="more-h" data-split>Keep reading.</h2>
+      <ul role="list" class="more-list" data-reveal-group>
+        {more.map((p) => (
+          <li data-reveal>
+            <a href={`/post/${p.slug}`}>
+              <span class="thumb"><img src={p.hero} alt="" width="480" height="270" loading="lazy" decoding="async" /></span>
+              <span class="cat">{p.category}</span>
+              <span class="t">{p.title}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBlank />
+</Base>
+
+<style>
+  .head { padding-top: calc(var(--nav-h) + clamp(40px, 6vw, 96px)); padding-bottom: clamp(32px, 4vw, 56px); }
+  .head h1 { font-size: clamp(36px, 4.4vw, 72px); max-width: 22ch; }
+  .crumbs { display: flex; gap: 10px; font-size: 15px; color: var(--muted); margin-bottom: 24px; }
+  .crumbs a:hover { color: var(--accent-hi); }
+  .crumbs a:last-child { color: var(--accent-hi); }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 28px; font-size: 16px; color: var(--muted); }
+  .meta span:first-child { color: var(--ink); font-weight: 500; }
+  .hero { aspect-ratio: 21 / 9; overflow: hidden; border-radius: var(--radius); background: var(--bg-2); }
+  .hero img { width: 100%; height: 100%; object-fit: cover; }
+  .body { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); padding-top: clamp(48px, 6vw, 96px); padding-bottom: clamp(64px, 8vw, 128px); }
+  .side { grid-column: 1 / span 3; }
+  .main { grid-column: 5 / span 7; }
+  .prose :global(> p:first-child) { font-size: clamp(20px, 1.6vw, 23px); line-height: 1.55; }
+  .author { display: flex; gap: 18px; align-items: flex-start; margin-top: 64px; padding: 28px; border-radius: var(--radius); background: var(--bg-2); }
+  .face { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex: none; }
+  .disc { display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+  .who { font-weight: 600; font-size: 18px; }
+  .role { color: var(--accent-hi); font-size: 15px; margin-top: 2px; }
+  .bio { color: var(--muted); font-size: 15px; margin-top: 8px; max-width: 60ch; }
+  .more h2 { margin-bottom: 48px; }
+  .more-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+  .more-list a { display: grid; gap: 12px; }
+  .thumb { aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius); background: var(--bg-3); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-out); }
+  .more-list a:hover img { transform: scale(1.05); }
+  .cat { font-size: 15px; color: var(--accent-hi); }
+  .t { font-size: 21px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; }
+  .more-list a:hover .t { color: var(--accent-hi); }
+  @media (max-width: 1080px) {
+    .side { display: none; }
+    .main { grid-column: 1 / -1; max-width: 760px; }
+  }
+  @media (max-width: 760px) {
+    .hero { aspect-ratio: 16 / 10; }
+    .more-list { grid-template-columns: 1fr; }
+  }
+</style>

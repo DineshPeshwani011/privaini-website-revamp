@@ -1,0 +1,52 @@
+---
+import Base from '@/layouts/Base.astro';
+import Toc from '@/components/Toc.astro';
+import HairlineField from '@/components/hairline/HairlineField.astro';
+import legal from '@/data/legal.json';
+import { legal as legalNav } from '@/data/site';
+
+interface Props { slug: 'terms-of-service' | 'service-agreement' | 'privacy-notice'; title: string; description: string }
+const { slug, title, description } = Astro.props;
+const doc = legal.find((d) => d.slug === slug)!;
+const pdf = {
+  'terms-of-service': '/media/docs/privaini-terms-of-service-2025-10.pdf',
+  'service-agreement': '/media/docs/privaini-service-agreement-2025-10.pdf',
+  'privacy-notice': '/media/docs/privaini-privacy-notice-2025-10.pdf',
+}[slug];
+const headings = doc.headings.filter((h) => h.depth === 2);
+---
+<Base title={title} description={description}>
+  <header class="head has-field">
+    <HairlineField at={{ x: 0.86, y: 0.5 }} signals={[]} />
+    <div class="wrap">
+      <nav class="docs" aria-label="Legal documents" data-reveal>
+        {legalNav.map((l) => <a href={l.href} aria-current={l.href === `/${slug}` ? 'page' : undefined}>{l.label}</a>)}
+      </nav>
+      <h1 data-split data-split-now>{doc.title}</h1>
+      <p class="updated" data-reveal>{doc.updated} · <a class="link" href={pdf} download>Download PDF <span class="arrow">↓</span></a></p>
+    </div>
+  </header>
+  <div class="wrap body">
+    <aside class="side"><Toc headings={headings} label="Sections" /></aside>
+    <div class="prose legal" set:html={doc.html} />
+  </div>
+</Base>
+
+<style>
+  .head { padding-top: calc(var(--nav-h) + clamp(40px, 6vw, 96px)); padding-bottom: clamp(32px, 4vw, 56px); }
+  .head h1 { font-size: clamp(40px, 5vw, 80px); max-width: 18ch; }
+  .docs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
+  .docs a { height: 38px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 999px; background: var(--bg-2); color: var(--muted); font-size: 15px; transition: background-color 0.2s, color 0.2s; }
+  .docs a:hover { color: var(--ink); background: var(--bg-3); }
+  .docs a[aria-current='page'] { background: var(--ink); color: var(--bg); }
+  .updated { margin-top: 20px; color: var(--muted); font-size: 16px; }
+  .body { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); padding-top: 24px; padding-bottom: clamp(64px, 8vw, 128px); }
+  .side { grid-column: 1 / span 3; }
+  .legal { grid-column: 5 / span 7; font-size: 17px; }
+  .legal :global(h2) { font-size: clamp(22px, 2vw, 28px); }
+  .legal :global(h3) { font-size: 19px; }
+  @media (max-width: 1080px) {
+    .side { display: none; }
+    .legal { grid-column: 1 / -1; max-width: 760px; }
+  }
+</style>

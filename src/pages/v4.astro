@@ -1,0 +1,403 @@
+---
+// /v4: a candidate home page in Folio (docs/DESIGN-LANGUAGE.md), with the content of the current privaini.com home
+// page (as captured on 2026-11-10) under /v3's hero. Every word below the hero is the live page's; the design,
+// the hairline drawings and the scroll scenes are Folio's (src/scripts/folio-v4.ts). The nav and footer carry the
+// live page's entries. Kept out of search results while it is a candidate.
+import '@fontsource-variable/urbanist/wght-italic.css';
+import Base from '@/layouts/Base.astro';
+import Hero from '@/components/folio/Hero.astro';
+import Lines from '@/components/folio/Lines.astro';
+import RiskPicture from '@/components/folio/RiskPicture.astro';
+import FolioFooter from '@/components/folio/FolioFooter.astro';
+import { enforcement, settlements, sampleFindings, sampleReport } from '@/data/findings';
+import { solutions, partners, DEMO_URL } from '@/data/site';
+import { customerLogos } from '@/data/logos';
+import { quotes } from '@/data/quotes';
+
+// the live page's nav: Risk Intelligence and Platform as pages, Solutions and Partners as menus
+const nav = [
+  { label: 'Risk Intelligence', href: '/risk-intelligence' },
+  { label: 'Platform', href: '/platform-overview' },
+  { label: 'Solutions', href: '/solutions', items: solutions },
+  { label: 'Partners', href: '/partner-program', items: partners },
+  { label: 'Company', href: '/about-us' },
+  { label: 'Resources', href: '/resources' },
+];
+
+// enforcement: the headline figure, then three more; each counts up once (the motion layer reads data-count and
+// its format, src/scripts/motion.ts)
+const [fines, ...stats] = enforcement;
+const count = (e: (typeof enforcement)[number]) => ({
+  'data-count': String(e.count), 'data-prefix': e.prefix, 'data-suffix': e.suffix, 'data-decimals': e.decimals ? String(e.decimals) : undefined,
+});
+// "Kaiser $46M" → name and amount
+const deals = settlements.map((s) => { const i = s.search(/[$€]/); return { name: s.slice(0, i).trim(), amount: s.slice(i) }; });
+
+// the institutions that price cyber risk: a figure, what it counts, and a tally of the whole it is part of
+const institutions = [
+  { n: 4, of: 'of top 10', what: 'Cyber Insurers', total: 10 },
+  { n: 2, of: 'of top 3', what: 'Brokers', total: 3 },
+  { n: 90, of: 'countries of', what: 'Customer Operations', total: 90 },
+];
+
+const viaquest = quotes.viaquest;
+// the quotation's last sentence takes the italic line
+const qSplit = viaquest.text.lastIndexOf('It’s');
+const [qa, qb] = [viaquest.text.slice(0, qSplit), viaquest.text.slice(qSplit)];
+
+// findings
+const steps = [
+  { title: 'Findings', text: 'Get detailed, evidence-backed findings based on observations from your markets and the statutes that apply to your company.' },
+  { title: 'Exposure', text: 'Understand potential regulatory fines exposure from enforcement agencies and consumer exposure arising from litigation.' },
+  { title: 'Remediation', text: 'Get recommendations to remediate findings and a phased plan. Each phase maps to quantified reduction to potential risk exposure.' },
+];
+const f1 = sampleFindings[0];
+
+// built for every team: the four the live page shows, each with its own hairline mark
+const href = (label: string) => solutions.find((s) => s.label === label)?.href ?? '/solutions';
+const teams = [
+  { label: 'Enterprises', note: 'Find the gaps between policy and practice.', icon: 'M4 4h10v10H4zM18 4h10v10H18zM4 18h10v10H4zM18 18h10v10H18z', mark: 'M18 18h10v10H18z' },
+  { label: 'Insurers', note: 'Spot privacy loss drivers before claims surface.', icon: 'M16 3 28 7V16L16 29 4 16V7ZM10.5 15.5l4 4 7-8', mark: 'M10.5 15.5l4 4 7-8' },
+  { label: 'Law Firms', note: 'See the evidence plaintiffs’ counsel already scanned.', icon: 'M16 4V27M9 27H23M5 9H27M5 9 2 18H8ZM27 9 24 18H30Z', mark: 'M16 4V27' },
+  { label: 'M&A Advisors', note: 'Find privacy & AI risk before it impacts the deal outcome.', icon: 'M4 11h15v15H4zM13 6h15v15H13z', mark: 'M13 11h6v10h-6z' },
+].map((t) => ({ ...t, href: href(t.label) }));
+---
+<Base
+  title="Privaini | Privacy & AI Risk Intelligence Platform"
+  description="See privacy and AI risk the way regulators and litigators do, outside-in, from your domain alone. Continuous monitoring across 90 countries and 20 US states."
+  bodyClass="home"
+  folio
+  noindex
+  nav={nav}
+>
+  <div data-folio>
+    <!-- the hero, as on /v3 -->
+    <Hero primary={{ label: 'See your exposure', href: DEMO_URL }} secondary={{ label: 'Look through the lens', href: '#preview' }} />
+
+    <!-- privacy enforcement is routine: the figure, three more, the settlements, and why -->
+    <section class="enf is-stone f-section has-lines" id="enforcement" aria-labelledby="enf-h">
+      <Lines kind="stairs" class="enf-lines" />
+      <div class="wrap">
+        <div class="f-head" data-reveal-group>
+          <h2 id="enf-h" class="f-h2" data-split>Privacy enforcement<br /><em>is routine.</em></h2>
+        </div>
+        <p class="enf-fig" data-reveal>
+          <span class="f-figure" {...count(fines)}>{fines.figure}</span>
+          <span class="f-em enf-of">{fines.label}</span>
+        </p>
+        <dl class="enf-stats" data-reveal-group>
+          {stats.map((e) => (
+            <div data-reveal><dt class="f-title" {...count(e)}>{e.figure}</dt><dd class="f-small">{e.label}</dd></div>
+          ))}
+        </dl>
+      </div>
+      <div class="ticker" role="region" aria-label="Recent privacy settlements">
+        {[0, 1].map((c) => (
+          <ul role="list" class="tk-set" aria-hidden={c === 1 ? 'true' : undefined}>
+            {deals.map((d) => <li><span class="tk-name">{d.name}</span> <span class="tk-amt f-em">{d.amount}</span></li>)}
+          </ul>
+        ))}
+      </div>
+      <div class="wrap enf-close" data-reveal-group>
+        <p class="enf-p f-title" data-reveal>Most enforcement actions hit companies that didn’t see them coming. It’s become a recurring cost of doing business online, <em>and it’s accelerating.</em></p>
+        <a class="f-link" href={DEMO_URL} data-reveal>Find out if your company is exposed <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <!-- the institutions that price cyber risk -->
+    <section class="inst is-night f-section" id="institutions" data-nav-dark aria-labelledby="inst-h">
+      <div class="wrap">
+        <div class="f-head" data-reveal-group>
+          <h2 id="inst-h" class="f-h2" data-split>The institutions that price<br /><em>cyber risk choose Privaini.</em></h2>
+        </div>
+        <ul class="inst-list" role="list" data-reveal-group>
+          {institutions.map((t) => (
+            <li data-reveal>
+              <p class="f-figure inst-n" data-count={String(t.n)}>{t.n}</p>
+              <p class="inst-of"><span class="f-caption">{t.of}</span><span class="f-title">{t.what}</span></p>
+              {t.total <= 10 ? (
+                <svg class="tally tally--cells" data-lines viewBox={`0 0 ${t.total * 18 - 6} 12`} aria-hidden="true" focusable="false">
+                  {Array.from({ length: t.total }, (_, i) => <rect class:list={{ lit: i < t.n }} style={`--i: ${i}`} x={i * 18 + 0.5} y="0.5" width="11" height="11" />)}
+                </svg>
+              ) : (
+                <svg class="tally tally--ticks" data-lines viewBox={`0 0 ${t.total * 5 - 3} 16`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                  {Array.from({ length: t.total }, (_, i) => <rect class="lit" style={`--i: ${i}`} x={i * 5} y={i % 10 === 9 ? 0 : 6} width="2" height={i % 10 === 9 ? 16 : 10} />)}
+                </svg>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- trusted by, and a customer's words -->
+    <section class="trust is-stone f-section" id="trusted" aria-labelledby="trust-h">
+      <div class="wrap"><p id="trust-h" class="f-caption trust-cap">Trusted by leading insurers &amp; enterprises</p></div>
+      <div class="mq">
+        {[0, 1].map((c) => (
+          <ul role="list" class="mq-set" aria-hidden={c === 1 ? 'true' : undefined}>
+            {customerLogos.map((l) => <li><img class:list={{ boxed: l.boxed }} src={l.src} alt={c === 0 ? l.name : ''} width="160" height="116" loading="lazy" decoding="async" /></li>)}
+          </ul>
+        ))}
+      </div>
+      <figure class="wrap quote" data-reveal-group>
+        <figcaption class="q-by" data-reveal>
+          <i class="q-rule" aria-hidden="true"></i>
+          <span class="q-role">{viaquest.name}</span>
+          <span class="q-org">{viaquest.org}</span>
+        </figcaption>
+        <div class="q-main">
+          <blockquote class="q-text" data-reveal>“{qa}<em>{qb}</em>”</blockquote>
+          <a class="f-link" href={viaquest.href} data-reveal>See how ViaQuest uses Privaini <span aria-hidden="true">→</span></a>
+        </div>
+      </figure>
+    </section>
+
+    <!-- from your company name and website, your risk picture: played as the chapter holds -->
+    <section class="pic is-night" id="risk-picture" data-nav-dark aria-labelledby="pic-h">
+      <div class="wrap f-section pic-head">
+        <div class="f-head f-head--split" data-reveal-group>
+          <h2 id="pic-h" class="f-h2" data-split>From your company name<br />and website, we deliver<br /><em>your risk picture.</em></h2>
+          <div class="pic-side" data-reveal>
+            <p class="f-lead">Privaini delivers evidence-backed findings, exposure, and remediation, mapped to the statutes that apply to you.</p>
+            <div class="pic-btns">
+              <a class="f-btn f-btn--cyan" href={DEMO_URL}>See Your Exposure</a>
+              <a class="f-btn f-btn--line" href="#preview">Preview</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pic-scene" id="preview" data-pic-scene>
+        <div class="wrap"><RiskPicture /></div>
+      </div>
+    </section>
+
+    <!-- findings, mapped to statutes -->
+    <section class="fnd is-stone f-section" id="findings" aria-labelledby="fnd-h">
+      <div class="wrap">
+        <div class="f-head fnd-head" data-reveal-group>
+          <p class="fnd-eyebrow" data-reveal>Findings</p>
+          <h2 id="fnd-h" class="f-h2" data-split>Findings mapped to statutes<br />applicable to you.<br /><em>Reproducible. Timestamped.</em></h2>
+          <p class="f-lead" data-reveal>Monitor your digital assets for privacy and AI risk across your markets and understand your regulatory and consumer exposure. Remediate and reduce your risk prioritized by your markets.</p>
+        </div>
+        <div class="fnd-grid">
+          <ol class="fnd-steps" role="list" data-fnd-line>
+            {steps.map((s) => (
+              <li data-fnd-item><i class="node" aria-hidden="true"></i><div><h3 class="f-title fs-t">{s.title}</h3><p class="f-small fs-p">{s.text}</p></div></li>
+            ))}
+          </ol>
+          <div class="fnd-side" data-reveal>
+            <div class="fc is-night">
+              <div class="fc-head"><p class="fc-t">Findings</p><p class="fc-sub">{sampleReport.findings} findings are impacting {sampleReport.markets} markets</p></div>
+              <div class="fc-row">
+                <p class="fc-meta"><span>{f1.id}</span><span class="fc-sev">High</span><span>{f1.law}</span></p>
+                <p class="fc-title">{f1.title}</p>
+              </div>
+              <div class="fc-row fc-law">
+                <p class="fc-label">Statute</p>
+                <p class="fc-statute">{f1.statute}</p>
+                <p class="fc-exp">Est. Exposure <span>${f1.low}M</span></p>
+              </div>
+            </div>
+            <p class="fnd-valid"><span class="fv-mark" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2.5 6.5 5 9 9.5 3" /></svg></span>{sampleReport.validated}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- built for every team with privacy exposure -->
+    <section class="teams is-night f-section" id="teams" data-nav-dark aria-labelledby="teams-h">
+      <div class="wrap teams-grid">
+        <div class="f-head teams-head" data-reveal-group>
+          <h2 id="teams-h" class="f-h2" data-split>Built for every<br />team with<br /><em>privacy exposure.</em></h2>
+        </div>
+        <ul class="teams-cards" role="list" data-reveal-group>
+          {teams.map((t) => (
+            <li data-reveal>
+              <a class="tc" href={t.href}>
+                <svg class="tc-icon" data-lines viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path class="tc-mark" d={t.mark} /><path class="tc-line" d={t.icon} pathLength="1" /></svg>
+                <span class="tc-copy"><span class="f-title tc-name">{t.label}</span><span class="f-small">{t.note}</span></span>
+                <span class="f-link tc-go">Learn more <span aria-hidden="true">→</span></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- your exposure is already visible: the lens, one last time -->
+    <section class="cta4 is-stone has-lines" id="exposure" aria-labelledby="cta-h">
+      <Lines kind="lens" class="cta-lens" />
+      <div class="wrap cta-in" data-reveal-group>
+        <h2 id="cta-h" class="f-h2" data-split>Your exposure is already visible.<br /><em>See it before they do.</em></h2>
+        <p class="f-lead" data-reveal>No sales pitch. No questionnaires. No IT lift. Just your domain name.</p>
+        <a class="f-btn f-btn--cyan" href={DEMO_URL} data-reveal>See Your Exposure <span aria-hidden="true">→</span></a>
+        <p class="cta-points" data-reveal>No generic alerts · No installation · Domain name only · Statute-mapped findings</p>
+      </div>
+    </section>
+  </div>
+
+  <FolioFooter slot="footer" />
+</Base>
+
+<script>
+  import { mountFolioV4 } from '@/scripts/folio-v4';
+  const root = document.querySelector<HTMLElement>('[data-folio]');
+  if (root) mountFolioV4(root);
+</script>
+
+<style>
+  /* the hero and its styles: src/components/folio/Hero.astro */
+
+  /* ---- enforcement ---- */
+  .enf { margin-top: -2px; z-index: 1; padding-bottom: clamp(72px, 8vw, 128px); }
+  /* the chapter's hairline: a staircase climbing behind the figure, its steps taller as it rises */
+  .enf :global(svg.enf-lines) { right: var(--inset); top: clamp(220px, 20vw, 330px); width: min(50vw, 720px); height: clamp(200px, 22vw, 340px); }
+  .enf-fig { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 8px 28px; margin: 0 0 clamp(48px, 5vw, 80px); }
+  .enf-fig .f-figure { font-variant-numeric: tabular-nums; }
+  .enf-of { font-size: clamp(18px, 1.6vw, 24px); max-width: 24ch; padding-bottom: 0.7em; }
+  .enf-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); margin: 0; }
+  .enf-stats div { display: grid; gap: 8px; padding-top: 18px; border-top: 1px solid var(--on-stone-line); }
+  .enf-stats dt { font-variant-numeric: tabular-nums; }
+  .enf-stats dd { margin: 0; max-width: 30ch; }
+  .ticker { display: flex; overflow: hidden; margin-top: clamp(56px, 6vw, 96px); border-block: 1px solid var(--on-stone-line); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .tk-set { display: flex; flex: none; list-style: none; margin: 0; padding: 22px 0; animation: tk 60s linear infinite; }
+  .ticker:hover .tk-set { animation-play-state: paused; }
+  @keyframes tk { to { transform: translateX(-100%); } }
+  .tk-set li { display: flex; align-items: baseline; gap: 0.4em; white-space: nowrap; font-size: clamp(24px, 2.4vw, 38px); letter-spacing: -0.03em; }
+  .tk-set li::after { content: '·'; margin-inline: clamp(28px, 3vw, 56px); color: var(--on-stone-line); }
+  .tk-amt { font-variant-numeric: tabular-nums; }
+  .enf-close { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 28px; margin-top: clamp(56px, 6vw, 96px); }
+  .enf-p { grid-column: 4 / span 8; margin: 0; font-weight: 300; line-height: 1.25; }
+  .enf-close .f-link { grid-column: 4 / span 8; justify-self: start; }
+
+  /* ---- the institutions ---- */
+  .inst-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
+  .inst-list li { display: grid; align-content: start; gap: 22px; padding-top: 28px; border-top: 1px solid var(--on-night-line); }
+  .inst-n { font-size: clamp(110px, 13vw, 210px); font-variant-numeric: tabular-nums; }
+  .inst-of { display: grid; gap: 6px; margin: 0; }
+  .inst-of .f-caption { text-transform: uppercase; letter-spacing: 0.12em; }
+  /* a tally of the whole: ten squares, four lit; three, two lit; ninety ticks, every one lit */
+  .tally { display: block; overflow: visible; }
+  .tally--cells { height: 14px; width: auto; max-width: 100%; }
+  .tally--ticks { width: min(100%, 420px); height: 18px; }
+  .tally rect { fill: none; stroke: var(--on-night-line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .tally .lit { fill: var(--cyan); stroke: var(--cyan); transition: fill 0.4s, stroke 0.4s, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); transition-delay: calc(var(--i) * 90ms + 200ms); }
+  .tally--ticks .lit { fill: var(--cyan-soft); stroke: none; transform-box: fill-box; transform-origin: 50% 100%; transition-delay: calc(var(--i) * 12ms + 200ms); }
+  .tally.is-armed:not(.on) .lit { fill: transparent; stroke: var(--on-night-line); }
+  .tally--ticks.is-armed:not(.on) .lit { transform: scaleY(0); }
+
+  /* ---- trusted by, and the quotation ---- */
+  .trust-cap { text-transform: uppercase; letter-spacing: 0.14em; margin: 0 0 28px; }
+  .mq { display: flex; overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .mq-set { display: flex; align-items: center; flex: none; gap: clamp(36px, 4vw, 72px); padding-right: clamp(36px, 4vw, 72px); list-style: none; margin: 0; animation: tk 70s linear infinite; }
+  .mq:hover .mq-set { animation-play-state: paused; }
+  .mq img { display: block; height: 72px; width: auto; filter: grayscale(1) contrast(1.15); mix-blend-mode: multiply; opacity: 0.75; }
+  /* a logo set in a box of its own colour (white on red): turned over, so its box drops away like the others' grounds */
+  .mq img.boxed { filter: grayscale(1) invert(1) contrast(1.3); }
+  .quote { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 28px; margin: clamp(80px, 9vw, 150px) auto 0; }
+  .q-by { grid-column: 1 / span 3; display: grid; gap: 6px; align-content: start; padding-top: 0.5em; }
+  .q-rule { width: 40px; height: 1px; background: var(--teal); margin-bottom: 18px; }
+  .q-role { font-size: 14px; color: var(--on-stone); }
+  .q-org { font: 500 12.5px/1.4 var(--font); letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); }
+  .q-main { grid-column: 4 / span 9; display: grid; gap: 36px; justify-items: start; }
+  .q-text { margin: 0; font: 300 clamp(28px, 3.1vw, 50px)/1.16 var(--font); letter-spacing: -0.035em; color: var(--on-stone); text-wrap: pretty; }
+  .q-text em { font-style: italic; color: var(--teal); }
+
+  /* ---- the risk picture ---- */
+  .pic-head { padding-bottom: clamp(32px, 4vw, 64px); }
+  .pic-head .f-h2 { font-size: clamp(38px, 4.9vw, 80px); }
+  .pic-side { display: grid; gap: 28px; justify-items: start; }
+  .pic-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .pic-scene { padding-bottom: clamp(80px, 9vw, 150px); }
+  @media (min-width: 1100px) {
+    /* held while it plays: the plate sits in the middle of the screen */
+    .pic-scene { height: 100svh; display: grid; align-content: center; padding: var(--nav-h) 0 24px; }
+  }
+
+  /* ---- findings ---- */
+  .fnd-eyebrow { margin: 0; font: 500 15px/1.4 var(--font); color: var(--teal); }
+  .fnd-head .f-lead { max-width: 58ch; }
+  .fnd-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(40px, 6vw, 112px); align-items: start; }
+  /* Findings → Exposure → Remediation: --p (0 to 1) draws the teal line down the grey one as the chapter scrolls
+     by (src/scripts/folio-v4.ts), and each step lights as the line reaches it */
+  .fnd-steps { --p: 1; position: relative; list-style: none; margin: 0; padding: 0; display: grid; gap: 40px; }
+  .fnd-steps::before, .fnd-steps::after { content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 1px; }
+  .fnd-steps::before { background: var(--on-stone-line); }
+  .fnd-steps::after { background: var(--teal); transform: scaleY(var(--p)); transform-origin: top; }
+  .fnd-steps li { display: grid; grid-template-columns: 13px 1fr; gap: 24px; align-items: start; }
+  .fnd-steps .node { position: relative; z-index: 1; width: 13px; height: 13px; margin-top: 8px; border: 1px solid var(--teal); background: var(--teal); transition: background-color 0.4s, border-color 0.4s; }
+  .fs-t { margin: 0 0 8px; }
+  .fs-p { margin: 0; max-width: 46ch; font-size: 16px; }
+  .fnd-steps.is-armed li:not(.on) .node { background: var(--stone); border-color: color-mix(in srgb, var(--on-stone) 28%, transparent); }
+  .fnd-steps.is-armed li > div { transition: opacity 0.7s var(--ease-edit), translate 0.9s var(--ease-edit); }
+  .fnd-steps.is-armed li:not(.on) > div { opacity: 0.25; translate: 0 14px; }
+  .fnd-side { display: grid; gap: 18px; }
+  .fc { border: 1px solid var(--on-night-line); background: var(--night); }
+  .fc p { margin: 0; }
+  .fc-head { display: grid; gap: 6px; padding: 24px 28px; background: var(--night-2); border-bottom: 1px solid var(--on-night-line); }
+  .fc-t { font-size: 18px; font-weight: 500; }
+  .fc-sub { font-size: 14px; color: var(--on-night-muted); }
+  .fc-row { display: grid; gap: 10px; padding: 24px 28px; }
+  .fc-row + .fc-row { border-top: 1px solid var(--on-night-line); }
+  .fc-meta { display: flex; align-items: center; gap: 14px; font: 500 13px/1 var(--font); letter-spacing: 0.04em; }
+  .fc-sev { padding: 5px 9px; background: var(--on-night); color: var(--night); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+  .fc-title { font-size: 17px; color: var(--on-night); }
+  .fc-label { font: 500 11.5px/1 var(--font); letter-spacing: 0.14em; text-transform: uppercase; color: var(--on-night-muted); }
+  .fc-statute { font: 300 clamp(44px, 4.6vw, 72px)/1 var(--font); letter-spacing: -0.05em; color: var(--on-night); }
+  .fc-exp { font-size: 15px; color: var(--on-night-muted); }
+  .fc-exp span { color: var(--cyan-soft); font-weight: 500; }
+  .fnd-valid { display: flex; align-items: center; gap: 12px; margin: 0; font-size: 14px; color: var(--on-stone); }
+  .fv-mark { flex: none; display: grid; place-items: center; width: 16px; height: 16px; background: var(--teal); }
+  .fv-mark svg { width: 80%; height: 80%; overflow: visible; }
+  .fv-mark path { fill: none; stroke: var(--stone); stroke-width: 1.6; stroke-linecap: square; }
+
+  /* ---- built for every team ---- */
+  .teams-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 48px; align-items: end; }
+  .teams-head { grid-column: 1 / span 5; margin-bottom: 0; align-self: end; }
+  /* it breaks as the live page does: "Built for every / team with / privacy exposure." */
+  .teams-head .f-h2 { font-size: clamp(38px, 4.3vw, 70px); }
+  .teams-cards { grid-column: 6 / -1; list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+  .tc {
+    display: grid; grid-template-rows: auto 1fr auto; gap: 28px; min-height: clamp(230px, 20vw, 290px); padding: clamp(24px, 2.4vw, 36px);
+    background: var(--night-2); border: 1px solid var(--on-night-line); transition: background-color 0.45s var(--ease-edit), border-color 0.45s;
+  }
+  .tc:hover, .tc:focus-visible { background: #172022; border-color: color-mix(in srgb, var(--on-night) 34%, transparent); }
+  .tc-icon { width: 40px; height: 40px; overflow: visible; }
+  .tc-line { fill: none; stroke: var(--cyan-soft); stroke-width: 1.2; stroke-linejoin: miter; stroke-linecap: square; stroke-dasharray: 1 1; transition: stroke-dashoffset 1.4s var(--ease-edit) 0.2s; }
+  .tc-icon.is-armed:not(.on) .tc-line { stroke-dashoffset: 1; }
+  .tc-mark { fill: none; stroke: none; transition: fill 0.4s; }
+  .tc:hover .tc-mark { fill: rgba(103, 214, 230, 0.22); }
+  .tc-copy { display: grid; gap: 10px; align-content: start; }
+  .tc-name { font-size: clamp(26px, 2.2vw, 34px); }
+  .tc-go { justify-self: start; font-size: 14px; }
+  .tc:hover .tc-go { background-size: 0% 1px; background-position: 100% 100%; }
+
+  /* ---- your exposure is already visible ---- */
+  .cta4 { min-height: min(100svh, 980px); display: grid; align-items: center; padding-block: clamp(120px, 12vw, 200px); overflow: hidden; }
+  /* the lens, one last time: the page's one round drawing, behind the headline */
+  .cta4 :global(svg.cta-lens) { left: 50%; top: 50%; width: min(82svh, 74vw, 860px); aspect-ratio: 1; translate: -50% -50%; color: color-mix(in srgb, var(--teal) 34%, transparent); }
+  .cta-in { display: grid; justify-items: center; gap: 28px; text-align: center; }
+  .cta-in .f-h2 { font-size: clamp(36px, 5vw, 80px); }
+  .cta-in .f-lead { max-width: none; }
+  .cta-points { margin: 12px 0 0; font-size: 13px; letter-spacing: 0.04em; color: var(--on-stone-muted); }
+
+  /* ---- narrow screens: nothing pins, everything stacks ---- */
+  @media (max-width: 899px) {
+    .enf-stats, .inst-list { grid-template-columns: 1fr; }
+    .enf :global(svg.enf-lines) { top: auto; bottom: 46%; width: 92vw; height: 160px; opacity: 0.8; }
+    .enf-p, .enf-close .f-link { grid-column: 1 / -1; }
+    .q-by, .q-main { grid-column: 1 / -1; }
+    .q-by { order: 2; }
+    .fnd-grid { grid-template-columns: 1fr; }
+    .teams-head, .teams-cards { grid-column: 1 / -1; }
+    .mq img { height: 56px; }
+  }
+  @media (max-width: 600px) {
+    .teams-cards { grid-template-columns: 1fr; }
+    .tc { min-height: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .tk-set, .mq-set { animation: none; }
+  }
+</style>

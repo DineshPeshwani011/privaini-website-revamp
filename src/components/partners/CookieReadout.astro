@@ -1,0 +1,87 @@
+---
+// Cookie settings as a live readout: what this page has actually stored in, and asked of, the
+// visitor's browser, read in the browser when the page runs. Nothing here is simulated.
+---
+<div class="cr" data-ui data-cookie-readout role="group" aria-label="What this page stores in your browser">
+  <div class="ui-head">
+    <div class="who">
+      <span class="ui-label">Cookie settings</span>
+      <span class="ui-mono host" data-cr-host>privaini.com</span>
+    </div>
+    <span class="ui-mono ui-muted" data-cr-time>live check</span>
+  </div>
+  <ul role="list" class="rows" aria-live="polite">
+    <li class="ui-row" data-cr="cookies"><span class="lbl">Cookies readable on this page</span><span class="val">—</span></li>
+    <li class="ui-row" data-cr="local"><span class="lbl">Local storage entries</span><span class="val">—</span></li>
+    <li class="ui-row" data-cr="session"><span class="lbl">Session storage entries</span><span class="val">—</span></li>
+    <li class="ui-row" data-cr="third"><span class="lbl">Third-party hosts contacted</span><span class="val">—</span></li>
+    <li class="ui-row" data-cr="gpc"><span class="lbl">Global Privacy Control</span><span class="val">—</span></li>
+  </ul>
+  <div class="result">
+    <div class="ui-kv">
+      <span class="ui-label">Preferences to manage</span>
+      <span class="ui-value big" data-cr-result>—</span>
+    </div>
+    <button class="ui-btn" type="button" data-cr-again>Check again</button>
+  </div>
+  <noscript><p class="ns ui-muted">This check runs in your browser and needs JavaScript.</p></noscript>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-cookie-readout]');
+  if (root) {
+    root.querySelector('[data-cr-host]')!.textContent = location.host || 'privaini.com';
+
+    const count = (store: () => Storage) => {
+      try { return store().length; } catch { return 0; }
+    };
+
+    const run = () => {
+      const cookies = document.cookie ? document.cookie.split(';').filter((c) => c.trim()).length : 0;
+      const local = count(() => window.localStorage);
+      const session = count(() => window.sessionStorage);
+      const hosts = new Set<string>();
+      (performance.getEntriesByType('resource') as PerformanceResourceTiming[]).forEach((e) => {
+        try { const h = new URL(e.name).host; if (h && h !== location.host) hosts.add(h); } catch {}
+      });
+      const gpc = (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl === true;
+
+      const set = (key: string, val: string, state: 'ok' | 'bad' | 'info') => {
+        const row = root.querySelector<HTMLElement>(`[data-cr="${key}"]`)!;
+        row.dataset.state = state;
+        row.querySelector('.val')!.textContent = val;
+      };
+      set('cookies', String(cookies), cookies ? 'bad' : 'ok');
+      set('local', String(local), local ? 'bad' : 'ok');
+      set('session', String(session), session ? 'bad' : 'ok');
+      set('third', String(hosts.size), hosts.size ? 'bad' : 'ok');
+      set('gpc', gpc ? 'Sent · honored' : 'Not sent by this browser', gpc ? 'ok' : 'info');
+
+      const found = cookies + local + session + hosts.size;
+      root.querySelector('[data-cr-result]')!.textContent = found ? `${found} item${found > 1 ? 's' : ''} to review` : 'None';
+      root.querySelector('[data-cr-time]')!.textContent = new Date().toISOString().slice(11, 19) + ' UTC';
+    };
+
+    if (document.readyState === 'complete') run(); else addEventListener('load', run, { once: true });
+    root.querySelector('[data-cr-again]')!.addEventListener('click', run);
+  }
+</script>
+
+<style>
+  .cr { width: 100%; max-width: 500px; box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.8); }
+  .who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .host { color: var(--ui-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rows .ui-row { grid-template-columns: 1fr auto; }
+  .lbl { font-size: 14px; color: var(--ui-text); }
+  .val { font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--ui-muted); text-align: right; }
+  [data-state='ok'] .val { color: var(--low); }
+  [data-state='bad'] .val { color: var(--high); }
+  [data-state='info'] .val { color: var(--ui-text); }
+  .result {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 14px 16px; border-top: 1px solid var(--ui-line); background: var(--ui-bg-2);
+    border-radius: 0 0 var(--ui-radius) var(--ui-radius);
+  }
+  .big { font-size: 22px; color: var(--accent-hi); }
+  .ns { padding: 12px 16px; border-top: 1px solid var(--ui-line); font-size: 12.5px; }
+</style>

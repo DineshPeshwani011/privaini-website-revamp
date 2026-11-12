@@ -1,0 +1,44 @@
+---
+import Base from '@/layouts/Base.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import HairlineField from '@/components/hairline/HairlineField.astro';
+---
+<Base title="Page not found | Privaini" noindex>
+  <section class="nf has-field">
+    <HairlineField at={{ x: 0.78, y: 0.5 }} signals={['404', 'not found', 'no trackers', 'no statute']} />
+    <div class="wrap grid">
+      <div class="copy" data-reveal-group>
+        <h1 data-split data-split-now>Nothing observed at this address.</h1>
+        <p class="t-lead" data-reveal>The page you asked for isn’t here. It may have moved when the site was rebuilt.</p>
+        <div class="actions" data-reveal>
+          <a class="btn" href="/">Go to the home page <span class="arrow">→</span></a>
+          <a class="btn btn--ghost" href="/blog">Read the blog</a>
+        </div>
+      </div>
+      <div class="panel" data-reveal>
+        <StatusPanel
+          title="Page check"
+          subject="privaini.com"
+          rows={[
+            { label: 'Requested page', value: 'not found', state: 'warn' },
+            { label: 'Trackers on this page', value: 'none', state: 'ok' },
+            { label: 'Statute triggered', value: 'none', state: 'ok' },
+          ]}
+          total={{ label: 'Status', value: '404' }}
+        />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf { min-height: 100svh; display: grid; align-items: center; padding-block: calc(var(--nav-h) + 48px) 96px; }
+  .copy { grid-column: 1 / span 7; display: grid; gap: 28px; justify-items: start; }
+  .copy h1 { font-size: clamp(40px, 5vw, 84px); }
+  .copy .t-lead { color: var(--muted); }
+  .panel { grid-column: 9 / span 4; }
+  @media (max-width: 960px) {
+    .copy, .panel { grid-column: 1 / -1; }
+    .panel { margin-top: 48px; }
+  }
+</style>

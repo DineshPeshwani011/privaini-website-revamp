@@ -1,0 +1,56 @@
+---
+// One statute page (VPPA, BIPA, CCPA/CPRA, GDPR, COPPA, CIPA, state laws). The page's data lives in
+// src/data/platform-statutes.ts; anything specific to one statute (the VPPA exposure slider) goes in the
+// default slot and lands after "Who faces … exposure".
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PointList from '@/components/PointList.astro';
+import FactGrid from '@/components/FactGrid.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import RelatedStatutes from './RelatedStatutes.astro';
+import { statutes, type StatuteSlug } from '@/data/platform-statutes';
+interface Props { slug: StatuteSlug }
+const s = statutes[Astro.props.slug];
+---
+<Base title={s.meta.title} description={s.meta.description}>
+  <PageHero title={s.hero.title} lead={s.hero.lead}>
+    <StatusPanel title={s.panel.title} rows={s.panel.rows} total={s.panel.total} note={s.act} />
+  </PageHero>
+
+  <section class="section" aria-labelledby="guide-h">
+    <div class="wrap">
+      <SectionHead id="guide-h" title={s.guide.heading} text={s.guide.text} />
+      <PointList variant="index" items={s.guide.items} />
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="pen-h">
+    <div class="wrap">
+      <SectionHead id="pen-h" title={s.penalties.heading} text={s.penalties.text} />
+      <FactGrid items={s.penalties.items} />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="who-h">
+    <div class="wrap">
+      <SectionHead id="who-h" title={s.who.heading} />
+      <PointList variant="columns" cols={s.who.items.length === 3 ? 3 : 2} items={s.who.items} />
+      <p class="close" data-reveal>{s.who.note}</p>
+    </div>
+  </section>
+
+  <slot />
+
+  <RelatedStatutes current={s.slug} />
+
+  <CtaBlank after="From your domain name to statute-mapped findings. No sales pitch, no questionnaires, no IT lift." />
+</Base>
+
+<style>
+  .close {
+    margin-top: clamp(48px, 6vw, 88px); font-size: clamp(20px, 1.6vw, 26px); line-height: 1.35;
+    letter-spacing: -0.015em; font-weight: 500; max-width: 40ch; text-wrap: pretty;
+  }
+</style>

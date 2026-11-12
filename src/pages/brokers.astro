@@ -1,0 +1,143 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PointList from '@/components/PointList.astro';
+import FigureBand from '@/components/solutions/FigureBand.astro';
+import QuoteBlock from '@/components/QuoteBlock.astro';
+import Wordmark from '@/components/Wordmark.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import StatuteMap from '@/components/solutions/StatuteMap.astro';
+import { panels } from '@/data/solutions-panels';
+import { quotes } from '@/data/quotes';
+
+const p = panels.brokers;
+const caseStudyPdf = '/media/docs/privaini-case-study-global-broker.pdf';
+---
+<Base
+  title="Privaini for Brokers"
+  description="Prepare stronger submissions and deliver privacy risk intelligence your clients can't get anywhere else."
+>
+  <PageHero
+    title="Privacy is the new MFA."
+    lead="Win business, and keep it. Prepare stronger submissions and deliver risk intelligence your clients can’t get anywhere else, from a domain name alone."
+  >
+    <StatusPanel title={p.title} subject={p.subject} rows={p.rows} total={p.total} />
+  </PageHero>
+
+  <section class="section" aria-labelledby="why-h">
+    <div class="wrap">
+      <SectionHead
+        id="why-h"
+        title="Win new business. Keep what you have."
+        text="Underwriters are asking about privacy at renewal. Walk in with the answer already prepared."
+      />
+      <PointList
+        variant="tiles"
+        cols={2}
+        items={[
+          { title: 'Better submissions', text: 'Walk into every placement with a privacy risk assessment already done: stronger submissions, better terms.' },
+          { title: 'Client value no one else offers', text: 'Deliver regulator-grade privacy risk intelligence as part of your service. Differentiate every renewal.' },
+          { title: 'Stronger retention', text: 'Annual outside-in assessments give clients a reason to stay. You become the source of their risk picture.' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <StatuteMap
+    id="laws-h"
+    heading="What plaintiffs’ counsel already knows."
+    text="Show it to your clients first. Every exposure below is observable from outside, before the application."
+    subject={p.subject}
+    footnote="Privaini maps each client’s exposure across all applicable regulations, from one assessment."
+    items={[
+      { law: 'VPPA', penalty: '$11.5M avg settlement', text: 'Video content on client sites creates VPPA exposure. Identify it before the application.', href: '/vppa' },
+      { law: 'Wiretapping / CIPA', penalty: '300%+ claim surge 2022–24', text: 'Session replay and chat widgets on client sites trigger CIPA claims.', href: '/wiretapping-cipa', linkLabel: 'See CIPA exposure' },
+      { law: 'BIPA', penalty: '$5,000 / violation strict liability', text: 'No breach required. Biometric collection alone triggers liability.', href: '/bipa' },
+      { law: 'CCPA / CPRA', penalty: '$7,500 per violation', text: 'Client consent flows and data practices, observable before application.', href: '/ccpa-cpra' },
+    ]}
+  />
+
+  <section class="section section--raised" aria-labelledby="market-h">
+    <div class="wrap">
+      <SectionHead
+        id="market-h"
+        title="The market moved. Submissions haven’t."
+        text="Underwriters are pricing privacy risk. Brokers who bring it win the placement."
+      />
+      <FigureBand
+        items={[
+          { figure: '$7B+', count: 7, prefix: '$', suffix: 'B+', label: 'in global privacy fines and settlements since 2020', href: '/privacy-risk-gap', linkLabel: 'Enforcement' },
+          { figure: '78%', count: 78, suffix: '%', label: 'privacy litigation surge, 2020–2024', href: '/privacy-risk-gap', linkLabel: 'Court records' },
+          { figure: '$11.5M', count: 11.5, decimals: 1, prefix: '$', suffix: 'M', label: 'average BIPA & VPPA settlement', href: '/privacy-risk-gap', linkLabel: 'Settlements' },
+          { figure: '300%+', count: 300, suffix: '%+', label: 'CIPA claim surge, 2022–24', href: '/privacy-risk-gap', linkLabel: 'Case data' },
+        ]}
+      />
+      <div class="said">
+        <QuoteBlock quote={quotes.wtw} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section case" aria-labelledby="case-h">
+    <div class="wrap grid">
+      <a class="cover" href={caseStudyPdf} data-reveal aria-hidden="true" tabindex="-1">
+        <div class="paper ui-paper" data-ui>
+          <div class="top">
+            <Wordmark size="sm" />
+            <span class="kind">Case study</span>
+          </div>
+          <p class="doc-title">A top-3 global broker makes privacy the new placement edge</p>
+          <div class="bottom">
+            <span>Privacy risk assessment inside application prep</span>
+            <span class="ui-muted">PDF · 13 pages</span>
+          </div>
+        </div>
+      </a>
+      <div class="copy" data-reveal-group>
+        <h2 id="case-h" data-split>The full broker case study.</h2>
+        <p class="t-lead" data-reveal>A top-3 global broker makes privacy the new placement edge.</p>
+        <p class="more" data-reveal>
+          The complete study: privacy risk assessment inside application prep, the underwriter questions behind it, and
+          the advisory playbook.
+        </p>
+        <div class="actions" data-reveal>
+          <a class="btn btn--ghost" href={caseStudyPdf} target="_blank" rel="noopener">Download the case study <span aria-hidden="true">↓</span></a>
+          <span class="meta">PDF, 13 pages</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <CtaBlank />
+</Base>
+
+<style>
+  .said { margin-top: clamp(72px, 9vw, 140px); padding-left: calc((100% - 11 * var(--gap)) / 12 * 4 + 4 * var(--gap)); }
+
+  .case .grid { align-items: center; row-gap: 48px; }
+  .cover { grid-column: 2 / span 4; display: block; background: var(--bg-2); border-radius: var(--radius); padding: clamp(28px, 4vw, 64px); }
+  .paper {
+    aspect-ratio: 3 / 4; max-width: 360px; margin-inline: auto; padding: 28px 26px;
+    display: grid; grid-template-rows: auto 1fr auto; gap: 24px;
+    transition: transform 0.5s var(--ease-out);
+  }
+  .cover:hover .paper { transform: translateY(-6px) rotate(-1deg); }
+  .paper :global(.wordmark) { color: #0d1a1d; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .kind { font-size: 13px; font-weight: 600; color: #0a3d47; }
+  .doc-title { align-self: center; font-size: clamp(19px, 1.6vw, 23px); line-height: 1.12; letter-spacing: -0.025em; font-weight: 600; color: #0d1a1d; text-wrap: balance; }
+  .bottom { display: grid; gap: 4px; font-size: 13px; color: #0d1a1d; }
+  .copy { grid-column: 7 / span 5; display: grid; gap: 22px; justify-items: start; }
+  .copy h2 { font-size: clamp(30px, 3.2vw, 50px); }
+  .more { color: var(--muted); font-size: 18px; max-width: 46ch; }
+  .meta { font-size: 15px; color: var(--muted); }
+  @media (max-width: 960px) {
+    .said { padding-left: 0; }
+    .cover, .copy { grid-column: 1 / -1; }
+  }
+  @media (max-width: 480px) {
+    .cover { margin-inline: calc(var(--margin) * -1); border-radius: 0; }
+  }
+</style>

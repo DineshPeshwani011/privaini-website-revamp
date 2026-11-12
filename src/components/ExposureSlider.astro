@@ -1,0 +1,113 @@
+---
+// The figure is the visitor's own: VPPA liquidated damages ($2,500 per violation, 18 U.S.C. §2710(c))
+// multiplied by the number of viewers a video pixel shared without consent.
+interface Props { heading?: string }
+const { heading = 'How many viewers does your video pixel see?' } = Astro.props;
+const steps = [1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000];
+const start = 3;
+---
+<section class="exposure section" data-exposure data-reveal-group>
+  <div class="wrap inner">
+    <div class="top">
+      <h2 class="q" data-reveal>{heading}</h2>
+      <div class="control" data-ui data-reveal>
+        <div class="ctl-head">
+          <label class="ui-label" for="viewers">Viewers tracked without consent, per year</label>
+          <output class="ui-value nums" for="viewers" data-viewers>{steps[start].toLocaleString('en-US')}</output>
+        </div>
+        <input id="viewers" type="range" min="0" max={steps.length - 1} step="1" value={start} data-steps={JSON.stringify(steps)} aria-valuetext={`${steps[start].toLocaleString('en-US')} viewers`} />
+        <div class="ticks ui-mono ui-muted" aria-hidden="true"><span>1K</span><span>10K</span><span>100K</span><span>1M</span></div>
+      </div>
+    </div>
+    <div class="bottom">
+      <p class="figure t-figure nums" aria-live="polite"><span data-figure>$25.0</span><span class="unit" data-unit>M</span></p>
+      <p class="how" data-reveal>
+        The Video Privacy Protection Act sets liquidated damages at $2,500 per violation. Multiply by every viewer whose
+        video activity reached a third party without consent. A statutory ceiling, not a prediction: the average BIPA &amp;
+        VPPA settlement in 2024–2025 was $11.5M.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-exposure]');
+  if (root) {
+    const input = root.querySelector<HTMLInputElement>('input')!;
+    const steps: number[] = JSON.parse(input.dataset.steps!);
+    const out = root.querySelector<HTMLElement>('[data-viewers]')!;
+    const fig = root.querySelector<HTMLElement>('[data-figure]')!;
+    const unit = root.querySelector<HTMLElement>('[data-unit]')!;
+    const fmt = (usd: number) => (usd >= 1e9 ? [`$${(usd / 1e9).toFixed(2)}`, 'B'] : [`$${(usd / 1e6).toFixed(usd >= 1e8 ? 0 : 1)}`, 'M']);
+    let shown = 0;
+    let raf = 0;
+    const paint = (target: number) => {
+      cancelAnimationFrame(raf);
+      const from = shown;
+      const t0 = performance.now();
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const tick = (now: number) => {
+        const k = reduce ? 1 : Math.min(1, (now - t0) / 420);
+        const e = 1 - Math.pow(1 - k, 3);
+        shown = from + (target - from) * e;
+        const [n, u] = fmt(shown);
+        fig.textContent = n;
+        unit.textContent = u;
+        if (k < 1) raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+    };
+    const update = () => {
+      const viewers = steps[+input.value];
+      out.textContent = viewers.toLocaleString('en-US');
+      input.setAttribute('aria-valuetext', `${viewers.toLocaleString('en-US')} viewers`);
+      input.style.setProperty('--p', `${(+input.value / (steps.length - 1)) * 100}%`);
+      paint(viewers * 2500);
+    };
+    input.addEventListener('input', update);
+    update();
+  }
+</script>
+
+<style>
+  .exposure { background: var(--bg-2); }
+  .inner { min-height: min(88svh, 900px); display: grid; grid-template-rows: auto 1fr auto; gap: 48px; }
+  .top { display: grid; gap: 28px; max-width: 760px; }
+  .q { font-size: clamp(32px, 3.2vw, 48px); max-width: 18ch; }
+  .control { width: min(100%, 440px); padding: 18px 18px 14px; }
+  .ctl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+  .ctl-head .ui-value { font-size: 20px; }
+  input[type='range'] {
+    --p: 33%;
+    -webkit-appearance: none; appearance: none; width: 100%; height: 28px; background: transparent; cursor: pointer;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 4px; border-radius: 2px;
+    background: linear-gradient(to right, var(--accent) var(--p), var(--ui-line-2) var(--p));
+  }
+  input[type='range']::-moz-range-track { height: 4px; border-radius: 2px; background: var(--ui-line-2); }
+  input[type='range']::-moz-range-progress { height: 4px; border-radius: 2px; background: var(--accent); }
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 22px; height: 22px; margin-top: -9px; border-radius: 50%;
+    background: var(--ink); border: 4px solid var(--accent); transition: transform 0.2s var(--ease-out);
+  }
+  input[type='range']::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--ink); border: 4px solid var(--accent); }
+  input[type='range']:active::-webkit-slider-thumb { transform: scale(1.15); }
+  .ticks { display: flex; justify-content: space-between; margin-top: 6px; }
+  .bottom { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 40px; }
+  .figure { color: var(--ink); white-space: nowrap; }
+  .unit { font-size: 0.32em; letter-spacing: -0.02em; margin-left: 0.06em; color: var(--accent-hi); }
+  .how { max-width: 34ch; color: var(--muted); font-size: 17px; line-height: 1.5; padding-bottom: 0.6em; }
+  @media (max-width: 1100px) {
+    .inner { min-height: 0; gap: 56px; }
+  }
+  @media (max-width: 760px) {
+    .inner { gap: 40px; }
+    .q { font-size: 26px; }
+    .control { width: 100%; }
+    input[type='range']::-webkit-slider-thumb { width: 30px; height: 30px; margin-top: -13px; }
+    .bottom { grid-template-columns: 1fr; gap: 16px; }
+    .figure { font-size: 25vw; }
+    .how { font-size: 15px; }
+  }
+</style>

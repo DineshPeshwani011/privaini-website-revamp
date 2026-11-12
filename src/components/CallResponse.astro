@@ -1,0 +1,102 @@
+---
+// How it works as an exchange: what you give Privaini, and what comes back.
+import RiskReport from './RiskReport.astro';
+interface Props { heading?: string; sub?: string }
+const {
+  heading = 'From domain name to risk picture.',
+  sub = 'Your domain name in; a statute-mapped risk picture out. No IT access. No questionnaires. No cooperation from the company being assessed.',
+} = Astro.props;
+---
+<section class="cr section" aria-labelledby="cr-h">
+  <div class="wrap">
+    <div class="col" data-reveal-group>
+      <h2 id="cr-h" class="h" data-reveal>{heading}</h2>
+      <p class="sub" data-reveal>{sub}</p>
+    </div>
+
+    <ol class="steps col" role="list">
+      <li class="step" data-reveal-group>
+        <p class="say" data-reveal>First, you name a company. That is the whole setup.</p>
+        <div class="call" data-ui data-reveal>
+          <span class="ui-label">Company or domain</span>
+          <div class="typed"><span class="ui-mono" data-type="your-company.com">your-company.com</span><span class="caret" aria-hidden="true"></span></div>
+        </div>
+        <div class="resp" data-ui data-reveal>
+          <div class="ui-head"><span class="ui-label">Observe · digital footprint</span><span class="ui-mono ui-muted">outside-in</span></div>
+          <ul role="list" class="fp">
+            <li class="ui-row"><span class="ui-dot"></span><span>Primary site, microsites &amp; subdomains</span><span class="ui-mono ui-muted">mapped</span></li>
+            <li class="ui-row"><span class="ui-dot"></span><span>Mobile apps &amp; store listings</span><span class="ui-mono ui-muted">mapped</span></li>
+            <li class="ui-row"><span class="ui-dot"></span><span>Privacy policies &amp; terms</span><span class="ui-mono ui-muted">parsed</span></li>
+            <li class="ui-row"><span class="ui-dot"></span><span>Subsidiaries &amp; operating markets</span><span class="ui-mono ui-muted">resolved</span></li>
+          </ul>
+        </div>
+      </li>
+
+      <li class="step" data-reveal-group>
+        <p class="say" data-reveal>Then we observe what your properties emit, and map each signal to the law.</p>
+        <div class="resp" data-ui data-reveal>
+          <div class="ui-head"><span class="ui-label">Detect · 100+ signals</span><span class="ui-mono ui-muted">90 countries · 20 US states</span></div>
+          <table>
+            <thead><tr><th>Signal</th><th>Statute</th><th>Markets</th></tr></thead>
+            <tbody>
+              <tr><td>47 trackers observed</td><td class="ui-mono">LGPD</td><td><span class="ui-chip" data-sev="high">12 violate</span></td></tr>
+              <tr><td>The same 47 trackers</td><td class="ui-mono">CIPA (CA wiretap)</td><td><span class="ui-chip" data-sev="high">8 exposed</span></td></tr>
+              <tr><td>Video engagement shared</td><td class="ui-mono">VPPA §2710</td><td><span class="ui-chip" data-sev="med">US</span></td></tr>
+              <tr><td>Banner fires on reject</td><td class="ui-mono">GDPR / ePrivacy</td><td><span class="ui-chip" data-sev="med">EU · UK</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </li>
+
+      <li class="step step--last" data-reveal-group>
+        <p class="say" data-reveal>Finally, findings arrive quantified, timestamped and ready to act on.</p>
+        <div class="resp resp--wide" data-reveal><RiskReport /></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-type]').forEach((el) => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const text = el.dataset.type!;
+    let started = false;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting || started) return;
+      started = true;
+      io.disconnect();
+      el.textContent = '';
+      [...text].forEach((ch, i) => window.setTimeout(() => (el.textContent += ch), 380 + i * 70));
+    }, { threshold: 0.8 });
+    io.observe(el);
+  });
+</script>
+
+<style>
+  .col { width: min(100%, 600px); margin-left: calc(25% + var(--gap) / 4); }
+  .h { font-size: clamp(30px, 3vw, 46px); }
+  .sub { margin-top: 18px; color: var(--muted); font-size: 18px; max-width: 44ch; }
+  .steps { display: grid; gap: 88px; margin-top: 72px; }
+  .step { display: grid; gap: 16px; }
+  .say { font-size: 21px; font-weight: 500; line-height: 1.35; letter-spacing: -0.01em; max-width: 30ch; }
+  .call { padding: 18px 20px; display: grid; gap: 8px; background: var(--bg-3); }
+  .typed { display: flex; align-items: center; min-height: 26px; }
+  .typed .ui-mono { font-size: 17px; color: var(--strong); }
+  .caret { width: 2px; height: 20px; background: var(--accent-hi); margin-left: 3px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .resp { margin-left: 56px; min-width: 0; }
+  .fp .ui-row { grid-template-columns: auto 1fr auto; }
+  .step--last .resp--wide { margin-left: 56px; width: min(calc(100vw - 2 * var(--margin) - 56px), 760px); }
+  .call, .typed { min-width: 0; overflow: hidden; }
+  .step--last .resp--wide :global(.report) { max-width: none; }
+  @media (max-width: 960px) {
+    .col { margin-left: 0; }
+  }
+  @media (max-width: 640px) {
+    .steps { gap: 64px; margin-top: 48px; }
+    .say { font-size: 19px; }
+    .resp, .step--last .resp--wide { margin-left: 0; width: 100%; }
+    .resp table { font-size: 13px; }
+    .resp th, .resp td { padding: 9px 10px; }
+  }
+</style>

@@ -1,0 +1,4 @@
+[
+  ["wait", 1500],
+  ["eval", "document.documentElement.scrollHeight + ' x ' + document.documentElement.clientWidth + ' plate ' + Math.round(document.querySelector('.iso-plate').getBoundingClientRect().height)"]
+]

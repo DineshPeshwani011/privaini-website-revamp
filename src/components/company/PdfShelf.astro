@@ -1,0 +1,45 @@
+---
+// The full case studies offered as PDF downloads, set as a short shelf of titles under the story index.
+import { fullCaseStudies } from '@/data/company-stories';
+interface Props { heading?: string }
+const { heading = 'Full case studies, as PDFs.' } = Astro.props;
+---
+<div class="shelf" data-reveal-group>
+  <h3 data-reveal>{heading}</h3>
+  <ul role="list" class="docs">
+    {fullCaseStudies.map((d) => (
+      <li data-reveal>
+        <a class="doc" href={d.href} target="_blank" rel="noopener">
+          <span class="t">{d.title}</span>
+          <span class="m">Download PDF <span class="arrow" aria-hidden="true">↓</span></span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .shelf {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 24px;
+    align-items: start; margin-top: clamp(48px, 6vw, 88px);
+  }
+  h3 { grid-column: 1 / span 3; font-size: clamp(20px, 1.6vw, 24px); letter-spacing: -0.02em; max-width: 14ch; text-wrap: balance; padding-top: clamp(18px, 2vw, 26px); }
+  .docs { grid-column: 4 / span 9; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 8px; }
+  .doc {
+    display: grid; gap: 14px; align-content: space-between; height: 100%;
+    padding: clamp(18px, 2vw, 26px) 0; transition: color 0.25s;
+  }
+  .t { font-size: clamp(21px, 1.8vw, 28px); font-weight: 600; letter-spacing: -0.025em; line-height: 1.12; max-width: 16ch; }
+  .m { font-size: 15px; font-weight: 600; color: var(--muted); transition: color 0.25s; }
+  .m .arrow { display: inline-block; transition: transform 0.3s var(--ease-out); }
+  .doc:hover .t { color: var(--accent-hi); }
+  .doc:hover .m { color: var(--ink); }
+  .doc:hover .arrow { transform: translateY(3px); }
+  @media (max-width: 960px) {
+    h3, .docs { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .docs { grid-template-columns: 1fr; }
+    .doc { padding: 12px 0; }
+  }
+</style>

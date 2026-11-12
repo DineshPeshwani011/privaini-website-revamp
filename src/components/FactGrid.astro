@@ -1,0 +1,48 @@
+---
+// Big figures on tone tiles. Each figure may count up: pass count (+ prefix/suffix/decimals).
+export interface Fact {
+  figure: string; label: string;
+  count?: number; prefix?: string; suffix?: string; decimals?: number;
+  href?: string; linkLabel?: string;
+}
+interface Props { items: Fact[]; accent?: boolean; class?: string }
+const { items, accent = true, class: cls } = Astro.props;
+---
+<dl class:list={['facts', `n${Math.min(items.length, 4)}`, { accent }, cls]} data-reveal-group>
+  {items.map((f) => (
+    <div class="fact" data-reveal>
+      <dt class="sr-only">{f.label}</dt>
+      <dd class="n nums" data-count={f.count} data-prefix={f.prefix} data-suffix={f.suffix} data-decimals={f.decimals}>{f.figure}</dd>
+      <dd class="l">{f.label}</dd>
+      {f.href && <dd class="a"><a class="link" href={f.href}>{f.linkLabel ?? 'Learn more'} <span class="arrow">→</span></a></dd>}
+    </div>
+  ))}
+</dl>
+
+<style>
+  .facts { display: grid; gap: 8px; margin: 0; }
+  .n4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .n2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .n1 { grid-template-columns: 1fr; }
+  .fact {
+    background: var(--bg-2); border-radius: var(--radius); padding: clamp(20px, 2.2vw, 32px);
+    display: grid; grid-template-rows: 1fr auto auto; gap: 14px; min-height: 240px;
+  }
+  .fact dd { margin: 0; }
+  .n { font-size: clamp(52px, 5.4vw, 92px); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; }
+  .accent .fact:first-child .n { color: var(--accent-hi); }
+  .l { font-size: 16px; color: var(--muted); max-width: 26ch; }
+  .a .link { font-size: 15px; }
+  :global(.section--raised) .fact { background: var(--bg-3); }
+  :global(.section--field) .fact { background: rgba(5, 8, 9, 0.28); }
+  :global(.section--field) .l { color: color-mix(in srgb, var(--field-ink) 78%, transparent); }
+  @media (max-width: 960px) {
+    .n4, .n3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fact { min-height: 190px; }
+  }
+  @media (max-width: 480px) {
+    .facts { grid-template-columns: 1fr; }
+    .fact { min-height: 0; }
+  }
+</style>

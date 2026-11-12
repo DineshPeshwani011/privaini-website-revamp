@@ -1,0 +1,7 @@
+[
+  ["wait", 800],
+  ["lines", "explainers/exposure-scale/shots/lines-light-p0.png"],
+  ["key", "1"], ["wait", 2600], ["lines", "explainers/exposure-scale/shots/lines-light-p1.png"],
+  ["key", "2"], ["wait", 2600], ["lines", "explainers/exposure-scale/shots/lines-light-p2.png"], ["shot", "explainers/exposure-scale/shots/pose-light-p2.png"],
+  ["key", "3"], ["wait", 2600], ["lines", "explainers/exposure-scale/shots/lines-light-p3.png"]
+]

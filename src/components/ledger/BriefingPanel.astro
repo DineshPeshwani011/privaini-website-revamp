@@ -1,0 +1,85 @@
+---
+// Ledger · the hero's product fragment: Privaini's published sample report as a flat risk briefing. Monochrome;
+// severity is ink weight (filled = high, outlined = medium); the one cyan mark is the live dot.
+// Rows settle in order on first view (the page's quiet motion), and the dot breathes.
+import { sampleFindings, sampleReport } from '@/data/findings';
+const sev = { high: 'High', med: 'Medium', low: 'Low' } as const;
+---
+<figure class="brief" data-ui aria-label={`Sample risk briefing for ${sampleReport.domain}: ${sampleReport.findings} findings across ${sampleReport.jurisdictions} jurisdictions, total exposure ${sampleReport.total}`}>
+  <header class="bar">
+    <span class="l-label">Risk briefing</span>
+    <span class="domain ui-mono">{sampleReport.domain}</span>
+    <span class="live l-label"><i aria-hidden="true"></i>Monitoring</span>
+  </header>
+
+  <dl class="sum">
+    <div><dt class="l-label">Total exposure</dt><dd class="nums">{sampleReport.total}</dd></div>
+    <div><dt class="l-label">Findings</dt><dd class="nums">{sampleReport.findings}</dd></div>
+    <div><dt class="l-label">Jurisdictions</dt><dd class="nums">{sampleReport.jurisdictions}</dd></div>
+  </dl>
+
+  <ol class="rows" role="list" data-reveal-group>
+    {sampleFindings.map((f) => (
+      <li class="row" data-reveal>
+        <span class:list={['sev', `sev--${f.severity}`]}>{sev[f.severity]}</span>
+        <span class="title">{f.title}</span>
+        <span class="law ui-mono">{f.statute}</span>
+        <span class="x ui-mono nums">{f.exposure}</span>
+      </li>
+    ))}
+  </ol>
+
+  <footer class="foot">
+    <span class="ui-mono">Detected {sampleReport.detected}</span>
+    <a class="link" href="/request-a-demo#sample">Open the sample report <span class="arrow">→</span></a>
+  </footer>
+</figure>
+
+<style>
+  .brief { display: grid; margin: 0; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); overflow: hidden; }
+  .bar {
+    display: flex; align-items: center; gap: 14px; padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .bar .domain { color: var(--ink); font-size: 13px; }
+  .live { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; color: var(--muted); }
+  .live i { width: 7px; height: 7px; border-radius: 50%; background: var(--hint); animation: breathe 2.4s var(--ease-std) infinite; }
+  @keyframes breathe { 50% { opacity: 0.35; } }
+
+  .sum { display: grid; grid-template-columns: 1.4fr 1fr 1fr; margin: 0; border-bottom: 1px solid var(--line); }
+  .sum > div { display: grid; gap: 10px; padding: 18px; }
+  .sum > div + div { border-left: 1px solid var(--line); }
+  .sum dd { margin: 0; font-size: clamp(22px, 2vw, 30px); font-weight: 300; letter-spacing: -0.03em; color: var(--ink); line-height: 1; }
+
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .row {
+    display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; grid-template-areas: 'sev title x' 'sev law x';
+    column-gap: 14px; row-gap: 4px; align-items: center; padding: 14px 18px;
+  }
+  .row + .row { border-top: 1px solid var(--line); }
+  .sev { grid-area: sev; justify-self: start; font: 500 10.5px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 7px; border-radius: 2px; }
+  .sev--high { background: var(--ink); color: var(--bg); }
+  .sev--med { border: 1px solid var(--ink); color: var(--ink); }
+  .sev--low { color: var(--muted); }
+  .title { grid-area: title; font-size: 15px; font-weight: 500; color: var(--ink); }
+  .law { grid-area: law; color: var(--muted); font-size: 12px; }
+  .x { grid-area: x; color: var(--ink); font-size: 12.5px; text-align: right; }
+
+  .foot {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    padding: 14px 18px; border-top: 1px solid var(--line); background: var(--bg-2);
+  }
+  .foot .ui-mono { color: var(--muted); font-size: 12px; }
+  .foot .link { font-size: 14px; }
+
+  @media (max-width: 520px) {
+    .bar > .l-label:first-child { display: none; }   /* the domain and the live dot are what matter at this width */
+    .sum { grid-template-columns: 1fr 1fr; }
+    .sum > div:first-child { grid-column: 1 / -1; }
+    .sum > div:nth-child(2) { border-left: 0; }
+    .sum > div:first-child { border-bottom: 1px solid var(--line); }
+    .row { grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: 'sev title' 'sev law' 'sev x'; }
+    .x { text-align: left; }
+  }
+  @media (prefers-reduced-motion: reduce) { .live i { animation: none; } }
+</style>

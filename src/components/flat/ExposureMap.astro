@@ -1,0 +1,89 @@
+---
+// Flat (/v5) · one finding's life, as a single line. It runs flat as the finding, climbs where the statute gives it
+// a price, holds at the exposure, then steps down at each remediation phase; the cyan blocks are what each phase
+// takes off. It draws in the order of the three steps beside it (src/scripts/flat-v5.ts sets data-part 0 to 3):
+//   1  Findings     the line sets out: F-0042, High, VPPA, video tracking without consent
+//   2  Exposure     it climbs at the statute, VPPA §2710, to the estimated exposure, $8.9M
+//   3  Remediation  it steps down at Immediate, then at Staged
+// Every word is the live page's; the drawing adds no figures of its own. Under reduced motion it is simply there.
+import { sampleFindings, sampleReport } from '@/data/findings';
+
+const f1 = sampleFindings[0];
+// x: the finding → the statute → Immediate → Staged; y: exposure (top is all of it)
+const X = { a: 0, b: 120, c: 250, d: 325, e: 400 };
+const Y = { low: 330, full: 130, mid: 230, end: 300, base: 396 };
+const line = `M${X.a} ${Y.low}H${X.b}V${Y.full}H${X.c}V${Y.mid}H${X.d}V${Y.end}H${X.e}`;
+const total = (X.b - X.a) + (Y.low - Y.full) + (X.c - X.b) + (Y.mid - Y.full) + (X.d - X.c) + (Y.end - Y.mid) + (X.e - X.d);
+// how much of the line is still undrawn after steps 1 and 2
+const rest1 = (1 - (X.b - X.a) / total).toFixed(3);
+const rest2 = (1 - ((X.b - X.a) + (Y.low - Y.full) + (X.c - X.b)) / total).toFixed(3);
+---
+<div class="xm" data-xm data-part="3" style={`--rest1: ${rest1}; --rest2: ${rest2}`}>
+  <svg class="xm-svg" viewBox="-4 0 408 412" role="img" aria-label={`${sampleReport.findings} findings are impacting ${sampleReport.markets} markets. Finding ${f1.id}, High, ${f1.law}: ${f1.title}. Statute ${f1.statute}, estimated exposure $${f1.low}M, stepping down through remediation: Immediate, then Staged.`}>
+    <g aria-hidden="true">
+      <rect class="xm-sq" x="0" y="8" width="8" height="8" />
+      <text class="xm-cap" x="18" y="16.5">Findings</text>
+      <text class="xm-sub" x="0" y="40">{sampleReport.findings} findings are impacting {sampleReport.markets} markets</text>
+
+      <path class="xm-base" d={`M0 ${Y.base}H${X.e}`} />
+      <g class="xm-p3">
+        <path class="xm-ghost" d={`M${X.c} ${Y.full}H${X.e}`} />
+        <rect class="xm-cut" x={X.c} y={Y.full} width={X.e - X.c} height={Y.mid - Y.full} />
+        <rect class="xm-cut xm-cut--2" x={X.d} y={Y.mid} width={X.e - X.d} height={Y.end - Y.mid} />
+      </g>
+      <path class="xm-line" d={line} pathLength="1" />
+
+      <g class="xm-p1">
+        <rect class="xm-node" x={X.a - 4} y={Y.low - 4} width="8" height="8" />
+        <text class="xm-meta" x="0" y={Y.low + 26}>{f1.id}</text>
+        <rect class="xm-tag" x="54" y={Y.low + 11} width="40" height="20" /><text class="xm-tag-t" x="74" y={Y.low + 25.5} text-anchor="middle">High</text>
+        <text class="xm-meta" x="102" y={Y.low + 26}>{f1.law}</text>
+        <text class="xm-title" x="0" y={Y.low + 50}>{f1.title}</text>
+      </g>
+      <g class="xm-p2">
+        <rect class="xm-node" x={X.b - 4} y={Y.full - 4} width="8" height="8" />
+        <text class="xm-cap2" x={X.b} y="78">Statute</text>
+        <text class="xm-statute" x={X.b - 2} y="118">{f1.statute}</text>
+        <text class="xm-est" x={X.b + 10} y={Y.full + 22}>Est. Exposure <tspan>${f1.low}M</tspan></text>
+      </g>
+      <g class="xm-p3">
+        <rect class="xm-node" x={X.c - 4} y={Y.mid - 4} width="8" height="8" />
+        <rect class="xm-node" x={X.d - 4} y={Y.end - 4} width="8" height="8" />
+        <text class="xm-step" x={X.c + 8} y={Y.mid + 20}>Immediate</text>
+        <text class="xm-step" x={X.d + 8} y={Y.end + 20}>Staged</text>
+      </g>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .xm { color: var(--on-stone); }
+  .xm-svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .xm-svg text { font-family: var(--font); fill: var(--on-stone); }
+  .xm-sq { fill: var(--cyan); }
+  .xm-svg .xm-cap { font: 500 10px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; }
+  .xm-svg .xm-sub, .xm-svg .xm-cap2 { font-size: 12px; fill: var(--on-stone-muted); }
+  .xm-base { stroke: var(--on-stone-line); fill: none; }
+  .xm-ghost { stroke: var(--on-stone); stroke-dasharray: 3 4; opacity: 0.4; fill: none; }
+  .xm-cut { fill: var(--cyan); }
+  .xm-line { fill: none; stroke: var(--on-stone); stroke-width: 2.5; stroke-dasharray: 1 1; transition: stroke-dashoffset 1.1s cubic-bezier(0.45, 0, 0.2, 1); }
+  .xm-node { fill: var(--on-stone); }
+  .xm-meta { font-size: 12px; font-weight: 600; }
+  .xm-tag { fill: var(--on-stone); }
+  .xm-svg .xm-tag-t { font-size: 11px; font-weight: 700; fill: var(--stone); }
+  .xm-title { font-size: 15px; font-weight: 500; }
+  .xm-statute { font-size: 42px; letter-spacing: -0.05em; }
+  .xm-svg .xm-est { font-size: 12px; fill: var(--on-stone-muted); }
+  .xm-svg .xm-est tspan { font-weight: 700; fill: var(--on-stone); }
+  .xm-step { font-size: 12px; font-weight: 600; }
+
+  /* drawn in turn: the line runs as far as the step reached, and each part's words arrive with it */
+  .xm-p1, .xm-p2, .xm-p3 { transition: opacity 0.6s 0.35s; }
+  .xm[data-part='0'] .xm-line { stroke-dashoffset: 1; }
+  .xm[data-part='1'] .xm-line { stroke-dashoffset: var(--rest1); }
+  .xm[data-part='2'] .xm-line { stroke-dashoffset: var(--rest2); }
+  .xm[data-part='0'] .xm-p1, .xm:is([data-part='0'], [data-part='1']) .xm-p2, .xm:not([data-part='3']) .xm-p3 { opacity: 0; transition-delay: 0s; }
+  @media (prefers-reduced-motion: reduce) {
+    .xm * { transition: none !important; }
+  }
+</style>

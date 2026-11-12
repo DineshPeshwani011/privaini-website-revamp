@@ -1,0 +1,8 @@
+---
+import StoryPage from '@/components/company/StoryPage.astro';
+import RiskReport from '@/components/RiskReport.astro';
+import { stories } from '@/data/company-stories';
+---
+<StoryPage story={stories.aggregator}>
+  <RiskReport slot="figure" variant="briefing" />
+</StoryPage>

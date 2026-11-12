@@ -1,0 +1,249 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import RiskReport from '@/components/RiskReport.astro';
+import FindingCard from '@/components/FindingCard.astro';
+import ExplainerSection from '@/components/ExplainerSection.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import CompareList from '@/components/CompareList.astro';
+import EnforcementBand from '@/components/EnforcementBand.astro';
+import Timeline from '@/components/Timeline.astro';
+import QuoteBlock from '@/components/QuoteBlock.astro';
+import PointList from '@/components/PointList.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import { quotes } from '@/data/quotes';
+import { DEMO_URL } from '@/data/site';
+
+const teams = [
+  {
+    name: 'Enterprises', href: '/enterprises', label: 'Privaini for Enterprises',
+    claim: 'Find the gaps between policy and practice before a regulator finds them.',
+    detail: 'Privacy, legal, and security teams each see the same observable signal: framed for the decisions they own.',
+  },
+  {
+    name: 'Insurers', href: '/insurers', label: 'Privaini for Insurers',
+    claim: 'Assess applicant posture at submission. Monitor your portfolio continuously.',
+    detail: 'Outside-in privacy posture at the point of underwriting. Observable signals, not self-attestations.',
+  },
+  {
+    name: 'Law Firms', href: '/law-firms', label: 'Privaini for Law Firms',
+    claim: 'See the evidence plaintiffs’ counsel already scanned before discovery begins.',
+    detail: 'VPPA, BIPA, and wiretapping claims are identified from outside, no discovery required. Know where you stand.',
+  },
+  {
+    name: 'M&A Advisors', href: '/ma-advisors', label: 'Privaini for M&A',
+    claim: 'Assess any target from the outside. No cooperation from the company required.',
+    detail: 'Privacy liability that was observable pre-close doesn’t disappear at signing; it transfers to the buyer.',
+  },
+];
+---
+<Base
+  title="Risk Intelligence | Privaini"
+  description="See what regulators and litigators detect: evidence-backed privacy & AI risk findings mapped to the statutes that apply to you."
+>
+  <PageHero
+    title="Now regulators observe behavior."
+    lead="Regulators & litigators used to read your policy. Risk Intelligence is the discipline of observing, assessing, and scoring an organization’s privacy & AI risk from the outside, the same vantage point they now use."
+  >
+    <RiskReport variant="briefing" />
+  </PageHero>
+
+  <ExplainerSection
+    name="policy-practice-gap"
+    figureTitle="Interactive figure: what a privacy policy declares, set against what each page is observed to do"
+    heading="Compliance documents what you intend."
+    text="Most privacy programs are built around policy: what you claim to do. Risk Intelligence is built around evidence: what your digital properties actually emit, observed from the outside."
+    points={[
+      { title: 'Declared', text: 'What your policy says each property shares, and with whom.' },
+      { title: 'Observed', text: 'What each property actually emits, read from outside, as a regulator or litigator would.' },
+      { title: 'The gap', text: 'Every undisclosed flow becomes a finding, tied to the statute it triggers.' },
+    ]}
+  />
+
+  <section class="section" aria-labelledby="cmp-h">
+    <div class="wrap">
+      <SectionHead
+        id="cmp-h"
+        title="Risk Intelligence reveals what you emit."
+        text="Evidence a regulator could use, gathered before they do: independent of what you claim, and reproducible from the moment of detection."
+      />
+      <CompareList
+        not={[
+          'A questionnaire about your practices',
+          'A review of your privacy policy',
+          'An audit that relies on your answers',
+          'A penetration test of your systems',
+          'A framework self-assessment',
+        ]}
+        is={[
+          'External observation of your digital behavior',
+          'Findings mapped to the statutes in your markets',
+          'Evidence a regulator could use before they do',
+          'Reproducible and timestamped from detection',
+          'Independent of what you claim',
+        ]}
+        get={[
+          'Finding cards with statute citations & exposure estimates',
+          'Risk score calibrated to your jurisdictions',
+          'Remediation steps with quantified exposure reduction',
+          'Report for regulators, insurers, or acquirers',
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="era-h">
+    <div class="wrap">
+      <SectionHead id="era-h" title="Regulations exploded, litigation &amp; fines followed." />
+      <Timeline
+        items={[
+          { when: 'Pre-2020', title: 'Compliance era', text: 'Policies drafted. No enforcement teeth.' },
+          { when: '2020–2025', title: 'Regulatory expansion', text: 'CPRA, GDPR fines, FTC enforcement surge.' },
+          { when: 'Today', title: 'Litigation & large fines', text: 'Class actions and eight-figure fines are now routine.' },
+        ]}
+      />
+      <div class="said">
+        <QuoteBlock quote={quotes.macko} />
+      </div>
+    </div>
+  </section>
+
+  <EnforcementBand
+    heading="Enforcement is costly, and accelerating."
+    link={{ label: 'Privaini for Insurers', href: '/insurers' }}
+  />
+
+  <section class="section section--raised" aria-labelledby="steps-h">
+    <div class="wrap">
+      <SectionHead
+        id="steps-h"
+        title="From a domain name to statute-mapped risk."
+        text="No IT access. No questionnaires. No cooperation from the company being assessed."
+      />
+      <PointList
+        variant="index"
+        items={[
+          { title: 'Observe', text: 'We scan your digital properties from the outside, the same vantage point a regulator, litigator, or insurer would use.' },
+          { title: 'Map', text: 'Every observation is mapped to the statutes that apply in your markets: VPPA, CCPA, GDPR, state privacy, and more.' },
+          { title: 'Quantify', text: 'Each finding carries a statutory exposure range and an estimated class exposure in dollars.' },
+          { title: 'Report', text: 'Findings are packaged into a timestamped, reproducible report: evidence-grade documentation you can act on.' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="section out" aria-labelledby="out-h">
+    <div class="wrap grid">
+      <div class="out-copy" data-reveal-group>
+        <h2 id="out-h" data-split>From your website, your risk picture.</h2>
+        <p data-reveal>
+          From your company name and website, Privaini delivers evidence-backed findings, exposure, and remediation
+          mapped to the statutes that apply to your markets. No questionnaires. No IT lift.
+        </p>
+        <a class="btn" href={DEMO_URL} data-reveal>See your exposure <span class="arrow">→</span></a>
+      </div>
+      <div class="out-stage" data-reveal>
+        <RiskReport />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--raised spec" aria-labelledby="spec-h">
+    <div class="wrap">
+      <SectionHead
+        id="spec-h"
+        title="Statute-mapped. Reproducible. Timestamped."
+        text="Each finding is tied to the statute it triggered, evidenced by observed behavior, not inferred from a questionnaire."
+      />
+      <div class="spec-grid">
+        <dl class="notes notes--left" data-reveal-group>
+          <div data-reveal>
+            <dt>Findings</dt>
+            <dd>Detailed, evidence-backed findings based on observations from your markets and the applicable statutes.</dd>
+          </div>
+        </dl>
+        <div class="card" data-reveal>
+          <FindingCard />
+        </div>
+        <dl class="notes notes--right" data-reveal-group>
+          <div data-reveal>
+            <dt>Exposure</dt>
+            <dd>Potential regulatory fine exposure from enforcement agencies, plus consumer class exposure in dollars.</dd>
+          </div>
+          <div data-reveal>
+            <dt>Remediation</dt>
+            <dd>Recommendations and a phased plan: each phase mapped to a quantified reduction in exposure.</dd>
+          </div>
+        </dl>
+      </div>
+      <a class="link spec-link" href={DEMO_URL}>See the full sample report <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="teams-h">
+    <div class="wrap">
+      <SectionHead
+        id="teams-h"
+        title="Built for privacy, legal &amp; underwriting teams."
+        text="Privaini translates one intelligence platform into the language of your specific risk role."
+      />
+      <ul role="list" class="teams" data-reveal-group>
+        {teams.map((t) => (
+          <li data-reveal>
+            <h3>{t.name}</h3>
+            <p class="claim">{t.claim}</p>
+            <p class="detail">{t.detail}</p>
+            <a class="link" href={t.href}>{t.label} <span class="arrow">→</span></a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CtaBlank />
+</Base>
+
+<style>
+  .said { margin-top: clamp(72px, 9vw, 136px); padding-left: calc((100% - 11 * var(--gap)) / 12 * 2 + 2 * var(--gap)); }
+
+  .out .grid { align-items: center; row-gap: 40px; }
+  .out-copy { grid-column: 1 / span 5; display: grid; gap: 24px; justify-items: start; }
+  .out-copy h2 { font-size: clamp(30px, 3vw, 46px); max-width: 14ch; }
+  .out-copy p { color: var(--muted); font-size: 18px; max-width: 42ch; }
+  .out-stage {
+    grid-column: 7 / span 6; background: var(--bg-2); border-radius: var(--radius);
+    padding: clamp(24px, 4vw, 64px); display: grid; justify-items: center;
+  }
+
+  .spec-grid {
+    display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 3fr); gap: var(--gap);
+    align-items: stretch;
+  }
+  .card { display: grid; justify-items: center; align-content: center; }
+  .notes { margin: 0; display: grid; align-content: space-between; gap: 40px; padding-block: 24px; }
+  .notes--left { align-content: start; text-align: right; justify-items: end; }
+  .notes dt { font-size: clamp(21px, 1.7vw, 26px); font-weight: 600; letter-spacing: -0.015em; }
+  .notes dd { margin: 8px 0 0; color: var(--muted); font-size: 17px; line-height: 1.55; max-width: 30ch; }
+  .notes--left dd { margin-left: auto; }
+  .spec-link { margin-top: clamp(32px, 4vw, 56px); }
+
+  .teams { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(48px, 6vw, 88px) var(--gap); }
+  .teams li { display: grid; gap: 12px; align-content: start; justify-items: start; padding-right: clamp(0px, 3vw, 48px); }
+  .teams h3 { font-size: clamp(30px, 3.2vw, 50px); letter-spacing: -0.04em; line-height: 1; margin-bottom: 8px; }
+  .teams .claim { font-size: clamp(19px, 1.45vw, 22px); line-height: 1.4; font-weight: 500; max-width: 36ch; }
+  .teams .detail { color: var(--muted); font-size: 17px; max-width: 46ch; }
+  .teams .link { margin-top: 6px; font-size: 16px; }
+
+  @media (max-width: 960px) {
+    .said { padding-left: 0; }
+    .out-copy, .out-stage { grid-column: 1 / -1; }
+    .teams { grid-template-columns: 1fr; }
+    .spec-grid { grid-template-columns: 1fr; }
+    .card { order: -1; justify-items: stretch; }
+    .notes, .notes--left { text-align: left; justify-items: start; padding-block: 0; gap: 28px; }
+    .notes--left dd { margin-left: 0; }
+  }
+  @media (max-width: 480px) {
+    .out-stage { padding: 16px; margin-inline: calc(var(--margin) * -1); border-radius: 0; }
+  }
+</style>

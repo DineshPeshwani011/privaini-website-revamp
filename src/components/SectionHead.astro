@@ -1,0 +1,18 @@
+---
+// Section heading: one h2 (masked line reveal), an optional sentence, an optional link.
+interface Props { title: string; text?: string; link?: { label: string; href: string }; id?: string; size?: 'md' | 'lg'; class?: string }
+const { title, text, link, id, size = 'md', class: cls } = Astro.props;
+---
+<div class:list={['sh', `sh--${size}`, cls]} data-reveal-group>
+  <h2 id={id} data-split set:html={title} />
+  {text && <p data-reveal>{text}</p>}
+  {link && <a class="link" href={link.href} data-reveal>{link.label} <span class="arrow">→</span></a>}
+</div>
+
+<style>
+  .sh { display: grid; gap: 20px; justify-items: start; margin-bottom: clamp(40px, 5vw, 72px); max-width: 980px; }
+  .sh h2 { max-width: 22ch; }
+  .sh--lg h2 { font-size: clamp(38px, 5vw, 84px); max-width: 16ch; }
+  .sh p { color: var(--muted); font-size: clamp(17px, 1.25vw, 20px); line-height: 1.5; max-width: 56ch; }
+  :global(.section--field) .sh p { color: color-mix(in srgb, var(--field-ink) 80%, transparent); }
+</style>

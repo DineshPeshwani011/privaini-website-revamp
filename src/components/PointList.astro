@@ -1,0 +1,72 @@
+---
+// A list of points (title, text, optional meta line and link) in one of three compositions:
+//   index   — large rows: title left at display size, text right. Best for 3–6 strong points.
+//   columns — two or three text columns on the plain ground, no boxes. Best for 3–6 short points.
+//   tiles   — filled tone tiles in a bento with varied spans (first tile wide). Best for 4–8 points.
+export interface Point { title: string; text?: string; meta?: string; href?: string; linkLabel?: string }
+interface Props { items: Point[]; variant?: 'index' | 'columns' | 'tiles'; cols?: 2 | 3; class?: string }
+const { items, variant = 'columns', cols = 3, class: cls } = Astro.props;
+---
+<ul role="list" class:list={['pl', `pl--${variant}`, `pl--c${cols}`, cls]} data-reveal-group>
+  {items.map((p, i) => (
+    <li class:list={['item', { 'theme-dark': variant === 'tiles' && i === 0 }]} data-reveal data-i={i}>
+      {p.meta && <span class="meta">{p.meta}</span>}
+      <h3 class="title">{p.title}</h3>
+      {p.text && <p class="text">{p.text}</p>}
+      {p.href && <a class="link" href={p.href}>{p.linkLabel ?? 'Learn more'} <span class="arrow">→</span></a>}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .pl { list-style: none; padding: 0; margin: 0; }
+  .meta { font-size: 15px; color: var(--accent-hi); font-weight: 500; }
+  .text { color: var(--muted); font-size: 17px; line-height: 1.55; max-width: 52ch; }
+  .item .link { margin-top: 4px; font-size: 16px; }
+
+  /* index */
+  .pl--index .item {
+    display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr) minmax(0, 1fr); column-gap: var(--gap); row-gap: 8px;
+    align-items: baseline; padding-block: clamp(24px, 3vw, 44px);
+  }
+  .pl--index .item + .item { padding-top: clamp(24px, 3vw, 44px); }
+  .pl--index .meta { grid-column: 1; }
+  .pl--index .title { grid-column: 1; font-size: clamp(28px, 3vw, 48px); letter-spacing: -0.035em; line-height: 1.02; }
+  .pl--index .text { grid-column: 2; grid-row: span 2; font-size: 18px; }
+  .pl--index .link { grid-column: 2; justify-self: start; }
+
+  /* columns */
+  .pl--columns { display: grid; gap: clamp(36px, 4vw, 56px) var(--gap); }
+  .pl--c3.pl--columns { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pl--c2.pl--columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pl--columns .item { display: grid; gap: 12px; align-content: start; justify-items: start; }
+  .pl--columns .title { font-size: clamp(21px, 1.7vw, 26px); }
+
+  /* tiles */
+  .pl--tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+  .pl--tiles .item {
+    grid-column: span 2; background: var(--bg-2); border-radius: var(--radius);
+    padding: clamp(22px, 2.4vw, 36px); display: grid; gap: 12px; align-content: start; justify-items: start;
+    min-height: 240px; transition: background-color 0.35s var(--ease-out);
+  }
+  .pl--tiles .item:hover { background: var(--bg-3); }
+  .pl--tiles .item:first-child { grid-column: span 4; background: var(--field); }
+  .pl--tiles .item:first-child .text { color: color-mix(in srgb, var(--field-ink) 80%, transparent); }
+  .pl--tiles .item:first-child .title { font-size: clamp(26px, 2.4vw, 38px); max-width: 18ch; }
+  .pl--tiles .title { font-size: clamp(20px, 1.6vw, 24px); }
+  .pl--c2.pl--tiles .item { grid-column: span 3; }
+  .pl--c2.pl--tiles .item:first-child { grid-column: span 6; }
+
+  @media (max-width: 960px) {
+    .pl--c3.pl--columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pl--tiles .item, .pl--tiles .item:first-child, .pl--c2.pl--tiles .item { grid-column: span 3; }
+    .pl--tiles .item:first-child { grid-column: 1 / -1; }
+    .pl--index .item { grid-template-columns: 1fr; }
+    .pl--index .text, .pl--index .link { grid-column: 1; grid-row: auto; }
+  }
+  @media (max-width: 640px) {
+    .pl--c3.pl--columns, .pl--c2.pl--columns { grid-template-columns: 1fr; }
+    .pl--tiles { grid-template-columns: 1fr; }
+    .pl--tiles .item, .pl--tiles .item:first-child, .pl--c2.pl--tiles .item { grid-column: 1; min-height: 0; }
+  }
+</style>

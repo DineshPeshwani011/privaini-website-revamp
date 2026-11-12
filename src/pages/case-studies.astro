@@ -1,0 +1,106 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import StoryIndex from '@/components/StoryIndex.astro';
+import FactGrid from '@/components/FactGrid.astro';
+import QuoteBlock from '@/components/QuoteBlock.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import PdfShelf from '@/components/company/PdfShelf.astro';
+import { featuredCase, bakktShort } from '@/data/company-stories';
+import { quotes } from '@/data/quotes';
+import { customerLogos } from '@/data/logos';
+
+// ViaQuest's quote points at this page; here it stands on its own, beside the customer's logo.
+const viaquest = { ...quotes.viaquest, href: undefined };
+const viaquestLogo = customerLogos.find((l) => l.name === 'ViaQuest')!;
+---
+<Base
+  title="Case Studies | Privaini"
+  description="Real findings, real outcomes: how privacy and risk teams use Privaini's outside-in intelligence."
+>
+  <PageHero
+    title="Real findings. Real outcomes."
+    lead="How privacy and risk teams use Privaini’s outside-in intelligence to cut exposure and coordination overhead."
+    secondary={{ label: 'How it works', href: '/how-it-works' }}
+  >
+    <StatusPanel {...featuredCase} />
+  </PageHero>
+
+  <section class="section" aria-labelledby="stories-h">
+    <div class="wrap">
+      <SectionHead id="stories-h" title="Case studies &amp; use cases." />
+      <StoryIndex />
+      <PdfShelf />
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="bakkt-h">
+    <div class="wrap bakkt">
+      <div class="bakkt-copy">
+        <SectionHead
+          id="bakkt-h"
+          title="Bakkt: global privacy compliance at scale."
+          text="A compliance team needing confidence across 22 global jurisdictions: Privaini became the outside-in compliance layer."
+          link={{ label: 'Read the story', href: '/bakkt-case-study' }}
+        />
+        <figure class="said" data-reveal>
+          <blockquote>{bakktShort.text}</blockquote>
+          <figcaption><strong>{bakktShort.name}</strong> · {bakktShort.org}</figcaption>
+        </figure>
+      </div>
+      <FactGrid
+        class="bakkt-facts"
+        items={[
+          { figure: '22', count: 22, label: 'Jurisdictions managed' },
+          { figure: '1 FTE', count: 1, suffix: ' FTE', label: 'Saved in compliance operations' },
+          { figure: '50%', count: 50, suffix: '%', label: 'Reduction in coordination overhead' },
+          { figure: '90+', count: 90, suffix: '+', label: 'Countries in the intelligence corpus' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="voice-h">
+    <div class="wrap voice">
+      <h2 id="voice-h" class="sr-only">What customers say</h2>
+      <div class="voice-quote"><QuoteBlock quote={viaquest} /></div>
+      <div class="voice-logo" data-reveal>
+        <img src={viaquestLogo.src} alt={viaquestLogo.name} width="220" height="160" loading="lazy" decoding="async" />
+      </div>
+    </div>
+  </section>
+
+  <CtaBlank />
+</Base>
+
+<style>
+  .bakkt { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 48px; align-items: start; }
+  .bakkt-copy { grid-column: 1 / span 5; display: grid; align-content: start; }
+  .bakkt :global(.bakkt-facts) { grid-column: 7 / span 6; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .said { display: grid; gap: 14px; margin: 0; padding: clamp(22px, 2.4vw, 32px); background: var(--bg-3); border-radius: var(--radius); }
+  .said blockquote { margin: 0; font-size: clamp(19px, 1.5vw, 23px); line-height: 1.4; letter-spacing: -0.012em; text-wrap: pretty; }
+  .said blockquote::before { content: '“'; color: var(--accent); }
+  .said blockquote::after { content: '”'; color: var(--accent); }
+  .said figcaption { font-size: 15px; color: var(--muted); }
+  .said strong { color: var(--ink); font-weight: 600; }
+  .voice { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 40px; align-items: center; }
+  .voice-quote { grid-column: 1 / span 8; }
+  .voice-logo {
+    grid-column: 10 / span 3; aspect-ratio: 4 / 3; display: grid; place-items: center;
+    background: var(--bg-2); border-radius: var(--radius);
+  }
+  .voice-logo img {
+    width: 64%; height: 64%; object-fit: contain;
+    filter: grayscale(1) invert(1) contrast(1.4); mix-blend-mode: screen; opacity: 0.9;
+  }
+  @media (max-width: 960px) {
+    .bakkt-copy, .bakkt :global(.bakkt-facts) { grid-column: 1 / -1; }
+    .voice-quote { grid-column: 1 / -1; }
+    .voice-logo { grid-column: 1 / span 6; }
+  }
+  @media (max-width: 480px) {
+    .bakkt :global(.bakkt-facts) { grid-template-columns: 1fr; }
+  }
+</style>

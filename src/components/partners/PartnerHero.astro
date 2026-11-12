@@ -1,0 +1,62 @@
+---
+// Hero for the partner pages: the headline runs across the top so it holds to two lines, then the
+// supporting sentence and actions on the left with the page's product panel on a lighter stage.
+interface Link { label: string; href: string }
+interface Props {
+  title: string;
+  lead?: string;
+  primary?: Link | false;
+  secondary?: Link | false;
+  caption?: string;
+}
+import HairlineField from '../hairline/HairlineField.astro';
+const { title, lead, primary, secondary, caption } = Astro.props;
+---
+<section class="ph">
+  <HairlineField at={{ x: 0.74, y: 0.66 }} />
+  <div class="wrap">
+    <h1 data-split data-split-now set:html={title} />
+    <div class="below">
+      <div class="copy" data-reveal-group>
+        {lead && <p class="t-lead lead" data-reveal>{lead}</p>}
+        {(primary || secondary) && (
+          <div class="actions" data-reveal>
+            {primary && <a class="btn" href={primary.href}>{primary.label} <span class="arrow">→</span></a>}
+            {secondary && <a class="btn btn--ghost" href={secondary.href}>{secondary.label}</a>}
+          </div>
+        )}
+      </div>
+      <div class="stage" data-reveal>
+        <slot />
+        {caption && <p class="caption">{caption}</p>}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ph {
+    position: relative; overflow: clip; padding-top: calc(var(--nav-h) + clamp(40px, 6vw, 96px)); padding-bottom: clamp(64px, 8vw, 120px);
+    background: radial-gradient(60% 80% at 75% 65%, var(--hero-glow), var(--bg-clear) 70%), var(--bg);
+  }
+  .ph > .wrap { position: relative; z-index: 1; }
+  h1 { font-size: clamp(40px, 5vw, 84px); max-width: 24ch; }
+  .below {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 40px;
+    margin-top: clamp(32px, 4vw, 64px); align-items: start;
+  }
+  .copy { grid-column: 1 / span 5; display: grid; gap: 28px; justify-items: start; padding-top: 8px; }
+  .lead { color: var(--muted); }
+  .stage {
+    grid-column: 7 / span 6; border-radius: var(--radius);
+    padding: clamp(24px, 4vw, 56px); display: grid; justify-items: center; gap: 18px;
+  }
+  .caption { font-size: 14.5px; color: var(--muted); max-width: 48ch; text-align: center; }
+  @media (max-width: 960px) {
+    .copy, .stage { grid-column: 1 / -1; }
+    h1 { font-size: clamp(34px, 7vw, 60px); max-width: 22ch; }
+  }
+  @media (max-width: 480px) {
+    .stage { padding: 16px; margin-inline: calc(var(--margin) * -1); border-radius: 0; }
+  }
+</style>

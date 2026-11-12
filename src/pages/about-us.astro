@@ -1,0 +1,189 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PointList from '@/components/PointList.astro';
+import FactGrid from '@/components/FactGrid.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import Portrait from '@/components/company/Portrait.astro';
+import { leadership, advisors } from '@/data/company-people';
+---
+<Base
+  title="About Privaini"
+  description="We made privacy risk intelligence a category, observing privacy risk from the outside, the way regulators do."
+>
+  <PageHero
+    title="We defined privacy risk intelligence."
+    lead="Privaini is the only platform that observes privacy risk from the outside, the same vantage point regulators and litigators use."
+  >
+    <StatusPanel
+      title="Traction"
+      subject="since 2025"
+      rows={[
+        { label: 'Top-10 cyber insurers', value: '4 embedded', state: 'ok' },
+        { label: 'Top-3 insurance brokers', value: '2 using', state: 'ok' },
+        { label: 'Countries covered', value: '90+', state: 'ok' },
+      ]}
+      total={{ label: 'Category', value: 'Defining' }}
+    />
+  </PageHero>
+
+  <section class="section" aria-labelledby="company-h">
+    <div class="wrap">
+      <SectionHead
+        id="company-h"
+        title="Measured from the outside. Built for scrutiny."
+        text="We are a team from enterprise software, security, and privacy law. We built Privaini to make privacy risk observable from the outside, the way regulators and litigators already see it."
+      />
+      <PointList
+        variant="index"
+        items={[
+          { title: 'Proven track record', text: 'Profitable growth, successful exits, and leadership experience across startups and public companies.' },
+          { title: 'Enterprise expertise', text: 'Decades of building and delivering B2B products for organizations with complex networks, regulatory demands, and global scale.' },
+          { title: 'Category creators', text: 'We defined the category of risk intelligence for privacy, and today we set the standard for it.' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="trust-h">
+    <div class="wrap trust">
+      <h2 id="trust-h" data-split>We’re building a future of privacy together.</h2>
+      <div class="trust-copy" data-reveal-group>
+        <p class="trust-lead" data-reveal>Privaini was founded to put privacy risk in plain sight.</p>
+        <p class="trust-body" data-reveal>
+          We assess companies the same way regulators and litigators do, from observable, statute-anchored, timestamped
+          evidence. We give privacy, legal, and security teams that picture first, while there is still time to act on it.
+          When exposure is visible, it gets fixed, and that protects both the companies we assess and the privacy of
+          everyone whose data they hold.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="market-h">
+    <div class="wrap">
+      <SectionHead
+        id="market-h"
+        title="The market already responded."
+        text="Insurers and brokers changed how they underwrite and advise, built on Privaini intelligence."
+      />
+      <FactGrid
+        items={[
+          { figure: '4 of 10', count: 4, suffix: ' of 10', label: 'Top cyber insurers with Privaini embedded' },
+          { figure: '2 of 3', count: 2, suffix: ' of 3', label: 'Top insurance brokers use Privaini' },
+          { figure: '90+', count: 90, suffix: '+', label: 'Countries covered by our corpus', href: '/what-we-find', linkLabel: 'Coverage' },
+          { figure: '$7B+', count: 7, prefix: '$', suffix: 'B+', label: 'in global privacy fines and settlements since 2020', href: '/privacy-risk-gap', linkLabel: 'Enforcement' },
+        ]}
+      />
+      <p class="market-more" data-reveal>
+        <a class="link" href="/partner-program">See partners <span class="arrow">→</span></a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="leaders-h">
+    <div class="wrap">
+      <div class="leaders-head" data-reveal-group>
+        <h2 id="leaders-h" data-split>Our leadership.</h2>
+        <p data-reveal>30 years building category-defining B2B software, now applied to privacy &amp; AI risk.</p>
+      </div>
+      <ul role="list" class="leaders" data-reveal-group>
+        {leadership.map((p, i) => (
+          <li class:list={['person', i < 2 ? 'person--founder' : 'person--team']} data-reveal>
+            <Portrait src={p.photo} name={p.name} />
+            <div class="who">
+              <h3>{p.name}</h3>
+              <p class="role">{p.role}</p>
+              {p.bio && <p class="bio">{p.bio}</p>}
+              {p.linkedin && (
+                <a class="link" href={p.linkedin} target="_blank" rel="noopener" aria-label={`${p.name} on LinkedIn`}>
+                  LinkedIn <span class="arrow" aria-hidden="true">→</span>
+                </a>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="advisors-h">
+    <div class="wrap advisors" data-reveal-group>
+      <div class="advisors-head">
+        <h2 id="advisors-h" data-split>Our advisors.</h2>
+      </div>
+      {advisors.map((a) => (
+        <article class="person advisor" data-reveal>
+          <Portrait src={a.photo} name={a.name} size={296} />
+          <h3>{a.name}</h3>
+          <p>{a.role}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <CtaBlank />
+</Base>
+
+<style>
+  /* trust: the heading, then the founding sentence large and the rest as body */
+  .trust { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 40px; align-items: start; }
+  .trust h2 { grid-column: 1 / span 6; max-width: 22ch; }
+  .trust-copy { grid-column: 7 / span 6; display: grid; gap: 28px; padding-top: 10px; }
+  .trust-lead { font-size: clamp(24px, 2.2vw, 34px); line-height: 1.25; letter-spacing: -0.02em; font-weight: 500; max-width: 24ch; text-wrap: balance; }
+  .trust-body { font-size: clamp(17px, 1.3vw, 20px); line-height: 1.6; color: var(--muted); max-width: 54ch; text-wrap: pretty; }
+
+  .market-more { margin-top: 28px; }
+
+  /* leadership: founders large, the team beside them smaller; portrait and words side by side */
+  .leaders-head {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 20px;
+    align-items: end; margin-bottom: clamp(48px, 6vw, 88px);
+  }
+  .leaders-head h2 { grid-column: 1 / span 6; }
+  .leaders-head p { grid-column: 7 / span 6; font-size: clamp(18px, 1.4vw, 22px); line-height: 1.45; color: var(--muted); max-width: 40ch; }
+  .leaders { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: clamp(56px, 6vw, 96px); }
+  .leaders .person { display: grid; column-gap: clamp(18px, 2vw, 28px); row-gap: 20px; align-items: end; }
+  .person--founder { grid-column: span 6; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .person--team { grid-column: span 4; grid-template-columns: minmax(0, 9fr) minmax(0, 11fr); }
+  .who { display: grid; gap: 8px; justify-items: start; align-content: end; padding-bottom: 4px; }
+  .who h3 { letter-spacing: -0.03em; line-height: 1.05; }
+  .person--founder h3 { font-size: clamp(28px, 2.6vw, 42px); }
+  .person--team h3 { font-size: clamp(21px, 1.7vw, 26px); }
+  .role { font-size: 17px; line-height: 1.35; color: var(--ink); font-weight: 500; }
+  .bio { font-size: 16px; line-height: 1.5; color: var(--muted); max-width: 34ch; }
+  .person--team .bio { font-size: 15px; }
+  .who .link { margin-top: 6px; font-size: 15px; }
+
+  /* advisors: the heading takes the first cell of the portrait grid */
+  .advisors { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--gap); row-gap: clamp(40px, 4.5vw, 64px); }
+  .advisors-head { align-self: start; padding-top: 4px; }
+  .advisors-head h2 { max-width: 8ch; }
+  .advisor { display: grid; gap: 6px; align-content: start; }
+  .advisor :global(.portrait) { margin-bottom: 12px; }
+  .advisor h3 { font-size: clamp(19px, 1.5vw, 23px); letter-spacing: -0.02em; }
+  .advisor p { font-size: 15px; line-height: 1.45; color: var(--muted); max-width: 30ch; }
+
+  @media (max-width: 1100px) {
+    .person--founder { grid-column: 1 / -1; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+    .person--team { grid-column: span 6; }
+  }
+  @media (max-width: 960px) {
+    .trust h2, .trust-copy, .leaders-head h2, .leaders-head p { grid-column: 1 / -1; }
+    .trust-copy { padding-top: 0; }
+    .advisors { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) {
+    .person--team { grid-column: 1 / -1; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+    .advisors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .advisors-head { grid-column: 1 / -1; }
+    .advisors-head h2 { max-width: none; }
+  }
+  @media (max-width: 480px) {
+    .person--founder, .person--team { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 16px; }
+    .person--founder h3 { font-size: 26px; }
+    .bio { font-size: 15px; }
+  }
+</style>

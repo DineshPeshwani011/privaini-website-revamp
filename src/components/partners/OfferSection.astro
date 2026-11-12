@@ -1,0 +1,56 @@
+---
+// A partner's policyholder pricing: the headline discount set large on its own tile, the other
+// terms stacked beside it.
+import type { Figure } from '@/data/partners-pages';
+interface Props { id: string; heading: string; text?: string; figures: Figure[]; fine?: string; tone?: 'plain' | 'raised' }
+const { id, heading, text, figures, fine, tone = 'raised' } = Astro.props;
+---
+<section class:list={['offer section', { 'section--raised': tone === 'raised' }]} aria-labelledby={id}>
+  <div class="wrap">
+    <div class="head" data-reveal-group>
+      <h2 id={id} data-split>{heading}</h2>
+      {text && <p data-reveal>{text}</p>}
+    </div>
+    <dl class:list={['terms', `n${figures.length}`]} data-reveal-group>
+      {figures.map((f) => (
+        <div class="term" data-reveal>
+          <dt class="l">{f.label}</dt>
+          <dd class="n nums" data-count={f.count} data-prefix={f.prefix} data-suffix={f.suffix} data-decimals={f.decimals}>{f.figure}</dd>
+        </div>
+      ))}
+    </dl>
+    {fine && <p class="fine" data-reveal>{fine}</p>}
+  </div>
+</section>
+
+<style>
+  .head {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 20px;
+    align-items: end; margin-bottom: clamp(40px, 5vw, 72px);
+  }
+  .head h2 { grid-column: 1 / span 7; font-size: clamp(30px, 3.2vw, 52px); }
+  .head p { grid-column: 9 / span 4; color: var(--muted); font-size: clamp(17px, 1.25vw, 20px); line-height: 1.5; }
+  .terms { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 8px; margin: 0; }
+  .term {
+    display: flex; flex-direction: column-reverse; justify-content: space-between; gap: 24px;
+    background: var(--bg-2); border-radius: var(--radius); padding: clamp(20px, 2.4vw, 36px); min-height: 200px;
+  }
+  .section--raised .term { background: var(--bg-3); }
+  .term dd { margin: 0; }
+  .n { font-size: clamp(52px, 5.4vw, 92px); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; }
+  .l { font-size: 17px; color: var(--muted); max-width: 26ch; }
+  .terms .term:first-child { grid-row: span 2; min-height: clamp(320px, 34vw, 480px); }
+  .terms .term:first-child .n { font-size: var(--t-figure); line-height: 0.82; color: var(--accent-hi); }
+  .terms .term:first-child .l { font-size: clamp(19px, 1.5vw, 24px); color: var(--ink); font-weight: 500; }
+  .n1 { grid-template-columns: 1fr; }
+  .n1 .term:first-child { grid-row: auto; }
+  .fine { margin-top: 28px; font-size: 14.5px; color: var(--muted); max-width: 70ch; }
+  @media (max-width: 960px) {
+    .head h2, .head p { grid-column: 1 / -1; }
+  }
+  @media (max-width: 640px) {
+    .terms { grid-template-columns: 1fr; }
+    .terms .term:first-child { grid-row: auto; min-height: 260px; }
+    .term { min-height: 160px; }
+  }
+</style>

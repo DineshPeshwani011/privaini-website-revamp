@@ -1,0 +1,157 @@
+---
+// One customer story (the Bakkt case study or a use case), as a whole page:
+// hero with the account panel → the challenge and what tipped it → what Privaini did, beside a product
+// fragment → outcomes as figures → the customer's words (+ the full PDF where one exists) → other stories.
+// Pass a product fragment in the "figure" slot to replace the solution panel from the data.
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import PointList from '@/components/PointList.astro';
+import FactGrid from '@/components/FactGrid.astro';
+import QuoteBlock from '@/components/QuoteBlock.astro';
+import StoryIndex from '@/components/StoryIndex.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import type { Story } from '@/data/company-stories';
+
+interface Props { story: Story }
+const { story: s } = Astro.props;
+const hasFigure = Astro.slots.has('figure') || !!s.solution.panel;
+---
+<Base title={s.seo.title} description={s.seo.description}>
+  <PageHero title={s.hero.title} lead={s.hero.lead} secondary={{ label: 'All case studies', href: '/case-studies' }}>
+    <StatusPanel {...s.hero.panel} />
+  </PageHero>
+
+  <section class="section" aria-labelledby="challenge-h">
+    <div class="wrap">
+      <div class:list={['ch-head', { 'has-turn': !!s.challenge.turn }]} data-reveal-group>
+        <h2 id="challenge-h" data-split>{s.challenge.heading}</h2>
+        {s.challenge.turn && <p class="turn" data-reveal>{s.challenge.turn}</p>}
+      </div>
+      <PointList variant="columns" cols={3} items={s.challenge.items} />
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="solution-h">
+    <div class="wrap">
+      <h2 id="solution-h" class="sol-h" data-split>{s.solution.heading}</h2>
+      <div class:list={['sol-body', { 'has-figure': hasFigure }]}>
+        <div class="sol-copy" data-reveal-group>
+          <ul role="list" class="sol-list">
+            {s.solution.items.map((p) => (
+              <li data-reveal>
+                <h3>{p.title}</h3>
+                <p>{p.text}</p>
+              </li>
+            ))}
+          </ul>
+          {s.solution.note && <p class="sol-note" data-reveal>{s.solution.note}</p>}
+        </div>
+        {hasFigure && (
+          <figure class="sol-figure" data-reveal>
+            <div class="stage">
+              <slot name="figure">{s.solution.panel && <StatusPanel {...s.solution.panel} />}</slot>
+            </div>
+            {s.solution.caption && <figcaption>{s.solution.caption}</figcaption>}
+          </figure>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="numbers-h">
+    <div class="wrap">
+      <SectionHead id="numbers-h" title="By the numbers." text={s.numbers.text} />
+      <FactGrid items={s.numbers.items} />
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="voice-h">
+    <div class:list={['wrap', 'voice', { 'has-pdf': !!s.pdf }]}>
+      <h2 id="voice-h" class="sr-only">In the customer’s words</h2>
+      <div class="voice-quote"><QuoteBlock quote={s.quote} /></div>
+      {s.pdf && (
+        <div class="pdf" data-reveal-group>
+          <h3 data-reveal>{s.pdf.title}</h3>
+          <p data-reveal>{s.pdf.text}</p>
+          <div class="pdf-act" data-reveal>
+            <a class="btn btn--ghost" href={s.pdf.href} target="_blank" rel="noopener">Download the case study <span class="arrow" aria-hidden="true">↓</span></a>
+            <span class="pdf-meta">{s.pdf.meta}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="more-h">
+    <div class="wrap">
+      <SectionHead id="more-h" title="More case studies." link={{ label: 'All case studies', href: '/case-studies' }} />
+      <StoryIndex exclude={[s.key]} />
+    </div>
+  </section>
+
+  <CtaBlank after="From your domain name to statute-mapped findings." />
+</Base>
+
+<style>
+  /* challenge: the heading, and beside it the moment that made it urgent */
+  .ch-head {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 24px;
+    align-items: end; margin-bottom: clamp(48px, 6vw, 88px);
+  }
+  .ch-head h2 { grid-column: 1 / span 6; max-width: 22ch; }
+  .turn {
+    grid-column: 7 / span 6; font-size: clamp(21px, 1.85vw, 29px); line-height: 1.35; letter-spacing: -0.015em;
+    color: var(--ink); max-width: 34ch; text-wrap: pretty;
+  }
+
+  /* solution: what Privaini did, beside the fragment it produced */
+  .sol-h { max-width: 28ch; margin-bottom: clamp(48px, 6vw, 88px); }
+  .sol-body {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 56px; align-items: start;
+  }
+  .sol-copy { grid-column: 1 / -1; display: grid; gap: clamp(36px, 4vw, 56px); align-content: start; }
+  .has-figure .sol-copy { grid-column: 1 / span 6; }
+  .sol-list { display: grid; gap: clamp(32px, 3.4vw, 48px); }
+  .sol-body:not(.has-figure) .sol-list { grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); }
+  .sol-list li { display: grid; gap: 12px; }
+  .sol-list h3 { font-size: clamp(22px, 1.9vw, 30px); letter-spacing: -0.025em; line-height: 1.12; }
+  .sol-list p { color: var(--muted); font-size: 17px; line-height: 1.55; max-width: 50ch; }
+  .sol-note {
+    font-size: clamp(18px, 1.35vw, 21px); line-height: 1.45; color: var(--ink); max-width: 44ch;
+    padding: clamp(20px, 2vw, 28px); background: var(--bg-3); border-radius: var(--radius);
+  }
+  .sol-figure { grid-column: 8 / span 5; position: sticky; top: calc(var(--nav-h) + 32px); display: grid; gap: 16px; margin: 0; }
+  .stage {
+    background: var(--bg-3); border-radius: var(--radius); padding: clamp(20px, 3vw, 44px);
+    display: grid; justify-items: center;
+  }
+  .sol-figure figcaption { font-size: 14.5px; line-height: 1.5; color: var(--muted); max-width: 52ch; }
+
+  /* the customer's words, with the full study beside them */
+  .voice {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 56px; align-items: end;
+  }
+  .voice-quote { grid-column: 1 / span 8; }
+  .voice:not(.has-pdf) .voice-quote { grid-column: 1 / span 11; }
+  .pdf {
+    grid-column: 9 / span 4; display: grid; gap: 16px; justify-items: start;
+    background: var(--bg); border-radius: var(--radius); padding: clamp(22px, 2.4vw, 36px);
+  }
+  .pdf h3 { font-size: clamp(20px, 1.6vw, 25px); letter-spacing: -0.02em; line-height: 1.2; }
+  .pdf p { color: var(--muted); font-size: 16px; line-height: 1.5; }
+  .pdf-act { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 8px; }
+  .pdf-meta { font-size: 14px; color: var(--muted); }
+
+  @media (max-width: 960px) {
+    .ch-head h2, .turn { grid-column: 1 / -1; }
+    .has-figure .sol-copy, .sol-figure { grid-column: 1 / -1; }
+    .sol-figure { position: static; }
+    .sol-body:not(.has-figure) .sol-list { grid-template-columns: 1fr; }
+    .voice-quote, .voice:not(.has-pdf) .voice-quote, .pdf { grid-column: 1 / -1; }
+  }
+  @media (max-width: 480px) {
+    .stage { padding: 16px; margin-inline: calc(var(--margin) * -1); border-radius: 0; }
+  }
+</style>

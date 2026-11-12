@@ -1,0 +1,67 @@
+---
+// The argument held on the left while its figures run down the right as a ledger: each figure at
+// display size, its label and source beside it. (FactGrid sets figures as tiles; this sets them as rows.)
+import type { Fact } from '@/components/FactGrid.astro';
+interface Props {
+  id: string;
+  heading: string;
+  text?: string;
+  items: Fact[];
+  link?: { label: string; href: string };
+  tone?: 'plain' | 'raised';
+  accent?: boolean;
+}
+const { id, heading, text, items, link, tone = 'plain', accent = true } = Astro.props;
+---
+<section class:list={['fsx section', { 'section--raised': tone === 'raised' }]} aria-labelledby={id}>
+  <div class="wrap grid">
+    <div class="head" data-reveal-group>
+      <h2 id={id} data-split>{heading}</h2>
+      {text && <p data-reveal>{text}</p>}
+      {link && <a class="link" href={link.href} data-reveal>{link.label} <span class="arrow">→</span></a>}
+    </div>
+    <dl class:list={['ledger', { accent }]} data-reveal-group>
+      {items.map((f) => (
+        <div class="row" data-reveal>
+          <dt class="sr-only">{f.label}</dt>
+          <dd class="n nums" data-count={f.count} data-prefix={f.prefix} data-suffix={f.suffix} data-decimals={f.decimals}>{f.figure}</dd>
+          <dd class="meta">
+            <span class="l">{f.label}</span>
+            {f.href && <a class="link" href={f.href}>{f.linkLabel ?? 'Learn more'} <span class="arrow">→</span></a>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: start; row-gap: 40px; }
+  .head {
+    grid-column: 1 / span 5; padding-right: clamp(0px, 3vw, 48px); display: grid; gap: 20px; justify-items: start;
+    position: sticky; top: calc(var(--nav-h) + 32px);
+  }
+  .head h2 { font-size: clamp(30px, 3.2vw, 50px); }
+  .head p { color: var(--muted); font-size: clamp(17px, 1.25vw, 20px); line-height: 1.5; max-width: 38ch; }
+  .ledger { grid-column: 6 / span 7; display: grid; gap: 8px; margin: 0; }
+  .row {
+    display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); align-items: center; gap: var(--gap);
+    padding: clamp(22px, 2.6vw, 40px) clamp(20px, 2.4vw, 36px); background: var(--bg-2); border-radius: var(--radius);
+  }
+  .section--raised .row { background: var(--bg-3); }
+  .row dd { margin: 0; }
+  .n { font-size: clamp(56px, 6.2vw, 108px); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; white-space: nowrap; }
+  .accent .row:first-child .n { color: var(--accent-hi); }
+  .meta { display: grid; gap: 10px; justify-items: start; }
+  .l { font-size: 17px; line-height: 1.45; color: var(--muted); max-width: 30ch; }
+  .meta .link { font-size: 15px; }
+  @media (max-width: 960px) {
+    .head { grid-column: 1 / -1; position: static; padding-right: 0; }
+    .ledger { grid-column: 1 / -1; }
+  }
+  @media (max-width: 480px) {
+    .row { grid-template-columns: 9.25rem minmax(0, 1fr); padding: 20px 18px; }
+    .n { font-size: 42px; }
+    .l { font-size: 15.5px; }
+  }
+</style>

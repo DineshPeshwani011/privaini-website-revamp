@@ -1,0 +1,83 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import ExplainerSection from '@/components/ExplainerSection.astro';
+import FactGrid from '@/components/FactGrid.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import CategoryIndex from '@/components/platform/CategoryIndex.astro';
+import { sampleFindings, sampleReport } from '@/data/findings';
+const f = sampleFindings[0];
+---
+<Base
+  title="What We Find | Privaini"
+  description="The exposures regulators and litigators already see: eight finding categories, each mapped to a statute."
+>
+  <PageHero
+    title="What regulators already see."
+    lead="Eight finding categories, each mapped to a governing statute with reproducible, timestamped evidence: what regulators and litigators see from the outside."
+    secondary={{ label: 'How it works', href: '/how-it-works' }}
+  >
+    <StatusPanel
+      title="Sample finding"
+      subject={`${f.id} · High`}
+      rows={[
+        { label: 'Statute', value: f.law, state: 'ok' },
+        { label: 'Type', value: 'Video tracking, no consent', state: 'info' },
+        { label: 'Subject', value: 'Top-10 US health system', state: 'info' },
+      ]}
+      total={{ label: 'Severity', value: 'High', state: 'bad' }}
+    />
+  </PageHero>
+
+  <section class="section" aria-labelledby="cats-h">
+    <div class="wrap">
+      <SectionHead
+        id="cats-h"
+        title="The exposures we surface."
+        text="Eight categories. Every finding maps to a specific statute with evidence."
+      />
+      <CategoryIndex />
+    </div>
+  </section>
+
+  <ExplainerSection
+    name="exposure-scale"
+    tone="raised"
+    flip
+    figureTitle="Interactive figure: the sample report's exposure, finding by finding, and the phased plan that lowers it"
+    heading="What each finding could cost."
+    text={`Every finding carries a modeled exposure range. Privaini’s sample report for ${sampleReport.domain} totals ${sampleReport.total} across ${sampleReport.jurisdictions} jurisdictions.`}
+    points={[
+      { title: 'Statute-mapped', text: `${f.id} maps to ${f.statute}: ${f.perViolation}.` },
+      { title: 'Range-modeled', text: `Modeled from legal precedent, not guesswork: est. ${f.exposure} for ${f.id}.` },
+      { title: 'Phased', text: 'A remediation plan in phases, each mapped to a quantified reduction in exposure.' },
+    ]}
+  />
+
+  <section class="section" aria-labelledby="bakkt-h">
+    <div class="wrap">
+      <SectionHead
+        id="bakkt-h"
+        title="A sample outcome: Bakkt at scale."
+        text="A OneTrust user needing confidence across 22 global jurisdictions used Privaini as its outside-in verification layer."
+      />
+      <FactGrid
+        items={[
+          { figure: '22', count: 22, label: 'Jurisdictions managed' },
+          { figure: '1 FTE', label: 'Saved in compliance operations' },
+          { figure: '50%', count: 50, suffix: '%', label: 'Reduction in coordination overhead' },
+          { figure: '100+', count: 100, suffix: '+', label: 'Data sources in the assessment' },
+        ]}
+      />
+      <a class="link story" href="/bakkt-case-study">Read the Bakkt story <span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <CtaBlank after="From your domain name to statute-mapped findings. No sales pitch, no questionnaires, no IT lift." />
+</Base>
+
+<style>
+  .story { margin-top: clamp(28px, 3vw, 44px); }
+</style>

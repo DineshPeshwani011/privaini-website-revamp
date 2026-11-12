@@ -1,0 +1,205 @@
+---
+// Folio · the x-ray: an ordinary company website, drawn flat, with the Privaini lens passing over it. Inside the
+// lens the same page reads the way a regulator reads it: the code each part runs and the law that code meets.
+// mode "lens": the page and the lens, which tours the parts in turn (src/scripts/xray.ts).
+// mode "evidence": the whole page as the lens sees it, with no lens and no motion.
+// Every part is placed in container units on one grid, so the two readings line up at any size. Every corner is
+// square: the lens is the only round thing on a Folio page. Class names
+// carry an x- prefix so the site's own (.btn, .nav, .card…) never reach in.
+interface Props {
+  mode?: 'lens' | 'evidence';
+  /** dark (the default, for night grounds) or light: the same drawing with its colours turned over, for white grounds (/v5) */
+  theme?: 'dark' | 'light';
+  label?: string;
+}
+const { mode = 'lens', theme = 'dark', label = 'Illustration: a sample company website, and the Privaini lens showing the trackers behind it and the laws they meet.' } = Astro.props;
+
+// order: the lens's tour. law and note: what the tag beside the lens says. mag: the lens's magnification there
+// (lower on the long, thin parts so the whole reading fits inside it).
+const spots = [
+  { box: 'bar', where: 'request', code: 'GET /stories/knee-surgery   200   ·   14 third-party hosts contacted' },
+  { box: 'nav', order: 5, mag: 1.12, where: '/privacy', code: '“We never sell or share\nyour personal information.”', law: 'Policy gap', note: 'The policy says never. Fourteen ad partners receive data.' },
+  { box: 'copy', order: 3, where: 'on page load', code: 'Set-Cookie  _ga    09:27:40\nSet-Cookie  _fbp   09:27:40\nSet-Cookie  _hjid  09:27:41\nconsent     none recorded', law: 'GDPR Art. 7', note: 'Cookies are set before any consent.' },
+  { box: 'video', order: 1, where: 'video player', code: "fbq('track', 'ViewContent', {\n  content_ids: ['video_1142'],\n  content_name: 'knee-surgery'\n});", law: 'VPPA §2710', note: 'A pixel tells an ad platform which video each visitor watched.' },
+  { box: 'card1', order: 2, where: 'doctor search', code: 'canvas.toDataURL()\n+ navigator.userAgent\n= fp 7c1e9a…', law: 'CCPA §1798.100', note: 'A device fingerprint: tracking with no cookie at all.' },
+  { box: 'card2', order: 6, where: 'assistant', code: 'model: "gpt-4o"\ndisclosure: none', law: 'EU AI Act', note: 'An AI system talks to patients, with no disclosure.' },
+  { box: 'chat', order: 4, where: 'chat widget', code: 'rrweb.record({\n  emit: (e) => send(e)\n});', law: 'CIPA §631', note: 'Session replay records every keystroke typed into chat.' },
+  { box: 'cookie', order: 7, mag: 1.12, where: 'cookie banner', code: 'Accept all  1 click\nReject all  3 clicks', law: 'Dark pattern', note: 'Accepting takes one click. Refusing takes three.' },
+];
+const spot = (box: string) => {
+  const s = spots.find((p) => p.box === box)!;
+  return { 'data-xr-target': String(s.order), 'data-law': s.law, 'data-note': s.note, 'data-mag': s.mag ? String(s.mag) : undefined };
+};
+const inline = new Set(['bar', 'nav', 'cookie']);
+---
+<div class:list={['xr', `xr--${mode}`, { 'xr--light': theme === 'light' }]} data-xray={mode === 'lens' ? '' : undefined} role="img" aria-label={label}>
+  <div class="xr-page" data-xr-page aria-hidden="true">
+    {mode === 'lens' && (
+      <div class="xr-layer xr-site">
+        <div class="xb x-bar"><i></i><i></i><i></i><span class="x-url">your-company.com/stories/knee-surgery</span></div>
+        <div class="xb x-nav" {...spot('nav')}>
+          <b class="x-logo">yourcompany</b>
+          <span class="x-links"><span>Care</span><span>Stories</span><span>Locations</span><span>Privacy</span></span>
+          <span class="x-btn">Book a visit</span>
+        </div>
+        <div class="xb x-copy" {...spot('copy')}>
+          <span class="x-kicker">Patient stories</span>
+          <span class="x-h">Knee surgery,<br />explained.</span>
+          <span class="x-p">What to expect before, during and after, from the surgeons who do it every day.</span>
+          <span class="x-row"><span class="x-btn">Watch the story</span><span class="x-btn x-btn--line">Find a surgeon</span></span>
+        </div>
+        <div class="xb x-video" {...spot('video')}>
+          <span class="x-play"></span>
+          <span class="x-vcap">Knee surgery: what to expect</span>
+          <span class="x-vbar"><i></i></span>
+          <span class="x-vtime">1:08 / 4:12</span>
+        </div>
+        <div class="xb x-panel x-card1" {...spot('card1')}>
+          <span class="x-ct">Find a doctor near you</span>
+          <span class="x-fieldrow"><span class="x-field">ZIP code</span><span class="x-btn">Search</span></span>
+        </div>
+        <div class="xb x-panel x-card2" {...spot('card2')}>
+          <span class="x-ct">Ask our assistant <span class="x-ai">AI</span></span>
+          <span class="x-field">Describe your symptoms…</span>
+        </div>
+        <div class="xb x-panel x-chat" {...spot('chat')}>
+          <span class="x-ct">Chat with us <i class="x-live"></i></span>
+          <span class="x-bubble">Hi! How can we help today?</span>
+          <span class="x-field">Type a message</span>
+        </div>
+        <div class="xb x-cookie" {...spot('cookie')}>
+          <span>We use cookies to give you the best experience.</span>
+          <span class="x-lnk">Settings</span>
+          <span class="x-btn">Accept all</span>
+        </div>
+      </div>
+    )}
+    <div class="xr-layer xr-ev" data-xr-ev>
+      {spots.map((s) => (
+        <div class:list={['xb', 'x-ev', `x-${s.box}`, { 'x-inline': inline.has(s.box) }]}>
+          <span class="x-w">{s.where}</span>
+          <code>{s.code}</code>
+          {s.law && <span class="x-law">{s.law}</span>}
+        </div>
+      ))}
+    </div>
+  </div>
+  {mode === 'lens' && (
+    <>
+      <div class="xr-lens" data-xr-lens aria-hidden="true"><i class="xr-t xr-t1"></i><i class="xr-t xr-t2"></i><i class="xr-t xr-t3"></i><i class="xr-t xr-t4"></i></div>
+      <div class="xr-tag" data-xr-tag aria-hidden="true"><span class="xr-tag-law" data-xr-law></span><span class="xr-tag-note" data-xr-note></span></div>
+    </>
+  )}
+</div>
+
+<style>
+  /* the drawing's colours: dark by default; light turns them over for a white ground */
+  .xr {
+    position: relative; width: 100%;
+    --xr-ink: 232, 236, 233; --xr-ground: #11181a; --xr-bar: #0d1314; --xr-video: #1b2528;
+    --xr-ev-ground: #0d2a30; --xr-ev-wash: rgba(7, 188, 212, 0.07); --xr-ev-line: rgba(103, 214, 230, 0.5); --xr-code: #e8ece9;
+    --xr-ev-dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='1.4' height='1.4' fill='%2367d6e6' fill-opacity='.3'/%3E%3C/svg%3E");
+    --xr-law: var(--cyan-soft, #67d6e6); --xr-lens: var(--cyan-soft, #67d6e6); --xr-lens-2: rgba(103, 214, 230, 0.28);
+    --xr-tag: rgba(11, 15, 16, 0.94); --xr-note: #98a3a2;
+  }
+  .xr--light {
+    --xr-ink: 26, 26, 26; --xr-ground: #ffffff; --xr-bar: #f1f1f1; --xr-video: #e8ebeb;
+    --xr-ev-ground: #eaf8fa; --xr-ev-wash: rgba(7, 188, 212, 0.1); --xr-ev-line: rgba(10, 127, 145, 0.55); --xr-code: #1a1a1a;
+    --xr-ev-dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Crect width='1.4' height='1.4' fill='%230a7f91' fill-opacity='.3'/%3E%3C/svg%3E");
+    --xr-law: #0a7f91; --xr-lens: #07bcd4; --xr-lens-2: rgba(7, 188, 212, 0.35);
+    --xr-tag: #ffffff; --xr-note: #656b6b;
+  }
+  .xr-page {
+    position: relative; width: 100%; aspect-ratio: 100 / 70; container-type: inline-size; overflow: hidden;
+    border: 1px solid rgba(var(--xr-ink), 0.14); background: var(--xr-ground);
+  }
+  .xr-layer { position: absolute; inset: 0; }
+
+  /* one grid for both readings: every part is placed in container units */
+  .xb { position: absolute; box-sizing: border-box; margin: 0; }
+  .x-bar { top: 0; left: 0; width: 100cqw; height: 3.6cqw; }
+  .x-nav { top: 5.6cqw; left: 4cqw; width: 92cqw; height: 4.4cqw; }
+  .x-copy { top: 15cqw; left: 4cqw; width: 38cqw; height: 26cqw; }
+  .x-video { top: 14cqw; left: 45cqw; width: 51cqw; height: 28.7cqw; }
+  .x-card1 { top: 46cqw; left: 4cqw; width: 29cqw; height: 14.5cqw; }
+  .x-card2 { top: 46cqw; left: 35.5cqw; width: 29cqw; height: 14.5cqw; }
+  .x-chat { top: 46cqw; left: 67cqw; width: 29cqw; height: 14.5cqw; }
+  .x-cookie { top: 63.5cqw; left: 4cqw; width: 92cqw; height: 4.6cqw; }
+
+  /* ---- the site, as its visitors see it: a quiet, ordinary page ---- */
+  .xr-site { color: rgba(var(--xr-ink), 0.5); font: 500 1.15cqw/1.4 var(--font); }
+  .xr-site .x-bar { display: flex; align-items: center; gap: 0.7cqw; padding: 0 1.4cqw; background: var(--xr-bar); border-bottom: 1px solid rgba(var(--xr-ink), 0.08); }
+  .xr-site .x-bar i { width: 0.8cqw; height: 0.8cqw; background: rgba(var(--xr-ink), 0.16); }
+  .x-url { margin-left: 2cqw; padding: 0.45cqw 1.6cqw; background: rgba(var(--xr-ink), 0.06); font-size: 1cqw; line-height: 1; color: rgba(var(--xr-ink), 0.45); }
+  .xr-site .x-nav { display: flex; align-items: center; gap: 3cqw; }
+  .x-logo { font-size: 1.8cqw; font-weight: 700; letter-spacing: -0.05em; color: rgba(var(--xr-ink), 0.82); }
+  .x-links { display: flex; gap: 2.4cqw; margin-left: auto; }
+  .x-btn { display: inline-flex; align-items: center; padding: 0.7cqw 1.5cqw; background: rgba(var(--xr-ink), 0.85); color: var(--xr-ground); font-weight: 600; font-size: 1.05cqw; line-height: 1; white-space: nowrap; }
+  .x-btn--line { background: transparent; color: rgba(var(--xr-ink), 0.7); box-shadow: inset 0 0 0 1px rgba(var(--xr-ink), 0.3); }
+  .xr-site .x-copy { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 1.6cqw; }
+  .x-kicker { font-size: 1cqw; letter-spacing: 0.12em; text-transform: uppercase; }
+  .x-h { font-size: 3.9cqw; font-weight: 600; line-height: 1.02; letter-spacing: -0.045em; color: rgba(var(--xr-ink), 0.9); }
+  .x-p { font-size: 1.3cqw; line-height: 1.5; max-width: 30cqw; }
+  .x-row { display: flex; gap: 1cqw; }
+  .xr-site .x-video { background: var(--xr-video); overflow: hidden; }
+  .x-play { position: absolute; left: 50%; top: 46%; width: 6.4cqw; height: 6.4cqw; translate: -50% -50%; box-shadow: inset 0 0 0 1px rgba(var(--xr-ink), 0.45); }
+  .x-play::after { content: ''; position: absolute; left: 41%; top: 31%; border-style: solid; border-width: 1.25cqw 0 1.25cqw 2cqw; border-color: transparent transparent transparent rgba(var(--xr-ink), 0.75); }
+  .x-vcap { position: absolute; left: 2cqw; top: 1.8cqw; font-size: 1.2cqw; color: rgba(var(--xr-ink), 0.7); }
+  .x-vbar { position: absolute; left: 2cqw; right: 9cqw; bottom: 2.2cqw; height: 0.3cqw; background: rgba(var(--xr-ink), 0.16); }
+  .x-vbar i { display: block; width: 26%; height: 100%; background: rgba(var(--xr-ink), 0.7); }
+  .x-vtime { position: absolute; right: 2cqw; bottom: 1.6cqw; font-size: 1cqw; }
+  .x-panel { display: flex; flex-direction: column; justify-content: space-between; padding: 1.5cqw; background: rgba(var(--xr-ink), 0.035); box-shadow: inset 0 0 0 1px rgba(var(--xr-ink), 0.09); }
+  .x-ct { display: flex; align-items: center; gap: 0.8cqw; font-size: 1.4cqw; font-weight: 600; letter-spacing: -0.02em; color: rgba(var(--xr-ink), 0.8); }
+  .x-ai { padding: 0.25cqw 0.6cqw; font-size: 0.85cqw; line-height: 1; box-shadow: inset 0 0 0 1px rgba(var(--xr-ink), 0.3); }
+  .x-live { width: 0.7cqw; height: 0.7cqw; background: rgba(var(--xr-ink), 0.6); }
+  .x-fieldrow { display: flex; align-items: center; gap: 0.8cqw; }
+  .x-field { flex: 1; padding: 0.85cqw 1cqw; box-shadow: inset 0 0 0 1px rgba(var(--xr-ink), 0.14); font-size: 1.05cqw; line-height: 1; color: rgba(var(--xr-ink), 0.35); }
+  .x-chat .x-field { flex: none; }
+  .x-bubble { align-self: flex-start; padding: 0.7cqw 1.1cqw; background: rgba(var(--xr-ink), 0.08); font-size: 1.05cqw; line-height: 1.2; color: rgba(var(--xr-ink), 0.65); }
+  .xr-site .x-cookie { display: flex; align-items: center; gap: 2cqw; padding: 0 0.6cqw 0 1.4cqw; background: rgba(var(--xr-ink), 0.07); }
+  .x-lnk { margin-left: auto; text-decoration: underline; text-underline-offset: 0.3cqw; }
+
+  /* ---- the same page through the lens: what each part runs, and the law it meets ---- */
+  .xr-ev {
+    background: var(--xr-ev-dots) 0 0 / 1.6cqw 1.6cqw, var(--xr-ev-ground);
+    will-change: clip-path, transform;
+  }
+  .xr--lens .xr-ev { clip-path: circle(0 at 50% 50%); }
+  .xr--evidence .xr-page { background: var(--xr-ev-ground); }
+  /* each reading sits in the middle of its part, where the lens settles */
+  .x-ev {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.8cqw; padding: 1cqw 1.3cqw;
+    border: 1px dashed var(--xr-ev-line); background: var(--xr-ev-wash);
+  }
+  .x-ev.x-inline { flex-direction: row; gap: 1.8cqw; padding-block: 0; }
+  .x-ev.x-bar { border-width: 0 0 1px; justify-content: flex-start; padding-inline: 1.4cqw; }
+  .x-w { font: 600 0.9cqw/1 var(--font); letter-spacing: 0.1em; text-transform: uppercase; color: rgba(var(--xr-ink), 0.6); white-space: nowrap; }
+  .x-ev code { font: 400 1.12cqw/1.5 var(--mono); font-variant-ligatures: none; white-space: pre; color: var(--xr-code); }
+  .x-law { font: italic 300 2.1cqw/1 var(--font); letter-spacing: -0.02em; color: var(--xr-law); white-space: nowrap; }
+  .x-inline .x-law { font-size: 1.7cqw; }
+
+  /* ---- the lens and its tag: the lens is round, its tag square ---- */
+  .xr-lens {
+    position: absolute; left: 0; top: 0; width: 0; height: 0; border-radius: 50%; pointer-events: none;
+    box-shadow: inset 0 0 0 1.5px var(--xr-lens); will-change: transform;
+  }
+  .xr-lens::before { content: ''; position: absolute; inset: -9px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--xr-lens-2); }
+  .xr-t { position: absolute; background: var(--xr-lens); }
+  .xr-t1, .xr-t3 { left: 50%; width: 1px; height: 9px; }
+  .xr-t2, .xr-t4 { top: 50%; width: 9px; height: 1px; }
+  .xr-t1 { top: -18px; } .xr-t3 { bottom: -18px; } .xr-t2 { right: -18px; } .xr-t4 { left: -18px; }
+  .xr-tag {
+    position: absolute; left: 0; top: 0; z-index: 1; display: grid; gap: 6px; width: max-content; max-width: 250px; padding: 12px 15px;
+    background: var(--xr-tag); border: 1px solid rgba(var(--xr-ink), 0.16);
+    opacity: 0; transition: opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1); pointer-events: none; will-change: transform;
+  }
+  .xr-tag.on { opacity: 1; }
+  .xr-tag.away { opacity: 0; transition-duration: 0.2s; }
+  .xr-tag-law { font: italic 300 22px/1 var(--font); letter-spacing: -0.02em; color: var(--xr-law); }
+  .xr-tag-note { font: 400 13.5px/1.45 var(--font); color: var(--xr-note); }
+  @media (max-width: 599px) {
+    .xr-tag { max-width: 190px; padding: 10px 12px; }
+    .xr-tag-law { font-size: 18px; }
+    .xr-tag-note { font-size: 12.5px; }
+  }
+</style>

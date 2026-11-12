@@ -1,0 +1,99 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import ExplainerSection from '@/components/ExplainerSection.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import Timeline from '@/components/Timeline.astro';
+import FactGrid from '@/components/FactGrid.astro';
+import PointList from '@/components/PointList.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+---
+<Base
+  title="The Privacy Risk Gap | Privaini"
+  description="Inside-out tools manage what companies report. Regulators observe from outside. That gap is where risk lives."
+>
+  <PageHero
+    title="If the stack worked, fines wouldn’t climb."
+    lead="Inside-out tools manage what a company reports about itself. Regulators and litigators observe from the outside, and that’s where the gap lives."
+  >
+    <StatusPanel
+      title="Inside-out vs outside-in"
+      subject="the gap"
+      rows={[
+        { label: 'Inside-out tools', value: 'report only', state: 'warn' },
+        { label: 'Regulators', value: 'observe outside', state: 'ok' },
+        { label: 'Litigators', value: 'observe outside', state: 'ok' },
+      ]}
+      total={{ label: 'Coverage gap', value: 'Wide', state: 'bad' }}
+    />
+  </PageHero>
+
+  <ExplainerSection
+    name="policy-practice-gap"
+    figureTitle="Interactive figure: what a privacy policy declares, set against what each page is observed to do"
+    heading="Where inside-out tools stop seeing."
+    text="Inside-out tools manage what a company reports about itself. Regulators and litigators observe what its properties actually do, from the outside."
+    points={[
+      { title: 'Inside-out tools', text: 'Report only: the declaration, as the company writes it.' },
+      { title: 'Regulators and litigators', text: 'Observe outside: consent flows, tracker behavior, and policy-practice gaps.' },
+      { title: 'The gap', text: 'Everything a property does that its declaration leaves out. That is where the risk lives.' },
+    ]}
+  />
+
+  <section class="section section--raised" aria-labelledby="era-h">
+    <div class="wrap">
+      <SectionHead
+        id="era-h"
+        title="From compliance era to litigation crisis."
+        text="Each phase raised the stakes. The inside-out tools didn’t keep pace."
+      />
+      <Timeline
+        items={[
+          { when: 'Pre-2020 · Compliance era', title: 'Documentation-first', text: 'GDPR/CCPA era. Inside-out tools manage what a company reports about itself.' },
+          { when: '2020–2023 · Expansion', title: '90 countries, 20 US states', text: 'Fines climb into the billions. Statutes multiply faster than internal tools adapt.' },
+          { when: '2024+ · Litigation crisis', title: 'Outside-in enforcement', text: 'Consent flows, tracker behavior, and policy-practice gaps observed and litigated from the outside.' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="num-h">
+    <div class="wrap">
+      <SectionHead
+        id="num-h"
+        title="Privacy enforcement numbers that keep climbing."
+        text="These aren’t outliers. They’re what happens when observation happens from the outside."
+      />
+      <FactGrid
+        items={[
+          { figure: '$7B+', count: 7, prefix: '$', suffix: 'B+', label: 'in global privacy fines and settlements since 2020' },
+          { figure: '$11.5M', count: 11.5, decimals: 1, prefix: '$', suffix: 'M', label: 'Average BIPA & VPPA settlement' },
+          { figure: '$1.9M', count: 1.9, decimals: 1, prefix: '$', suffix: 'M', label: 'Average wrongful collection claim' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="section section--raised" aria-labelledby="forces-h">
+    <div class="wrap">
+      <SectionHead
+        id="forces-h"
+        title="Five forces making privacy risk harder to manage."
+        text="Privaini closes the observation gap, continuously, from the outside in."
+      />
+      <PointList
+        variant="index"
+        items={[
+          { title: 'Digital asset surface area', text: 'Microsites, subdomains, mobile apps, and third-party tools multiply faster than teams can track.' },
+          { title: 'Jurisdiction complexity', text: '90 countries, 20 US states, 19 more pending: same behavior, different rules.' },
+          { title: 'Statute specialization', text: 'HIPAA, GLBA, FERPA, VPPA, COPPA, CIPA: each with distinct triggers.' },
+          { title: 'Continuous change', text: 'Consent standards and enforcement shift constantly; static audits go stale fast.' },
+          { title: 'The observation gap', text: 'Internal tools can’t see what regulators and litigators see from the outside.' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <CtaBlank />
+</Base>

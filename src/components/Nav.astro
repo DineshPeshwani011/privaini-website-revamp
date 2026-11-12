@@ -1,0 +1,263 @@
+---
+import Wordmark from './Wordmark.astro';
+import { mainNav, PLATFORM_URL, DEMO_URL, statutes, type NavGroup, type NavLink } from '@/data/site';
+
+interface Props {
+  /** the top-level entries; every page but a candidate home page uses the site's own (mainNav) */
+  items?: (NavGroup | NavLink)[];
+}
+const { items = mainNav } = Astro.props;
+const path = Astro.url.pathname.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const isActive = (href?: string, items: { href: string }[] = []) =>
+  !!href && (path === href || items.some((i) => i.href === path));
+---
+<header class="nav" data-nav>
+  <div class="nav-bar wrap">
+    <a href="/" class="brand" aria-label="Privaini home"><Wordmark size="md" /></a>
+
+    <nav class="links" aria-label="Main">
+      <ul role="list">
+        {items.map((entry) =>
+          'items' in entry ? (
+            <li class="has-menu" data-menu>
+              <button class:list={['top', { active: isActive(entry.href, entry.items) }]} aria-expanded="false" aria-controls={`menu-${entry.label}`} data-menu-toggle>
+                {entry.label}
+                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 3.5 5 6.5 8 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+              </button>
+              <div class="menu" id={`menu-${entry.label}`} data-menu-panel>
+                <div class="menu-inner">
+                  <ul role="list" class:list={['menu-list', { 'menu-list--notes': entry.items.some((i) => i.note) }]}>
+                    {entry.items.map((item) => (
+                      <li>
+                        <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
+                          <span class="menu-label">{item.label}</span>
+                          {item.note && <span class="menu-note">{item.note}</span>}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                  {entry.label === 'Platform' && (
+                    <div class="menu-side">
+                      <p class="menu-side-title">Statutes we map</p>
+                      <ul role="list">
+                        {statutes.map((s) => <li><a href={s.href}>{s.label}</a></li>)}
+                      </ul>
+                    </div>
+                  )}
+                  {entry.href && (
+                    <a class="menu-all" href={entry.href}>
+                      {entry.label === 'Partners' ? 'Partner program' : entry.label === 'Solutions' ? 'All solutions' : 'Platform overview'} <span class="arrow">→</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            </li>
+          ) : (
+            <li><a class:list={['top', { active: isActive(entry.href) }]} href={entry.href}>{entry.label}</a></li>
+          ),
+        )}
+      </ul>
+    </nav>
+
+    <div class="cta">
+      <button class="theme" type="button" data-theme-toggle aria-label="Switch colour theme" title="Switch colour theme">
+        <svg class="sun" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6" /><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" /></svg>
+        <svg class="moon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" /></svg>
+      </button>
+      <a class="login" href={PLATFORM_URL}>Log in</a>
+      <a class="btn btn--sm" href={DEMO_URL}>See your exposure</a>
+      <button class="burger" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu" data-burger>
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile" id="mobile-menu" data-mobile hidden>
+    <div class="wrap mobile-inner">
+      {items.map((entry) =>
+        'items' in entry ? (
+          <details class="m-group">
+            <summary>{entry.label}</summary>
+            <ul role="list">
+              {entry.href && <li><a href={entry.href}>{entry.label === 'Partners' ? 'Partner program' : entry.label === 'Solutions' ? 'All solutions' : 'Platform overview'}</a></li>}
+              {entry.items.filter((i) => i.href !== entry.href).map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+            </ul>
+          </details>
+        ) : (
+          <a class="m-link" href={entry.href}>{entry.label}</a>
+        ),
+      )}
+      <details class="m-group">
+        <summary>Statutes</summary>
+        <ul role="list">{statutes.map((s) => <li><a href={s.href}>{s.label}</a></li>)}</ul>
+      </details>
+      <a class="m-link" href="/blog">Blog</a>
+      <div class="m-actions">
+        <a class="btn" href={DEMO_URL}>See your exposure <span class="arrow">→</span></a>
+        <a class="btn btn--ghost" href={PLATFORM_URL}>Log in</a>
+        <button class="btn btn--ghost" type="button" data-theme-toggle>Switch to <span data-theme-next>dark</span> theme</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]')!;
+  const menus = [...document.querySelectorAll<HTMLElement>('[data-menu]')];
+  const close = (except?: HTMLElement) =>
+    menus.forEach((m) => {
+      if (m === except) return;
+      m.classList.remove('open');
+      m.querySelector('[data-menu-toggle]')?.setAttribute('aria-expanded', 'false');
+    });
+  const fine = matchMedia('(hover: hover) and (pointer: fine)');
+  menus.forEach((menu) => {
+    const toggle = menu.querySelector<HTMLButtonElement>('[data-menu-toggle]')!;
+    let timer = 0;
+    const open = () => { clearTimeout(timer); close(menu); menu.classList.add('open'); toggle.setAttribute('aria-expanded', 'true'); };
+    const later = () => { timer = window.setTimeout(() => close(), 140); };
+    toggle.addEventListener('click', () => (menu.classList.contains('open') ? close() : open()));
+    menu.addEventListener('pointerenter', () => fine.matches && open());
+    menu.addEventListener('pointerleave', () => fine.matches && later());
+    menu.addEventListener('focusout', (e) => { if (!menu.contains(e.relatedTarget as Node)) close(); });
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { close(); setMobile(false); } });
+  document.addEventListener('click', (e) => { if (!nav.contains(e.target as Node)) close(); });
+
+  const burger = nav.querySelector<HTMLButtonElement>('[data-burger]')!;
+  const mobile = nav.querySelector<HTMLElement>('[data-mobile]')!;
+  const setMobile = (on: boolean) => {
+    mobile.hidden = !on;
+    burger.setAttribute('aria-expanded', String(on));
+    burger.setAttribute('aria-label', on ? 'Close menu' : 'Open menu');
+    nav.classList.toggle('menu-open', on);
+    document.documentElement.classList.toggle('no-scroll', on);
+    window.dispatchEvent(new CustomEvent(on ? 'privaini:scroll-stop' : 'privaini:scroll-start'));
+  };
+  burger.addEventListener('click', () => setMobile(mobile.hidden));
+
+  // theme: light (white ground, brand-teal text) or dark; chosen before paint in Base.astro
+  const html = document.documentElement;
+  const syncThemeUi = () => {
+    const next = html.dataset.theme === 'light' ? 'dark' : 'light';
+    nav.querySelectorAll('[data-theme-next]').forEach((n) => (n.textContent = next));
+    nav.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((b) => b.setAttribute('aria-label', `Switch to ${next} theme`));
+  };
+  nav.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((b) =>
+    b.addEventListener('click', () => {
+      const t = html.dataset.theme === 'light' ? 'dark' : 'light';
+      html.dataset.theme = t;
+      try { localStorage.setItem('privaini-theme', t); } catch { /* private mode */ }
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', t === 'light' ? '#ffffff' : '#061923');
+      syncThemeUi();
+      window.dispatchEvent(new CustomEvent('privaini:theme', { detail: t }));
+    }),
+  );
+  syncThemeUi();
+
+  // the nav stays light-on-dark while it sits over a dark stage (the lens hero)
+  const darkStages = [...document.querySelectorAll<HTMLElement>('[data-nav-dark]')];
+  let last = 0;
+  const onScroll = () => {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 8);
+    const h = nav.offsetHeight || 72;
+    nav.classList.toggle('theme-dark', darkStages.some((s) => { const r = s.getBoundingClientRect(); return r.top <= 1 && r.bottom > h; }));
+    if (!nav.classList.contains('menu-open') && !nav.matches(':focus-within')) {
+      nav.classList.toggle('tucked', y > 240 && y > last);
+    }
+    last = y;
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+<style>
+  .nav {
+    position: fixed; inset: 0 0 auto; z-index: 50;
+    transition: transform 0.45s var(--ease-out), background-color 0.3s;
+  }
+  .nav.scrolled { background: var(--bg); }
+  .nav.tucked { transform: translateY(-100%); }
+  .nav.menu-open { background: var(--bg); }
+  .nav-bar { height: var(--nav-h); display: flex; align-items: center; gap: 32px; }
+  .brand { display: inline-flex; padding: 6px 0; }
+  .links { margin-left: auto; }
+  .links > ul { display: flex; gap: 4px; }
+  .top {
+    display: inline-flex; align-items: center; gap: 7px; height: 40px; padding: 0 12px;
+    font-size: 15px; font-weight: 500; color: var(--ink); border-radius: var(--radius);
+    transition: color 0.2s, background-color 0.2s;
+  }
+  .top svg { transition: transform 0.3s var(--ease-out); opacity: 0.7; }
+  .top:hover, .has-menu.open .top { background: var(--bg-3); }
+  .has-menu.open .top svg { transform: rotate(180deg); }
+  .top.active { color: var(--accent-hi); }
+  .has-menu { position: relative; }
+  .menu { position: absolute; top: calc(100% + 10px); left: -12px; display: none; }
+  .menu::before { content: ''; position: absolute; inset: -12px 0 auto; height: 12px; }
+  .has-menu.open .menu { display: block; animation: menu-in 0.32s var(--ease-out); }
+  @keyframes menu-in { from { opacity: 0; transform: translateY(-6px); } }
+  .menu-inner {
+    display: grid; grid-template-columns: auto; gap: 4px;
+    min-width: 280px; padding: 10px; background: var(--bg-2); border-radius: 8px;
+    box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.7);
+  }
+  .has-menu:first-child .menu-inner { grid-template-columns: 340px 200px; }
+  .menu-list a { display: grid; gap: 2px; padding: 10px 12px; border-radius: 5px; transition: background-color 0.2s; }
+  .menu-list a:hover, .menu-list a[aria-current='page'] { background: var(--bg-4); }
+  .menu-list--notes { min-width: 320px; }
+  .menu-label { font-size: 15px; font-weight: 600; }
+  .menu-note { font-size: 13.5px; color: var(--muted); line-height: 1.35; }
+  .menu-side { padding: 10px 12px; background: var(--bg-3); border-radius: 6px; }
+  .menu-side-title { font-size: 13.5px; color: var(--muted); margin-bottom: 8px; }
+  .menu-side a { display: block; padding: 5px 0; font-size: 14.5px; font-weight: 500; }
+  .menu-side a:hover { color: var(--accent-hi); }
+  .menu-all {
+    grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center;
+    padding: 12px; margin-top: 2px; border-radius: 5px; background: var(--bg-3);
+    font-size: 14.5px; font-weight: 600; color: var(--accent-hi);
+  }
+  .menu-all:hover { background: var(--bg-4); }
+  .cta { display: flex; align-items: center; gap: 20px; }
+  .nav.scrolled:not(.theme-dark) { box-shadow: 0 1px 0 var(--ui-line); }
+  .theme {
+    width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%;
+    color: var(--muted); transition: color 0.2s, background-color 0.2s;
+  }
+  .theme:hover { color: var(--ink); background: var(--bg-3); }
+  .theme .moon { display: none; }
+  :global([data-theme='light']) .theme .sun { display: none; }
+  :global([data-theme='light']) .theme .moon { display: block; }
+  .login { font-size: 15px; font-weight: 500; color: var(--muted); transition: color 0.2s; }
+  .login:hover { color: var(--ink); }
+  .burger { display: none; width: 44px; height: 44px; position: relative; border-radius: var(--radius); }
+  .burger span { position: absolute; left: 12px; right: 12px; height: 1.5px; background: var(--ink); transition: transform 0.35s var(--ease-out); }
+  .burger span:first-child { top: 17px; }
+  .burger span:last-child { top: 25px; }
+  .burger[aria-expanded='true'] span:first-child { transform: translateY(4px) rotate(45deg); }
+  .burger[aria-expanded='true'] span:last-child { transform: translateY(-4px) rotate(-45deg); }
+
+  .mobile { position: fixed; inset: var(--nav-h) 0 0; background: var(--bg); overflow-y: auto; overscroll-behavior: contain; }
+  .mobile-inner { display: grid; padding-block: 16px 48px; }
+  .m-link, .m-group summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; cursor: pointer; list-style: none;
+  }
+  .m-group summary::-webkit-details-marker { display: none; }
+  .m-group summary::after { content: '+'; font-weight: 400; color: var(--muted); transition: transform 0.3s var(--ease-out); }
+  .m-group[open] summary::after { transform: rotate(45deg); }
+  .m-group ul { display: grid; gap: 2px; padding: 0 0 16px; }
+  .m-group a { display: block; padding: 8px 0; font-size: 18px; color: var(--muted); }
+  .m-group a:hover { color: var(--ink); }
+  .m-actions { display: grid; gap: 10px; margin-top: 28px; }
+
+  @media (max-width: 1080px) {
+    .links, .login { display: none; }
+    .burger { display: inline-block; }
+    .cta { margin-left: auto; gap: 8px; }
+  }
+  @media (max-width: 420px) {
+    .cta .btn { display: none; }
+  }
+</style>

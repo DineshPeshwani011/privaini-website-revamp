@@ -1,0 +1,78 @@
+---
+// Autofocus: four corner brackets follow the pointer and lock onto whatever it points at — a link, a
+// button, a product panel — the way a camera's focus box finds its subject. Fine pointers only; the
+// native cursor stays. Off under reduced motion.
+---
+<div class="af" aria-hidden="true" data-af>
+  <i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i>
+  <span class="dot"></span>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>('[data-af]');
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (el && fine && !reduce) {
+    const TARGETS = 'a, button, input, select, textarea, summary, label, [data-ui], [role="tab"], [data-focus]';
+    const cur = { x: innerWidth / 2, y: innerHeight / 2, w: 28, h: 28 };
+    const want = { ...cur };
+    let px = cur.x, py = cur.y, locked: Element | null = null, raf = 0, shown = false;
+
+    const aim = () => {
+      if (locked && locked.isConnected) {
+        const r = locked.getBoundingClientRect();
+        const pad = locked.matches('[data-ui]') ? 10 : 7;
+        want.x = r.left + r.width / 2; want.y = r.top + r.height / 2;
+        want.w = r.width + pad * 2; want.h = r.height + pad * 2;
+      } else {
+        want.x = px; want.y = py; want.w = 28; want.h = 28;
+      }
+    };
+    const tick = () => {
+      aim();
+      const k = locked ? 0.22 : 0.32;
+      cur.x += (want.x - cur.x) * k; cur.y += (want.y - cur.y) * k;
+      cur.w += (want.w - cur.w) * 0.2; cur.h += (want.h - cur.h) * 0.2;
+      el.style.transform = `translate3d(${cur.x - cur.w / 2}px, ${cur.y - cur.h / 2}px, 0)`;
+      el.style.width = `${cur.w}px`;
+      el.style.height = `${cur.h}px`;
+      const settled = Math.abs(want.x - cur.x) + Math.abs(want.y - cur.y) + Math.abs(want.w - cur.w) + Math.abs(want.h - cur.h) < 0.5;
+      raf = settled ? 0 : requestAnimationFrame(tick);
+    };
+    const run = () => { if (!raf) raf = requestAnimationFrame(tick); };
+
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      px = e.clientX; py = e.clientY;
+      const t = (e.target as Element | null)?.closest?.(TARGETS) ?? null;
+      const big = t && t.getBoundingClientRect();
+      const next = t && big && big.width < innerWidth * 0.8 && big.height < innerHeight * 0.8 ? t : null;
+      if (next !== locked) { locked = next; el.classList.toggle('lock', !!locked); el.classList.toggle('panel', !!locked?.matches('[data-ui]')); }
+      if (!shown) { shown = true; el.classList.add('on'); }
+      run();
+    }, { passive: true });
+    addEventListener('scroll', run, { passive: true });
+    document.documentElement.addEventListener('pointerleave', () => { shown = false; el.classList.remove('on'); });
+    addEventListener('pointerdown', () => el.classList.add('press'));
+    addEventListener('pointerup', () => el.classList.remove('press'));
+  }
+</script>
+
+<style>
+  .af {
+    position: fixed; left: 0; top: 0; z-index: 95; width: 28px; height: 28px; pointer-events: none;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .af.on { opacity: 1; }
+  .c { position: absolute; width: 9px; height: 9px; border: 0 solid var(--accent-hi); transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), border-color 0.3s; }
+  .tl { left: 0; top: 0; border-left-width: 1.5px; border-top-width: 1.5px; }
+  .tr { right: 0; top: 0; border-right-width: 1.5px; border-top-width: 1.5px; }
+  .bl { left: 0; bottom: 0; border-left-width: 1.5px; border-bottom-width: 1.5px; }
+  .br { right: 0; bottom: 0; border-right-width: 1.5px; border-bottom-width: 1.5px; }
+  .dot { position: absolute; left: 50%; top: 50%; width: 3px; height: 3px; margin: -1.5px; border-radius: 50%; background: var(--accent-hi); transition: opacity 0.2s; }
+  .lock .dot { opacity: 0; }
+  .lock .c { width: 12px; height: 12px; }
+  .panel .c { width: 18px; height: 18px; border-color: rgba(94, 230, 245, 0.85); }
+  .press .c { border-color: var(--strong); }
+  @media (hover: none), (pointer: coarse) { .af { display: none; } }
+</style>

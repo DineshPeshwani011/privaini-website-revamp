@@ -1,0 +1,85 @@
+---
+// Folio · the footer as the current privaini.com sets it out (the /v4 candidate home page): the address and
+// contacts on the left, then four columns: the main pages, Solutions, Partners and Legal. Night, square, Urbanist.
+// Used through Base's "footer" slot; every other page keeps src/components/Footer.astro. /v5 passes `flat`.
+import Wordmark from '@/components/Wordmark.astro';
+import { solutions, partners, legal, contact } from '@/data/site';
+
+interface Props {
+  /** Flat (/v5): column titles set plain, and the name set across the whole width as the page's close */
+  flat?: boolean;
+}
+const { flat = false } = Astro.props;
+
+const year = new Date().getFullYear();
+const main = [
+  { label: 'Risk Intelligence', href: '/risk-intelligence' },
+  { label: 'Platform', href: '/platform-overview' },
+  { label: 'Company', href: '/about-us' },
+  { label: 'Resources', href: '/resources' },
+];
+// "Privacy Settings": this build sets no cookies, so there is nothing to switch; the link explains that
+const legalLinks = [...legal, { label: 'Privacy Settings', href: '/cookie-notice' }];
+---
+<footer class:list={['ff is-night', { 'ff--flat': flat }]} data-nav-dark>
+  <div class="wrap ff-grid">
+    <div class="ff-intro">
+      <a href="/" class="ff-mark" aria-label="Privaini home"><Wordmark size="md" /></a>
+      <address>{contact.address.map((line) => <span>{line}</span>)}</address>
+      <p class="ff-mail">
+        <span>Sales: <a href={`mailto:${contact.sales}`}>{contact.sales}</a></span>
+        <span>Support: <a href={`mailto:${contact.support}`}>{contact.support}</a></span>
+      </p>
+      <p class="ff-copy">© {year} Privaini Inc. All rights reserved.</p>
+    </div>
+    <nav class="ff-col ff-main" aria-label="Main pages">
+      <ul role="list">{main.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+    <nav class="ff-col" aria-label="Solutions">
+      <p class="ff-title">Solutions</p>
+      <ul role="list">{solutions.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+    <nav class="ff-col" aria-label="Partners">
+      <p class="ff-title">Partners</p>
+      <ul role="list">{partners.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+    <nav class="ff-col" aria-label="Legal">
+      <p class="ff-title">Legal</p>
+      <ul role="list">{legalLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </nav>
+  </div>
+  {flat && <div class="wrap"><p class="ff-name" aria-hidden="true">PRIV<b>AI</b>NI</p></div>}
+</footer>
+
+<style>
+  .ff { padding-block: clamp(72px, 8vw, 120px) clamp(48px, 5vw, 72px); border-top: 1px solid var(--on-night-line); }
+  .ff-grid { display: grid; grid-template-columns: minmax(0, 5fr) repeat(4, minmax(0, 2fr)); gap: clamp(32px, 3vw, 56px) var(--gap); align-items: start; }
+  .ff-intro { display: grid; gap: 24px; justify-items: start; font-size: 14px; line-height: 1.6; color: var(--on-night-muted); }
+  .ff-mark { color: var(--on-night); margin-bottom: 8px; }
+  address { display: grid; font-style: normal; }
+  .ff-mail { display: grid; gap: 4px; margin: 0; }
+  .ff-mail a, .ff-col a { transition: color 0.3s; }
+  .ff-mail a:hover, .ff-col a:hover { color: var(--cyan-soft); }
+  .ff a:focus-visible { outline: 2px solid var(--cyan-soft); outline-offset: 4px; }
+  .ff a:active { opacity: 0.75; }
+  .ff-copy { margin: 0; font-size: 13px; }
+  .ff-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .ff-title { margin: 0 0 20px; font: italic 400 15px/1.4 var(--font); color: var(--cyan-soft); }
+  .ff-col a { font-size: 15px; color: var(--on-night); }
+  /* the main pages, set larger: they are the column's titles */
+  .ff-main ul { gap: 16px; }
+  .ff-main a { font-size: clamp(19px, 1.5vw, 23px); letter-spacing: -0.02em; }
+  /* Flat: plain titles, no rule on top, and the name across the whole width, its AI in cyan */
+  .ff--flat { border-top: 0; padding-bottom: clamp(24px, 3vw, 44px); }
+  .ff--flat .ff-title { font: 600 14px/1.4 var(--font); letter-spacing: 0.01em; color: var(--on-night-muted); }
+  .ff--flat .ff-intro { color: var(--on-night); }
+  .ff-name {
+    margin: clamp(72px, 8vw, 128px) 0 0; font: 400 calc((min(100vw, var(--max)) - 2 * var(--margin)) / 6.32)/0.78 var(--logo);
+    letter-spacing: 0.01em; white-space: nowrap; color: var(--on-night);
+  }
+  .ff-name b { font-weight: 400; color: var(--cyan); }
+  @media (max-width: 899px) {
+    .ff-grid { grid-template-columns: 1fr 1fr; }
+    .ff-intro { grid-column: 1 / -1; }
+  }
+</style>

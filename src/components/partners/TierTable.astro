@@ -1,0 +1,85 @@
+---
+// A tier comparison as a real table: tiers across, what each includes down, rows separated by tone.
+// On narrow screens each feature takes a full-width line with its three values beneath, so the
+// table never scrolls sideways (explicit roles keep the table semantics when display changes).
+interface Props {
+  id: string;
+  heading: string;
+  label: string;
+  sizes: string[];
+  rows: { feature: string; values: (string | boolean)[] }[];
+  note?: string;
+  tone?: 'plain' | 'raised';
+}
+const { id, heading, label, sizes, rows, note, tone = 'plain' } = Astro.props;
+---
+<section class:list={['tiers section', { 'section--raised': tone === 'raised' }]} aria-labelledby={id}>
+  <div class="wrap">
+    <h2 id={id} data-split>{heading}</h2>
+    <table role="table" aria-labelledby={id} data-reveal>
+      <thead role="rowgroup">
+        <tr role="row" class="heads">
+          <td class="corner" role="cell"></td>
+          {sizes.map((s) => (
+            <th scope="col" role="columnheader"><span class="size nums">{s}</span> <span class="lbl">{label}</span></th>
+          ))}
+        </tr>
+      </thead>
+      <tbody role="rowgroup">
+        <tr role="row" class="group"><th scope="rowgroup" role="rowheader" colspan={sizes.length + 1}>Includes</th></tr>
+        {rows.map((r) => (
+          <tr role="row" class="feat">
+            <th scope="row" role="rowheader">{r.feature}</th>
+            {r.values.map((v, i) =>
+              v === true ? (
+                <td role="cell">
+                  <svg class="yes" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path d="M3 8.6l3.1 3.1L13 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                  <span class="sr-only">Included in {label} {sizes[i]}</span>
+                </td>
+              ) : v ? (
+                <td role="cell" class="val">{v}</td>
+              ) : (
+                <td role="cell"><span class="no" aria-hidden="true">–</span><span class="sr-only">Not included in {label} {sizes[i]}</span></td>
+              )
+            )}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    {note && <p class="note" data-reveal>{note}</p>}
+  </div>
+</section>
+
+<style>
+  h2 { font-size: clamp(30px, 3.2vw, 52px); max-width: 24ch; margin-bottom: clamp(40px, 5vw, 72px); }
+  table { width: 100%; border-collapse: separate; border-spacing: 0 6px; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 18px clamp(14px, 2vw, 28px); vertical-align: middle; }
+  thead th { padding-block: 0 18px; vertical-align: bottom; width: 20%; }
+  .size { display: block; font-size: clamp(40px, 4.4vw, 72px); font-weight: 600; letter-spacing: -0.05em; line-height: 0.95; }
+  .lbl { display: block; font-size: 15px; color: var(--muted); font-weight: 500; margin-top: 10px; }
+  .group th { padding-block: 14px 6px; font-size: 15px; color: var(--muted); font-weight: 500; }
+  .feat > * { background: var(--bg-2); }
+  .section--raised .feat > * { background: var(--bg-3); }
+  .feat > :first-child { border-radius: var(--radius) 0 0 var(--radius); }
+  .feat > :last-child { border-radius: 0 var(--radius) var(--radius) 0; }
+  .feat th { font-size: clamp(17px, 1.3vw, 20px); font-weight: 600; letter-spacing: -0.01em; }
+  td { font-size: 17px; }
+  .val { font-weight: 600; }
+  .yes { color: var(--accent-hi); }
+  .no { color: var(--faint); font-size: 20px; }
+  .note { margin-top: 28px; font-size: 17px; color: var(--muted); max-width: 60ch; }
+
+  @media (max-width: 640px) {
+    table, thead, tbody { display: block; }
+    tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .heads .corner { display: none; }
+    thead th { width: auto; padding: 0 12px 14px; }
+    .size { font-size: clamp(30px, 9vw, 40px); }
+    .lbl { font-size: 14px; margin-top: 6px; }
+    .group th { grid-column: 1 / -1; padding: 10px 12px 6px; }
+    .feat { margin-top: 6px; border-radius: var(--radius); overflow: hidden; }
+    .feat > :first-child, .feat > :last-child { border-radius: 0; }
+    .feat th { grid-column: 1 / -1; padding: 14px 12px 6px; font-size: 16px; }
+    .feat td { padding: 6px 12px 14px; font-size: 15px; }
+  }
+</style>

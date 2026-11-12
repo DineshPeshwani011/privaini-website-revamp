@@ -1,0 +1,68 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import RiskReport from '@/components/RiskReport.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import FragmentSplit from '@/components/solutions/FragmentSplit.astro';
+import FigureSplit from '@/components/solutions/FigureSplit.astro';
+import StatuteMap from '@/components/solutions/StatuteMap.astro';
+import { panels } from '@/data/solutions-panels';
+
+const p = panels['risk-advisors'];
+---
+<Base
+  title="Privaini for Risk Advisors"
+  description="Assess any company from its domain: regulator-grade privacy risk intelligence, no questionnaires, no cooperation required."
+>
+  <PageHero
+    title="Assess any company from its domain."
+    lead="No questionnaires. No cooperation. Deliver regulator-grade privacy risk intelligence to every client, from a domain name, without depending on what they self-report."
+    secondary={{ label: 'How it works', href: '/how-it-works' }}
+  >
+    <StatusPanel title={p.title} subject={p.subject} rows={p.rows} total={p.total} />
+  </PageHero>
+
+  <FragmentSplit
+    id="practice-h"
+    flip
+    heading="Remove the dependency on the assessed party."
+    text="Every capability Privaini gives your practice works from the outside, no cooperation required."
+    points={[
+      { title: 'On-demand assessment', text: 'Any client. Company name plus domain. Full privacy posture, no questionnaires.' },
+      { title: 'Continuous monitoring', text: 'Alerts when new risks emerge: new trackers, consent failures, jurisdictional changes.' },
+      { title: 'Evidence-grade documentation', text: 'Reproducible, timestamped, jurisdiction-specific findings. Defensible under scrutiny.' },
+    ]}
+  >
+    <RiskReport variant="briefing" />
+    <a slot="after" class="link" href="/how-it-works">How an assessment works <span class="arrow">→</span></a>
+  </FragmentSplit>
+
+  <FigureSplit
+    id="flaw-h"
+    tone="raised"
+    heading="Self-attestation has a structural flaw."
+    text="The assessed party controls what gets shared. Outside-in observation doesn’t."
+    items={[
+      { figure: '$7B+', count: 7, prefix: '$', suffix: 'B+', label: 'in global privacy fines and settlements since 2020', href: '/privacy-risk-gap', linkLabel: 'Enforcement' },
+      { figure: '$11.5M', count: 11.5, decimals: 1, prefix: '$', suffix: 'M', label: 'average BIPA & VPPA settlement, 2024–25', href: '/privacy-risk-gap', linkLabel: 'Settlements' },
+      { figure: '$1.9M', count: 1.9, decimals: 1, prefix: '$', suffix: 'M', label: 'average wrongful-collection claim', href: '/privacy-risk-gap', linkLabel: 'Claims data' },
+      { figure: '78%', count: 78, suffix: '%', label: 'privacy litigation surge, 2020–2024', href: '/privacy-risk-gap', linkLabel: 'Court records' },
+    ]}
+  />
+
+  <StatuteMap
+    id="laws-h"
+    heading="Any client. Every regulation."
+    subject={p.subject}
+    footnote="Assess any client across all applicable regulations, from a domain name."
+    items={[
+      { law: 'VPPA', penalty: '$11.5M avg settlement', text: 'The same observable signals plaintiffs’ counsel detects, on any client site.', href: '/vppa' },
+      { law: 'GDPR', penalty: '€20M or 4% of global revenue', text: '90 countries. Art. 3 extraterritorial scope. Assess any client worldwide.', href: '/gdpr' },
+      { law: 'BIPA', penalty: '$5,000 / violation strict liability', text: 'No breach required. Collection alone triggers strict liability.', href: '/bipa' },
+      { law: 'Wiretapping / CIPA', penalty: '300%+ claim surge 2022–24', text: 'Session replay, chat widgets, and tracking pixels create plaintiff exposure.', href: '/wiretapping-cipa', linkLabel: 'See CIPA exposure' },
+    ]}
+  />
+
+  <CtaBlank />
+</Base>

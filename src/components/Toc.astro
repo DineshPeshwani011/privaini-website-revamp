@@ -1,0 +1,41 @@
+---
+// "On this page": sticky contents list for long reads; the heading in view is highlighted.
+interface Props { headings: { id: string; text: string; depth: number }[]; label?: string }
+const { headings, label = 'On this page' } = Astro.props;
+---
+{headings.length > 1 && (
+  <nav class="toc" aria-label={label} data-toc>
+    <p class="toc-label">{label}</p>
+    <ol role="list">
+      {headings.map((h) => (
+        <li class={`d${h.depth}`}><a href={`#${h.id}`}>{h.text}</a></li>
+      ))}
+    </ol>
+  </nav>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-toc]').forEach((toc) => {
+    const links = [...toc.querySelectorAll<HTMLAnchorElement>('a')];
+    const targets = links.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1)))).filter(Boolean) as HTMLElement[];
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        links.forEach((a) => a.classList.toggle('on', a.hash === `#${e.target.id}`));
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    targets.forEach((t) => io.observe(t));
+  });
+</script>
+
+<style>
+  .toc { position: sticky; top: calc(var(--nav-h) + 24px); max-height: calc(100svh - var(--nav-h) - 48px); overflow-y: auto; scrollbar-width: thin; }
+  .toc-label { font-size: 15px; color: var(--muted); margin-bottom: 12px; }
+  ol { display: grid; gap: 2px; list-style: none; padding: 0; margin: 0; }
+  a { display: block; padding: 6px 0 6px 14px; font-size: 14.5px; line-height: 1.35; color: var(--muted); position: relative; transition: color 0.2s; }
+  a::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; border-radius: 1px; background: var(--bg-4); transition: background-color 0.2s; }
+  a:hover { color: var(--ink); }
+  a.on { color: var(--ink); }
+  a.on::before { background: var(--accent); }
+  .d3 a { padding-left: 28px; font-size: 13.5px; }
+</style>

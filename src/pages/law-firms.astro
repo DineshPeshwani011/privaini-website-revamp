@@ -1,0 +1,71 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import FindingCard from '@/components/FindingCard.astro';
+import ExposureSlider from '@/components/ExposureSlider.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import FragmentSplit from '@/components/solutions/FragmentSplit.astro';
+import FigureSplit from '@/components/solutions/FigureSplit.astro';
+import StatuteMap from '@/components/solutions/StatuteMap.astro';
+import { panels } from '@/data/solutions-panels';
+
+const p = panels['law-firms'];
+---
+<Base
+  title="Privaini for Law Firms"
+  description="The evidence layer plaintiff's counsel already has: observable, statute-anchored, timestamped privacy findings."
+>
+  <PageHero
+    title="See what plaintiffs’ counsel sees."
+    lead="The evidence layer plaintiffs’ counsel already has, now in your hands: privacy litigation support, M&A due diligence and compliance advisory, built from observable, statute-anchored, timestamped evidence."
+    secondary={{ label: 'How it works', href: '/how-it-works' }}
+  >
+    <StatusPanel title={p.title} subject={p.subject} rows={p.rows} total={p.total} />
+  </PageHero>
+
+  <FragmentSplit
+    id="asym-h"
+    tone="raised"
+    flip
+    heading="Dangerous violations are already visible."
+    text="Plaintiffs’ counsel and regulators use outside-in signals. Now you can see the same view first."
+    points={[
+      { title: 'Plaintiffs’ counsel files on observable signals', text: 'VPPA, BIPA, and wiretapping claims are identified from the outside: no discovery required.' },
+      { title: 'Statute-anchored evidence', text: 'Specific statute sections and article numbers in every finding, timestamped and reproducible, not AI summaries.' },
+      { title: 'Defense counsel needs the same view', text: 'When opposing counsel has already run an outside-in assessment, see what they see, before they file.' },
+    ]}
+  >
+    <FindingCard />
+  </FragmentSplit>
+
+  <FigureSplit
+    id="surge-h"
+    heading="The litigation surge is real."
+    text="The exposure is observable. Every filing starts with something visible from the outside."
+    items={[
+      { figure: '78%', count: 78, suffix: '%', label: 'privacy litigation surge, 2020–2024', href: '/privacy-risk-gap', linkLabel: 'Court records' },
+      { figure: '$11.5M', count: 11.5, decimals: 1, prefix: '$', suffix: 'M', label: 'average BIPA & VPPA settlement', href: '/privacy-risk-gap', linkLabel: 'Settlements' },
+      { figure: '$2,500', label: 'statutory minimum per VPPA violation', href: '/vppa', linkLabel: 'See VPPA §2710' },
+      { figure: '65%', count: 65, suffix: '%', label: 'of large cyber claims with privacy elements', href: '/privacy-risk-gap', linkLabel: 'Allianz 2024' },
+    ]}
+  />
+
+  <ExposureSlider heading="How many viewers did the pixel see?" />
+
+  <StatuteMap
+    id="laws-h"
+    heading="Find the evidence first."
+    text="Before plaintiffs’ counsel files."
+    subject={p.subject}
+    footnote="Privaini finds the evidence, observable, statute-anchored, and timestamped."
+    items={[
+      { law: 'BIPA', penalty: '$5,000 / violation: no breach required', text: 'Meta settled for $650M. Strict liability: collection alone triggers.', href: '/bipa' },
+      { law: 'VPPA', penalty: '$2,500 statutory damages per violation', text: 'Any site with video content that collects viewing data.', href: '/vppa' },
+      { law: 'Wiretapping / CIPA', penalty: '300%+ CIPA claim surge 2022–24', text: 'Session replay, chat widgets, tracking pixels: CIPA creates per-interaction exposure.', href: '/wiretapping-cipa', linkLabel: 'See CIPA exposure' },
+      { law: 'State Privacy Laws', penalty: '20+ active US state laws', text: 'Virginia, Colorado, Connecticut, Texas, Montana. Defense and plaintiff-side.', href: '/state-privacy-laws', linkLabel: 'See state privacy laws' },
+    ]}
+  />
+
+  <CtaBlank />
+</Base>

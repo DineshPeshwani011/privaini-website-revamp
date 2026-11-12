@@ -1,0 +1,45 @@
+---
+// Customer stories and use cases as an index of rows; each row names the sector, the outcome and the link.
+const all = [
+  { key: 'bakkt', sector: 'FinTech', title: 'Compliance at scale', text: 'Bakkt, a NYSE-listed fintech, automated privacy compliance across 22 jurisdictions.', href: '/bakkt-case-study', cta: 'Read the story' },
+  { key: 'healthcare', sector: 'Healthcare', title: 'Hidden tracking exposure', text: 'A top-10 US health system’s patient portals were leaking to trackers: VPPA, HIPAA, wiretapping.', href: '/healthcare-use-case', cta: 'Read the use case' },
+  { key: 'education', sector: 'Education', title: 'FERPA & children’s privacy', text: 'A national edtech platform closed COPPA and FERPA gaps across millions of students.', href: '/education-use-case', cta: 'Read the use case' },
+  { key: 'aggregator', sector: 'Risk aggregator', title: 'Privacy risk across a book', text: 'How a cyber insurer or broker prices privacy risk at submission, monitors at renewal and mitigates before claims.', href: '/risk-aggregator-use-case', cta: 'Read the use case' },
+];
+interface Props { only?: string[]; exclude?: string[] }
+const { only, exclude = [] } = Astro.props;
+const stories = all.filter((s) => (!only || only.includes(s.key)) && !exclude.includes(s.key));
+---
+<ul role="list" class="stories" data-reveal-group>
+  {stories.map((s) => (
+    <li data-reveal>
+      <a href={s.href} class="row">
+        <span class="sector">{s.sector}</span>
+        <span class="title">{s.title}</span>
+        <span class="text">{s.text}</span>
+        <span class="cta">{s.cta} <span class="arrow">→</span></span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .stories { display: grid; gap: 8px; }
+  .row {
+    display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 4fr) minmax(0, 5fr) auto; gap: var(--gap);
+    align-items: baseline; padding: clamp(20px, 2.4vw, 32px); border-radius: var(--radius); background: var(--bg-2);
+    transition: background-color 0.35s var(--ease-out);
+  }
+  .row:hover { background: var(--bg-3); }
+  :global(.section--raised) .row { background: var(--bg-3); }
+  :global(.section--raised) .row:hover { background: var(--bg-4); }
+  .sector { font-size: 16px; color: var(--accent-hi); font-weight: 500; }
+  .title { font-size: clamp(22px, 2vw, 30px); font-weight: 600; letter-spacing: -0.025em; line-height: 1.1; }
+  .text { color: var(--muted); font-size: 16px; }
+  .cta { font-size: 15px; font-weight: 600; white-space: nowrap; }
+  .cta .arrow { display: inline-block; transition: transform 0.3s var(--ease-out); }
+  .row:hover .cta .arrow { transform: translateX(4px); }
+  @media (max-width: 960px) {
+    .row { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>

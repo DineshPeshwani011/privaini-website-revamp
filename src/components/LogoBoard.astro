@@ -1,0 +1,60 @@
+---
+import { customerLogos } from '@/data/logos';
+interface Props { heading?: string; logos?: typeof customerLogos }
+const { heading = 'Trusted by those who price cyber risk.', logos = customerLogos } = Astro.props;
+---
+<section class="board section" aria-labelledby="board-h" data-reveal-group>
+  <div class="wrap">
+    <ul role="list" class="tiles">
+      <li class="tile tile--lead" data-reveal>
+        <h2 id="board-h">{heading}</h2>
+        <p>Insurers, brokers and enterprises in 90 countries rely on Privaini's outside-in view.</p>
+      </li>
+      <li class="tile tile--stat" data-reveal>
+        <span class="n nums">4<small>/10</small></span>
+        <span class="l">of the top ten cyber insurers</span>
+      </li>
+      <li class="tile tile--stat" data-reveal>
+        <span class="n nums">2<small>/3</small></span>
+        <span class="l">of the top three brokers</span>
+      </li>
+      {logos.map((logo) => (
+        <li class="tile tile--logo" data-reveal>
+          <img class:list={{ boxed: 'boxed' in logo && logo.boxed }} src={logo.src} alt={logo.name} width="220" height="160" loading="lazy" decoding="async" />
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .tile {
+    position: relative; min-height: 0; aspect-ratio: 2 / 1; border-radius: var(--radius);
+    background: var(--bg-2); overflow: hidden;
+  }
+  .tile--lead {
+    grid-column: span 2; aspect-ratio: auto; background: var(--accent); color: var(--accent-ink);
+    padding: clamp(20px, 2.2vw, 32px); display: flex; flex-direction: column; justify-content: space-between; gap: 24px;
+  }
+  .tile--lead h2 { font-size: clamp(30px, 2.9vw, 46px); max-width: 14ch; color: var(--accent-ink); }
+  .tile--lead p { font-size: 16px; max-width: 40ch; font-weight: 500; }
+  .tile--stat { display: flex; flex-direction: column; justify-content: space-between; padding: clamp(18px, 2vw, 28px); aspect-ratio: auto; }
+  .n { font-size: clamp(48px, 5.2vw, 84px); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; }
+  .n small { font-size: 0.42em; color: var(--muted); letter-spacing: -0.02em; margin-left: 0.08em; }
+  .l { font-size: 16px; color: var(--muted); max-width: 18ch; }
+  .tile--logo { display: grid; place-items: center; transition: background-color 0.35s var(--ease-out); }
+  .tile--logo:hover { background: var(--bg-3); }
+  .tile--logo img {
+    width: 62%; height: 70%; object-fit: contain;
+    filter: var(--logo-filter); mix-blend-mode: var(--logo-blend); opacity: 0.86;
+    transition: opacity 0.3s, transform 0.5s var(--ease-out);
+  }
+  .tile--logo img.boxed { filter: grayscale(1) contrast(5) brightness(0.9); }
+  :global([data-theme='light']) .tile--logo img.boxed { filter: grayscale(1) invert(1) contrast(1.6) brightness(1.05); }
+  .tile--logo:hover img { opacity: 1; transform: scale(1.04); }
+  @media (max-width: 860px) {
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+    .tile--lead { grid-column: 1 / -1; }
+  }
+</style>

@@ -1,0 +1,97 @@
+---
+import Base from '@/layouts/Base.astro';
+import PageHero from '@/components/PageHero.astro';
+import StatusPanel from '@/components/StatusPanel.astro';
+import ExplainerSection from '@/components/ExplainerSection.astro';
+import SectionHead from '@/components/SectionHead.astro';
+import FigureBand from '@/components/solutions/FigureBand.astro';
+import FindingCard from '@/components/FindingCard.astro';
+import StoryIndex from '@/components/StoryIndex.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import FragmentSplit from '@/components/solutions/FragmentSplit.astro';
+import StatuteMap from '@/components/solutions/StatuteMap.astro';
+import { panels } from '@/data/solutions-panels';
+
+const p = panels.enterprises;
+---
+<Base
+  title="Privaini for Enterprises"
+  description="Verify your privacy program performs as documented: see the gaps between policy and observed behavior before regulators do."
+>
+  <PageHero
+    title="Your privacy program, verified."
+    lead="You manage your privacy program. Privaini verifies it’s working, from the same vantage point regulators and litigators use: observable, evidence-backed, and mapped to the statutes that apply to you."
+  >
+    <StatusPanel title={p.title} subject={p.subject} rows={p.rows} total={p.total} />
+  </PageHero>
+
+  <ExplainerSection
+    name="policy-practice-gap"
+    figureTitle="Interactive figure: what a privacy policy declares, set against what its pages are observed doing"
+    heading="Your program says one thing."
+    text="Regulators see another. Internal compliance tools manage what companies report. They don’t see what’s observable from the outside, and that’s exactly where violations are found."
+    points={[
+      { title: 'Policy vs. observed behavior', text: 'Your privacy policy describes what should happen. Regulators and litigators observe what actually happens: consent flows, tracker behavior, and policy-practice gaps.' },
+      { title: 'Questionnaires vs. runtime', text: 'Vendors and processors self-report what they do. Outside-in assessment observes what they actually do at runtime, including undisclosed sub-processors and data flows.' },
+      { title: 'Audit snapshots vs. continuous signals', text: 'Audit-cycle assessments capture a moment in time. What changed between audits (a new tracker, a consent-flow update, a new AI system) is where enforcement originates.' },
+    ]}
+  >
+    <a class="link" href="/how-it-works">See how it works <span class="arrow">→</span></a>
+  </ExplainerSection>
+
+  <section class="section" aria-labelledby="enf-h">
+    <div class="wrap">
+      <SectionHead
+        id="enf-h"
+        title="Privacy enforcements aren’t rare."
+        text="The organizations behind these figures had privacy programs. The programs didn’t detect what was visible from the outside."
+      />
+      <FigureBand
+        items={[
+          { figure: '$7B+', count: 7, prefix: '$', suffix: 'B+', label: 'in global privacy fines and settlements since 2020', href: '/privacy-risk-gap', linkLabel: 'Enforcement records' },
+          { figure: '78%', count: 78, suffix: '%', label: 'privacy litigation surge, 2020–2024', href: '/privacy-risk-gap', linkLabel: 'Court records' },
+          { figure: '$11.5M', count: 11.5, decimals: 1, prefix: '$', suffix: 'M', label: 'average BIPA & VPPA settlement', href: '/privacy-risk-gap', linkLabel: 'Settlements data' },
+          { figure: '$2,500', label: 'statutory minimum per VPPA violation', href: '/vppa', linkLabel: 'See statute' },
+        ]}
+      />
+    </div>
+  </section>
+
+  <FragmentSplit
+    id="teams-h"
+    tone="raised"
+    flip
+    heading="Three teams. One outside-in view."
+    text="Privacy, legal, and security each use the same findings, framed for the decisions they own."
+    points={[
+      { title: 'CPO · DPO · Privacy Manager', text: 'Verify your program performs as documented: consent flows, tracker behavior, and policy-practice gaps, observed from the outside.' },
+      { title: 'General Counsel · CLO', text: 'Know what the other side will find before they file. Statute-anchored exposure ranges in dollars, evidenced and timestamped.' },
+      { title: 'CISO · VP Compliance', text: 'Surface third-party runtime behavior, AI governance gaps, and jurisdictional exposure across every market you operate in.' },
+    ]}
+  >
+    <FindingCard />
+  </FragmentSplit>
+
+  <section class="section" aria-labelledby="stories-h">
+    <div class="wrap">
+      <SectionHead id="stories-h" title="See it in action." />
+      <StoryIndex />
+    </div>
+  </section>
+
+  <StatuteMap
+    id="laws-h"
+    heading="One assessment covers them all."
+    text="Global laws, from GDPR to 20+ US state statutes, each read from the same outside-in view."
+    subject={p.subject}
+    footnote="Privaini maps your exposure across all relevant regulations simultaneously, from one assessment."
+    items={[
+      { law: 'GDPR', penalty: '€20M fine or 4% of revenue', text: 'EU-resident data exposure. Art. 7 consent, Art. 13 disclosure: observable from outside.', href: '/gdpr' },
+      { law: 'CCPA / CPRA', penalty: '$7,500 per intentional violation', text: 'California data practices, consent flows, opt-out mechanisms: highest-frequency enforcement.', href: '/ccpa-cpra' },
+      { law: 'BIPA', penalty: '$5,000 per violation: strict liability', text: 'Employee and customer biometric data collection triggers strict liability under BIPA.', href: '/bipa' },
+      { law: 'State Privacy Laws', penalty: '20+ active across the US', text: 'Virginia, Colorado, Connecticut, Texas, Montana and more. Exposure maps to where your users are.', href: '/state-privacy-laws', linkLabel: 'See state law exposure' },
+    ]}
+  />
+
+  <CtaBlank />
+</Base>

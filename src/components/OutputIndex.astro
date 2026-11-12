@@ -1,0 +1,117 @@
+---
+// Showcase: the names of Privaini's outputs on the left; the selected one lies on a stage on the right.
+import FindingCard from './FindingCard.astro';
+import RiskReport from './RiskReport.astro';
+import RemediationPlan from './RemediationPlan.astro';
+interface Props { heading?: string; intro?: string }
+const {
+  heading = 'Your risk picture, from your domain.',
+  intro = 'From your company name and website, Privaini delivers evidence-backed findings, exposure and remediation, mapped to the statutes that apply to you.',
+} = Astro.props;
+const outputs = [
+  { key: 'finding', name: 'Finding cards', note: 'Each one tied to the statute it triggered, with observed evidence and a class-exposure range.' },
+  { key: 'briefing', name: 'Risk briefing', note: 'A risk score calibrated to your jurisdictions, with the findings that drive it.' },
+  { key: 'report', name: 'Exposure report', note: 'Regulatory fines and consumer litigation exposure, totalled across your markets.' },
+  { key: 'plan', name: 'Remediation plan', note: 'A phased plan; each phase maps to a quantified reduction in exposure.' },
+];
+---
+<section class="outputs section" aria-labelledby="outputs-h" data-outputs>
+  <div class="wrap grid">
+    <div class="index" data-reveal-group>
+      <h2 id="outputs-h" class="h" data-reveal>{heading}</h2>
+      <p class="intro" data-reveal>{intro}</p>
+      <div class="names" role="tablist" aria-label="Privaini outputs" data-reveal>
+        {outputs.map((o, i) => (
+          <button role="tab" id={`tab-${o.key}`} aria-controls={`sheet-${o.key}`} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1} data-tab={o.key}>
+            <span class="name">{o.name}</span>
+            <span class="note">{o.note}</span>
+          </button>
+        ))}
+      </div>
+      <a class="btn" href="/request-a-demo" data-reveal>See your exposure <span class="arrow">→</span></a>
+    </div>
+    <div class="stage" data-reveal>
+      <div class="sheet active" role="tabpanel" id="sheet-finding" aria-labelledby="tab-finding" data-sheet="finding"><FindingCard /></div>
+      <div class="sheet" role="tabpanel" id="sheet-briefing" aria-labelledby="tab-briefing" data-sheet="briefing" hidden><RiskReport variant="briefing" /></div>
+      <div class="sheet" role="tabpanel" id="sheet-report" aria-labelledby="tab-report" data-sheet="report" hidden><RiskReport /></div>
+      <div class="sheet" role="tabpanel" id="sheet-plan" aria-labelledby="tab-plan" data-sheet="plan" hidden><RemediationPlan /></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-outputs]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+    const sheets = [...root.querySelectorAll<HTMLElement>('[data-sheet]')];
+    let auto = 0;
+    const select = (key: string, focus = false) => {
+      tabs.forEach((t) => {
+        const on = t.dataset.tab === key;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      });
+      sheets.forEach((s) => {
+        const on = s.dataset.sheet === key;
+        if (on) { s.hidden = false; requestAnimationFrame(() => s.classList.add('active')); }
+        else { s.classList.remove('active'); window.setTimeout(() => { if (!s.classList.contains('active')) s.hidden = true; }, 260); }
+      });
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => { clearInterval(auto); select(t.dataset.tab!); });
+      t.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        clearInterval(auto);
+        select(tabs[(i + d + tabs.length) % tabs.length].dataset.tab!, true);
+      });
+    });
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let n = 0;
+      const io = new IntersectionObserver(([e]) => {
+        clearInterval(auto);
+        if (e.isIntersecting) auto = window.setInterval(() => { n = (n + 1) % tabs.length; select(tabs[n].dataset.tab!); }, 5200);
+      }, { threshold: 0.4 });
+      io.observe(root);
+      root.addEventListener('pointerdown', () => { clearInterval(auto); io.disconnect(); }, { once: true });
+    }
+  });
+</script>
+
+<style>
+  .grid { align-items: start; }
+  .index { grid-column: 1 / span 5; display: grid; gap: 28px; align-content: start; padding-top: 8px; }
+  .h { font-size: clamp(30px, 3vw, 46px); }
+  .intro { color: var(--muted); font-size: 18px; max-width: 40ch; }
+  .names { display: grid; gap: 4px; margin-top: 8px; }
+  .names button {
+    display: grid; gap: 6px; text-align: left; padding: 14px 0;
+    color: #6f868b; transition: color 0.3s var(--ease-out);
+  }
+  .name { font-size: clamp(30px, 3.4vw, 52px); font-weight: 600; letter-spacing: -0.035em; line-height: 1.05; }
+  .note { font-size: 16px; line-height: 1.45; max-width: 40ch; color: var(--muted); display: none; }
+  .names button[aria-selected='true'] { color: var(--ink); }
+  .names button[aria-selected='true'] .note { display: block; }
+  .names button:hover { color: var(--ink); }
+  .index .btn { justify-self: start; margin-top: 8px; }
+  .stage {
+    grid-column: 7 / span 6; position: relative; height: min(88svh, 820px); min-height: 560px;
+    background: var(--bg-2); border-radius: var(--radius); overflow: hidden;
+  }
+  .sheet {
+    position: absolute; left: clamp(20px, 4vw, 64px); right: clamp(20px, 4vw, 64px); top: 72px;
+    opacity: 0; transform: translateY(14px);
+    transition: opacity 0.26s var(--ease-out), transform 0.5s var(--ease-out);
+  }
+  .sheet.active { opacity: 1; transform: none; }
+  @media (max-width: 960px) {
+    .index, .stage { grid-column: 1 / -1; }
+    .names { grid-auto-flow: column; grid-auto-columns: max-content; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--margin); gap: 20px; margin-inline: calc(var(--margin) * -1); padding-inline: var(--margin); scrollbar-width: none; }
+    .names button { scroll-snap-align: start; padding: 6px 0; }
+    .name { font-size: 22px; }
+    .names button[aria-selected='true'] .note { display: none; }
+    .stage { margin-top: 32px; height: 600px; min-height: 0; }
+    .sheet { left: 16px; right: 16px; top: 16px; }
+  }
+</style>

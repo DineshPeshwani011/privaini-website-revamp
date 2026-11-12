@@ -1,0 +1,63 @@
+---
+// Phased remediation for the sample report: each phase retires findings and with them their exposure ranges.
+import { sampleFindings, sampleReport } from '@/data/findings';
+const [vppa, ccpa, bipa, gdpr] = sampleFindings;
+const phases = [
+  { name: 'Phase 1', when: 'Weeks 1–2', step: 'Hold the video pixel until consent; stop engagement events on patient-facing pages.', f: vppa },
+  { name: 'Phase 2', when: 'Weeks 3–5', step: 'Remove the third-party pixel from health pages; add notice and written consent before biometric capture.', f: [ccpa, bipa] },
+  { name: 'Phase 3', when: 'Weeks 6–9', step: 'Put a lawful transfer mechanism in place for EU data and update the record of processing.', f: gdpr },
+];
+---
+<section class="plan" data-ui aria-label="Sample remediation plan">
+  <header class="ui-head">
+    <div class="t">
+      <span class="ui-label">Remediation plan</span>
+      <span class="ui-mono">{sampleReport.domain}</span>
+    </div>
+    <span class="ui-chip" data-sev="info">3 phases</span>
+  </header>
+  <ol class="phases">
+    {phases.map((p, i) => {
+      const list = Array.isArray(p.f) ? p.f : [p.f];
+      return (
+        <li class:list={['phase', { current: i === 0 }]}>
+          <div class="ph-head">
+            <span class="ui-value">{p.name}</span>
+            <span class="ui-mono ui-muted">{p.when}</span>
+          </div>
+          <p class="step">{p.step}</p>
+          <ul role="list" class="retires">
+            {list.map((f) => (
+              <li>
+                <span class="ui-mono ui-muted">{f.statute}</span>
+                <span class="ui-mono red">− {f.exposure}</span>
+              </li>
+            ))}
+          </ul>
+        </li>
+      );
+    })}
+  </ol>
+  <footer class="foot">
+    <span class="ui-label">Illustrative plan for the sample report · each phase retires its findings' exposure</span>
+  </footer>
+</section>
+
+<style>
+  .plan { width: 100%; max-width: 540px; }
+  .t { display: grid; gap: 2px; }
+  .phases { list-style: none; margin: 0; padding: 0; }
+  .phase { padding: 14px 16px 14px 40px; border-top: 1px solid var(--ui-line); position: relative; }
+  .phase:first-child { border-top: 0; }
+  .phase::before {
+    content: ''; position: absolute; left: 16px; top: 19px; width: 10px; height: 10px; border-radius: 50%;
+    border: 2px solid var(--ui-line-2);
+  }
+  .phase.current::before { border-color: var(--accent); background: var(--accent); }
+  .ph-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+  .step { margin-top: 6px; font-size: 14px; color: var(--ui-text); }
+  .retires { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 4px; }
+  .retires li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 10px; border-radius: 4px; background: var(--ui-bg-2); }
+  .red { color: var(--low); }
+  .foot { padding: 12px 16px; border-top: 1px solid var(--ui-line); background: var(--ui-bg-2); border-radius: 0 0 var(--ui-radius) var(--ui-radius); }
+</style>

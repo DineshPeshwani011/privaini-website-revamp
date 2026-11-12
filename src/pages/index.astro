@@ -1,0 +1,74 @@
+---
+import Base from '@/layouts/Base.astro';
+import LensHero from '@/components/LensHero.astro';
+import ScanThisPage from '@/components/ScanThisPage.astro';
+import EnforcementBand from '@/components/EnforcementBand.astro';
+import LogoBoard from '@/components/LogoBoard.astro';
+import OutputIndex from '@/components/OutputIndex.astro';
+import ExposureSlider from '@/components/ExposureSlider.astro';
+import ExplainerSection from '@/components/ExplainerSection.astro';
+import AudienceIndex from '@/components/AudienceIndex.astro';
+import QuoteThread from '@/components/QuoteThread.astro';
+import CtaBlank from '@/components/CtaBlank.astro';
+import { quotes } from '@/data/quotes';
+---
+<Base
+  title="Privaini | Privacy & AI Risk Intelligence Platform"
+  description="See privacy and AI risk the way regulators and litigators do, outside-in, from your domain alone. Continuous monitoring across 90 countries and 20 US states."
+  bodyClass="home"
+>
+  <LensHero />
+
+  <EnforcementBand />
+
+  <section class="self section" aria-labelledby="self-h">
+    <div class="wrap grid">
+      <div class="copy" data-reveal-group>
+        <h2 id="self-h" data-split>Point the lens at this page.</h2>
+        <p class="t-lead" data-reveal>
+          The same outside-in reading, run live in your browser against the page you are on: what it loaded, who it
+          talked to, what it stored. We hold this site to the standard we measure.
+        </p>
+        <p class="t-small t-muted" data-reveal>Your domain gets the same treatment across every property, market and statute.</p>
+      </div>
+      <div class="frag" data-reveal><ScanThisPage /></div>
+    </div>
+  </section>
+
+  <LogoBoard />
+
+  <OutputIndex />
+
+  <ExposureSlider />
+
+  <ExplainerSection
+    name="outside-in-scanner"
+    figureTitle="Interactive figure: an outside-in assessment of a company's public properties"
+    heading="Observed from outside. Never from within."
+    text="An assessment reads only what a company's public properties emit: the same vantage point a regulator, a plaintiff's firm or an underwriter has. Nothing is installed and nothing is asked."
+    points={[
+      { title: 'Observe', text: 'Consent flows, tracker behaviour and policy–practice gaps across every public property.' },
+      { title: 'Detect', text: '100+ signals scored against the statutes of 90 countries and 20 US states.' },
+      { title: 'Recommend', text: 'Regulator-grade findings with a defensible exposure range and clear next steps.' },
+    ]}
+  >
+    <a class="link" href="/how-it-works">How an assessment works <span class="arrow">→</span></a>
+  </ExplainerSection>
+
+  <AudienceIndex />
+
+  <QuoteThread lead={quotes.viaquest} replies={[quotes.bakkt, quotes.healthcare]} />
+
+  <CtaBlank />
+</Base>
+
+<style>
+  .self .grid { align-items: center; row-gap: 48px; }
+  .self .copy { grid-column: 1 / span 5; display: grid; gap: 24px; }
+  .self .copy h2 { font-size: clamp(30px, 3.4vw, 54px); max-width: 14ch; }
+  .self .copy .t-lead { color: var(--muted); }
+  .self .frag { grid-column: 7 / span 6; display: grid; justify-items: center; }
+  @media (max-width: 960px) {
+    .self .copy, .self .frag { grid-column: 1 / -1; }
+  }
+</style>

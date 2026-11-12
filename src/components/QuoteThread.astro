@@ -1,0 +1,64 @@
+---
+// Customer words arrive the way words arrive inside the product: as a comment on a finding, with replies.
+import type { Quote } from '@/data/quotes';
+interface Props { lead: Quote; replies?: Quote[]; context?: string }
+const { lead, replies = [], context = 'Comment on report · your-company.com' } = Astro.props;
+---
+<section class="thread section" aria-labelledby="thread-h" data-reveal-group>
+  <h2 id="thread-h" class="sr-only">What customers say</h2>
+  <div class="wrap grid">
+    <figure class="lead" data-ui data-reveal>
+      <div class="who">
+        <span class="disc" aria-hidden="true">{lead.initials}</span>
+        <figcaption><strong>{lead.name}</strong> <span class="ui-muted">· {lead.org}</span></figcaption>
+        <span class="ctx ui-muted">{context}</span>
+      </div>
+      <blockquote>{lead.text}</blockquote>
+      <div class="state">
+        <span class="ui-chip" data-sev="low">✓ Resolved</span>
+        {lead.href && <a class="ui-btn" href={lead.href}>Read the story →</a>}
+      </div>
+    </figure>
+    {replies.length > 0 && (
+      <ul role="list" class="replies">
+        {replies.map((r) => (
+          <li data-reveal>
+            <figure class="reply" data-ui>
+              <div class="who">
+                <span class="disc sm" aria-hidden="true">{r.initials}</span>
+                <figcaption><strong>{r.name}</strong> <span class="ui-muted">· {r.org}</span></figcaption>
+              </div>
+              <blockquote>{r.text}</blockquote>
+              {r.href && <a class="more" href={r.href}>Read the story →</a>}
+            </figure>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</section>
+
+<style>
+  .grid { row-gap: 32px; }
+  .lead { grid-column: 2 / span 8; font-size: clamp(26px, 2.7vw, 44px); padding: 0.75em 0.85em; background: var(--bg-2); border-color: transparent; }
+  .who { display: flex; align-items: center; gap: 0.45em; flex-wrap: wrap; font-size: 0.4em; }
+  .who figcaption { font-size: 1em; }
+  .lead .who { font-size: max(15px, 0.38em); }
+  .disc {
+    width: 2.4em; height: 2.4em; border-radius: 50%; display: grid; place-items: center; flex: none;
+    background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 0.85em;
+  }
+  .ctx { margin-left: auto; font-size: 0.9em; }
+  blockquote { margin: 0.5em 0 0.6em; line-height: 1.22; letter-spacing: -0.02em; color: var(--strong); font-weight: 500; text-wrap: pretty; }
+  .state { display: flex; gap: 10px; align-items: center; font-size: 14px; }
+  .replies { grid-column: 3 / span 6; display: grid; gap: 24px; list-style: none; padding: 0; margin: 0; }
+  .reply { width: min(100%, 520px); padding: 18px 20px; font-size: 15px; }
+  .reply .who { font-size: 14px; }
+  .reply blockquote { font-size: 17px; line-height: 1.45; letter-spacing: -0.005em; margin: 10px 0 8px; font-weight: 400; }
+  .more { font-size: 14px; font-weight: 600; color: var(--accent-hi); }
+  @media (max-width: 860px) {
+    .lead { grid-column: 1 / -1; font-size: 6.4vw; }
+    .replies { grid-column: 1 / -1; padding-left: 28px; }
+    .ctx { display: none; }
+  }
+</style>

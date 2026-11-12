@@ -1,0 +1,88 @@
+---
+// "One assessment covers them all": the statutes one outside-in assessment maps a subject against,
+// each with its penalty, what is observable, and a link to the statute page. Set as the product renders
+// it, for the same subject as the page's hero panel. The heading leads; the map hangs off to one side.
+export interface Statute { law: string; penalty: string; text: string; href: string; linkLabel?: string }
+interface Props {
+  id: string;
+  heading: string;
+  text?: string;
+  subject: string;
+  items: Statute[];
+  footnote: string;
+  flip?: boolean;
+  tone?: 'plain' | 'raised';
+}
+const { id, heading, text, subject, items, footnote, flip = false, tone = 'plain' } = Astro.props;
+---
+<section class:list={['sm section', { 'section--raised': tone === 'raised', flip }]} aria-labelledby={id}>
+  <div class="wrap grid">
+    <div class="head" data-reveal-group>
+      <h2 id={id} data-split>{heading}</h2>
+      {text && <p class="text" data-reveal>{text}</p>}
+    </div>
+    <div class="map" data-ui data-reveal role="group" aria-label={`Statute map for ${subject}`}>
+      <div class="ui-head">
+        <div class="t">
+          <span class="ui-label">Statute map</span>
+          <span class="subj">{subject}</span>
+        </div>
+        <span class="ui-chip" data-sev="info">{items.length} statutes · one assessment</span>
+      </div>
+      <ul role="list">
+        {items.map((s) => (
+          <li class="ui-row srow">
+            <div class="law">
+              <span class="name">{s.law}</span>
+              <span class="pen">{s.penalty}</span>
+            </div>
+            <p class="txt">{s.text}</p>
+            <a class="ui-btn go" href={s.href}>{s.linkLabel ?? `See ${s.law} exposure`} <span aria-hidden="true">→</span></a>
+          </li>
+        ))}
+      </ul>
+      <p class="foot">{footnote}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: start; row-gap: clamp(36px, 4vw, 56px); }
+  .head { grid-column: 1 / span 8; display: grid; gap: 20px; justify-items: start; }
+  .head h2 { max-width: 24ch; }
+  .text { color: var(--muted); font-size: clamp(17px, 1.25vw, 20px); line-height: 1.5; max-width: 52ch; }
+  .map { grid-column: 4 / span 9; width: 100%; }
+  .flip .head { grid-column: 5 / span 8; }
+  .flip .map { grid-column: 1 / span 9; }
+  .section--raised .map { background: var(--bg); }
+  .t { display: grid; gap: 2px; }
+  .subj { font-size: 13.5px; color: var(--ui-text); }
+  .srow {
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr) auto; align-items: start; column-gap: 24px;
+    padding: 20px 18px; transition: background-color 0.2s;
+  }
+  .srow:hover { background: var(--ui-bg-2); }
+  .law { display: grid; gap: 4px; }
+  .name { font-size: 20px; font-weight: 600; color: var(--strong); letter-spacing: -0.01em; line-height: 1.2; }
+  .pen { font-size: 14.5px; font-weight: 600; color: var(--med); line-height: 1.35; }
+  .txt { font-size: 15.5px; line-height: 1.5; color: var(--ui-text); max-width: 48ch; }
+  .go { white-space: nowrap; align-self: center; }
+  .foot {
+    padding: 14px 18px; font-size: 14.5px; color: var(--ui-text);
+    border-top: 1px solid var(--ui-line); background: var(--ui-bg-2); border-radius: 0 0 var(--ui-radius) var(--ui-radius);
+  }
+  @media (max-width: 1180px) {
+    .map, .flip .map { grid-column: 1 / -1; }
+    .head, .flip .head { grid-column: 1 / span 10; }
+  }
+  @media (max-width: 860px) {
+    .head, .flip .head { grid-column: 1 / -1; }
+    .srow { grid-template-columns: minmax(0, 11rem) minmax(0, 1fr); }
+    .go { grid-column: 2; justify-self: start; }
+  }
+  @media (max-width: 560px) {
+    .ui-head { flex-wrap: wrap; }
+    .srow { grid-template-columns: 1fr; row-gap: 10px; }
+    .go { grid-column: 1; }
+  }
+</style>

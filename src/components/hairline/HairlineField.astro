@@ -1,0 +1,122 @@
+---
+// Hairline field: the quiet backdrop behind every page's opening. The lens drawn in hairlines on a faint
+// survey grid: concentric rings turning very slowly, a tick ring, crosshair registration, and the page's own
+// signals arriving along hairlines as short dashes. One cyan mark rides a ring. All SVG and CSS: no canvas, no
+// glow. It pauses offscreen and holds still under reduced motion.
+import { lensSignals } from '@/data/lens-signals';
+interface Props { at?: { x: number; y: number }; signals?: string[]; class?: string }
+const { at = { x: 0.78, y: 0.52 }, signals = lensSignals(Astro.url.pathname), class: cls } = Astro.props;
+
+const C = 600;                                                     // the lens centre in its 1200×1200 drawing
+const ticks = Array.from({ length: 96 }, (_, i) => {
+  const a = (i / 96) * Math.PI * 2, r0 = 296, r1 = r0 + (i % 8 === 0 ? 16 : 7);
+  return `M${(C + Math.cos(a) * r0).toFixed(1)} ${(C + Math.sin(a) * r0).toFixed(1)}L${(C + Math.cos(a) * r1).toFixed(1)} ${(C + Math.sin(a) * r1).toFixed(1)}`;
+}).join('');
+// signals come in from the left, spread top to bottom, and converge on the lens
+const lines = signals.slice(0, 6).map((text, i, all) => {
+  const t = all.length > 1 ? i / (all.length - 1) : 0.5;
+  const y0 = C - 330 + t * 660, x0 = -760 + (i % 2) * 140;
+  const d = `M${x0} ${y0.toFixed(0)} C${x0 + 520} ${y0.toFixed(0)} ${C - 420} ${(C + (y0 - C) * 0.18).toFixed(0)} ${C - 158} ${(C + (y0 - C) * 0.06).toFixed(0)}`;
+  return { text, d, x0, y0, delay: -(i * 1.7) };
+});
+---
+<div class:list={['hf', cls]} aria-hidden="true" data-hairline-field style={`--hf-x:${at.x * 100}%;--hf-y:${at.y * 100}%`}>
+  <div class="grid"></div>
+  <svg class="lens" viewBox="0 0 1200 1200" overflow="visible">
+    <g class="in">
+      {lines.map((l) => (
+        <>
+          <path class="trace" d={l.d} />
+          <path class="pulse" d={l.d} style={`animation-delay:${l.delay}s`} />
+          <text class="label" x={l.x0} y={l.y0 - 10}>{l.text}</text>
+        </>
+      ))}
+    </g>
+    <g class="cross">
+      <path d={`M${C - 560} ${C}H${C - 330}M${C + 330} ${C}H${C + 560}M${C} ${C - 560}V${C - 330}M${C} ${C + 330}V${C + 560}`} />
+      <path class="reg" d={`M${C - 420} ${C - 400}h-20v20M${C + 420} ${C - 400}h20v20M${C - 420} ${C + 400}h-20v-20M${C + 420} ${C + 400}h20v-20`} />
+    </g>
+    <circle class="ring strong" cx={C} cy={C} r="150" />
+    <circle class="ring spin-a" cx={C} cy={C} r="196" />
+    <g class="spin-b">
+      <circle class="ring arcs" cx={C} cy={C} r="248" />
+      <rect class="mark" x={C + 244} y={C - 4} width="8" height="8" />
+    </g>
+    <path class="ticks spin-c" d={ticks} />
+    <circle class="ring dots spin-d" cx={C} cy={C} r="380" />
+    <circle class="ring faint" cx={C} cy={C} r="520" />
+  </svg>
+</div>
+
+<script>
+  // no work offscreen: the animations pause while the field is out of view
+  document.querySelectorAll<HTMLElement>('[data-hairline-field]').forEach((el) => {
+    new IntersectionObserver(([e]) => el.toggleAttribute('data-paused', !e.isIntersecting)).observe(el);
+  });
+</script>
+
+<style>
+  .hf {
+    --hf-line: color-mix(in srgb, var(--ink) 18%, transparent);
+    --hf-strong: color-mix(in srgb, var(--ink) 30%, transparent);
+    --hf-faint: color-mix(in srgb, var(--ink) 9%, transparent);
+    --hf-label: color-mix(in srgb, var(--ink) 46%, transparent);
+    --hf-hint: var(--hint, var(--accent));
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+    animation: hf-in 1.4s var(--ease-out) both;
+  }
+  @keyframes hf-in { from { opacity: 0; } }
+
+  /* a survey grid that only shows around the lens */
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(to right, var(--hf-faint) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--hf-faint) 1px, transparent 1px);
+    background-size: 96px 96px;
+    background-position: var(--hf-x) var(--hf-y);
+    mask-image: radial-gradient(48% 62% at var(--hf-x) var(--hf-y), #000 0%, transparent 100%);
+  }
+
+  .lens {
+    position: absolute; left: var(--hf-x); top: var(--hf-y);
+    width: 1200px; height: 1200px; translate: -50% -50%;
+    fill: none; stroke-width: 1; overflow: visible;
+  }
+  .lens * { vector-effect: non-scaling-stroke; transform-box: view-box; transform-origin: 600px 600px; }
+  .ring { stroke: var(--hf-line); }
+  .ring.strong { stroke: var(--hf-strong); }
+  .ring.faint { stroke: var(--hf-faint); }
+  .spin-a { stroke-dasharray: 3 7; animation: spin 150s linear infinite; }
+  .arcs { stroke: var(--hf-strong); stroke-dasharray: 260 130; }
+  .spin-b { animation: spin 210s linear infinite reverse; }
+  .ticks { stroke: var(--hf-line); }
+  .spin-c { animation: spin 280s linear infinite; }
+  .dots { stroke-dasharray: 1 11; }
+  .spin-d { animation: spin 360s linear infinite reverse; }
+  .mark { fill: var(--hf-hint); stroke: none; }
+  .cross path { stroke: var(--hf-faint); stroke-dasharray: 2 6; }
+  .cross .reg { stroke: var(--hf-line); stroke-dasharray: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* signals arriving: a faint trace, a short dash travelling it toward the lens */
+  .trace { stroke: var(--hf-faint); }
+  .pulse { stroke: var(--hf-strong); stroke-dasharray: 22 1400; stroke-dashoffset: 0; animation: arrive 10s linear infinite; }
+  @keyframes arrive { to { stroke-dashoffset: -1422; } }
+  .label {
+    fill: var(--hf-label); stroke: none;
+    font: 500 11px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  .hf[data-paused] *, .hf[data-paused] { animation-play-state: paused; }
+
+  @media (max-width: 960px) {
+    .hf { --hf-x: 62%; --hf-y: 84%; }
+    .lens { width: 900px; height: 900px; }
+    .label { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hf, .hf * { animation: none !important; }
+    .pulse { display: none; }
+  }
+</style>

@@ -1,0 +1,20 @@
+// Customer logos shown on the current privaini.com ("Trusted by leading insurers & enterprises"),
+// downloaded into public/media by scripts/extract-content.mjs.
+export const customerLogos = [
+  { name: 'Bakkt', src: '/media/bakkt-4b5223.png' },
+  { name: 'Chubb', src: '/media/chubb-092493.png' },
+  { name: 'Blackhawk', src: '/media/blackhawk-265e15.png' },
+  { name: 'Grammarly', src: '/media/grammarly-23f9c3.png' },
+  { name: 'Sompo', src: '/media/sompo-d456f6.png' },
+  { name: 'Paychex', src: '/media/paychex-9ddabf.png' },
+  { name: 'PGA', src: '/media/pga-77f58b.png' },
+  { name: 'my529', src: '/media/my529-3c6a98.png' },
+  { name: 'Deciphera', src: '/media/deciphera-80100f.png' },
+  { name: 'Herbalife', src: '/media/herbalife-a31642.png' },
+  { name: 'Dayforce', src: '/media/dayforce-0b1463.png' },
+  { name: 'American National Bank', src: '/media/american-national-55c63b.png' },
+  { name: 'Columbia', src: '/media/columbia-b6e2db.png' },
+  { name: 'CFG', src: '/media/cfg-f042e7.png' },
+  { name: 'McGraw Hill', src: '/media/mcgraw-13ccb0.png', boxed: true },
+  { name: 'ViaQuest', src: '/media/vq-329d0c.png' },
+];

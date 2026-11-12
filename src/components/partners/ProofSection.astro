@@ -1,0 +1,45 @@
+---
+// The partner's own words beside the figures that explain them: statement and quote on the left,
+// a column of figures on the right.
+import QuoteBlock from '@/components/QuoteBlock.astro';
+import type { Quote } from '@/data/quotes';
+import type { Figure } from '@/data/partners-pages';
+interface Props { id: string; heading: string; quote: Quote; figures: Figure[]; tone?: 'plain' | 'raised' }
+const { id, heading, quote, figures, tone = 'raised' } = Astro.props;
+---
+<section class:list={['proof section', { 'section--raised': tone === 'raised' }]} aria-labelledby={id}>
+  <div class="wrap grid">
+    <div class="say">
+      <h2 id={id} data-split>{heading}</h2>
+      <QuoteBlock quote={quote} class="q" />
+    </div>
+    <dl class="figs" data-reveal-group>
+      {figures.map((f) => (
+        <div class="fig" data-reveal>
+          <dt class="l">{f.label}</dt>
+          <dd class="n nums" data-count={f.count} data-prefix={f.prefix} data-suffix={f.suffix} data-decimals={f.decimals}>{f.figure}</dd>
+        </div>
+      ))}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .grid { align-items: start; row-gap: 56px; }
+  .say { grid-column: 1 / span 7; display: grid; gap: clamp(40px, 5vw, 72px); }
+  h2 { font-size: clamp(30px, 3.2vw, 52px); max-width: 26ch; }
+  .say :global(.q blockquote) { font-size: clamp(24px, 2.2vw, 32px); }
+  .figs { grid-column: 9 / span 4; display: grid; gap: clamp(28px, 3vw, 44px); margin: 0; }
+  .fig { display: flex; flex-direction: column-reverse; gap: 8px; }
+  .fig dd { margin: 0; }
+  .n { font-size: clamp(48px, 4.8vw, 80px); font-weight: 600; letter-spacing: -0.05em; line-height: 0.9; white-space: nowrap; }
+  .fig:first-child .n { color: var(--accent-hi); }
+  .l { font-size: 16px; color: var(--muted); max-width: 30ch; }
+  @media (max-width: 960px) {
+    .say, .figs { grid-column: 1 / -1; }
+    .figs { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--gap); }
+  }
+  @media (max-width: 480px) {
+    .figs { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+// One argument set as a band: a single sentence across the page, its middle clause lit.
+interface Props { id: string; title: string; lit?: string; link?: { label: string; href: string }; tone?: 'plain' | 'raised' }
+const { id, title, lit, link, tone = 'raised' } = Astro.props;
+const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const html = lit && title.includes(lit)
+  ? title.split(lit).map(esc).join(`<span class="lit">${esc(lit)}</span>`)
+  : esc(title);
+---
+<section class:list={['gap section', { 'section--raised': tone === 'raised' }]} aria-labelledby={id}>
+  <div class="wrap" data-reveal-group>
+    <h2 id={id} data-split set:html={html} />
+    {link && <a class="link" href={link.href} data-reveal>{link.label} <span class="arrow">→</span></a>}
+  </div>
+</section>
+
+<style>
+  .wrap { display: grid; gap: clamp(28px, 3vw, 44px); justify-items: start; }
+  h2 { font-size: clamp(30px, 3.6vw, 60px); line-height: 1.06; max-width: none; }
+  h2 :global(.lit) { color: var(--accent-hi); }
+  .link { font-size: 18px; }
+</style>
