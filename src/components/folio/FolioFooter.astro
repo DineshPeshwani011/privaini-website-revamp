@@ -101,6 +101,18 @@ const platformCols = [
 </footer>
 )}
 
+<script>
+  // the faded name arrives once, when it scrolls into view
+  const name = document.querySelector<HTMLElement>('.fz-name');
+  if (name) {
+    if (!('IntersectionObserver' in window)) name.classList.add('in');
+    else {
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { name.classList.add('in'); io.disconnect(); } }), { threshold: 0.35 });
+      io.observe(name);
+    }
+  }
+</script>
+
 <style>
   .ff { padding-block: clamp(72px, 8vw, 120px) clamp(48px, 5vw, 72px); border-top: 1px solid var(--on-night-line); }
   .ff-grid { display: grid; grid-template-columns: minmax(0, 5fr) repeat(4, minmax(0, 2fr)); gap: clamp(32px, 3vw, 56px) var(--gap); align-items: start; }
@@ -128,9 +140,11 @@ const platformCols = [
      name sits behind it all, large and faint, fading out towards the foot ---- */
   .ff--flat { position: relative; overflow: clip; border-top: 0; padding: clamp(80px, 8vw, 120px) 0 0; isolation: isolate; }
   .fz-name {
-    order: 5; margin: clamp(48px, 6vw, 96px) 0 0; text-align: center; pointer-events: none; user-select: none;
-    font: 400 clamp(56px, 15.6vw, 320px)/1 var(--logo); letter-spacing: 0.02em; white-space: nowrap; color: var(--on-night); opacity: 0.12;
-    -webkit-mask-image: linear-gradient(180deg, #000 35%, transparent 100%); mask-image: linear-gradient(180deg, #000 35%, transparent 100%);
+    /* equal space above and below: the line box is cut to the capitals (0.72em), so the margins are the whole gap */
+    margin: clamp(24px, 3vw, 48px) 0; text-align: center; pointer-events: none; user-select: none;
+    transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1), translate 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    font: 400 clamp(56px, 15.6vw, 320px)/0.72 var(--logo); letter-spacing: 0.02em; white-space: nowrap; color: var(--on-night); opacity: 0.12;
+    -webkit-mask-image: linear-gradient(180deg, #000 30%, rgba(0, 0, 0, 0.3) 100%); mask-image: linear-gradient(180deg, #000 30%, rgba(0, 0, 0, 0.3) 100%);
   }
   .fz-groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(64px, 6vw, 96px) var(--gap); align-items: start; }
   .fz-g--3 { grid-column: span 3; }
@@ -149,7 +163,10 @@ const platformCols = [
   .ff--flat a:hover { color: var(--on-night); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
   .ff--flat a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
   .ff--flat a:active { opacity: 0.75; }
-  .fz-bar { margin-top: clamp(24px, 3vw, 48px); border-block: 1px solid var(--on-night-line); }
+  /* scroll reveal: it rises and fades up to its resting 12% when the footer's close comes into view */
+  :global(html.js) .fz-name:not(.in) { opacity: 0; translate: 0 36px; }
+  @media (prefers-reduced-motion: reduce) { :global(html.js) .fz-name:not(.in) { opacity: 0.12; translate: none; } .fz-name { transition: none; } }
+  .fz-bar { margin-top: 0; border-block: 1px solid var(--on-night-line); }
   .fz-bar-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; min-height: 72px; padding-block: 14px; }
   .fz-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid var(--on-night-line-2); font-size: 14px; color: var(--on-night); }
   .ff--flat .fz-cta:hover { background: var(--cyan); border-color: var(--cyan); color: var(--night); text-decoration: none; }
