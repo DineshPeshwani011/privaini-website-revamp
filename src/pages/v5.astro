@@ -39,8 +39,16 @@ const beats = [
 
 // enforcement: the headline figure, then three more; each decodes out of scrambled glyphs once it is on screen
 // (src/scripts/flat-v5.ts). The two shares are drawn as bars of their whole.
-const [fines, ...stats] = enforcement;
+const [fines, ...shares] = enforcement;
+const mean = shares.pop()!;   // $11.5M, the average: drawn as a line through the settlements
 const deals = settlements.map((s) => { const i = s.search(/[$€]/); return { name: s.slice(0, i).trim(), amount: s.slice(i) }; });
+// the settlements on one scale, in millions (an amount's own currency symbol is kept; the euro figure is drawn at its face value)
+const SCALE = 50;
+const num = (s: string) => parseFloat(s.replace(/[^0-9.]/g, ''));
+const bars = deals.map((d) => ({ ...d, v: +((num(d.amount) / SCALE) * 100).toFixed(1), lo: num(d.amount) < (mean.count ?? 0) }));
+// a hundred squares, read from the bottom-left up: each square's place in the order they light
+const waffle = Array.from({ length: 100 }, (_, i) => (9 - Math.floor(i / 10)) * 10 + (i % 10));
+const meanAt =+(((mean.count ?? 0) / SCALE) * 100).toFixed(1);
 
 // the institutions that price cyber risk: the figure, what it counts, and the whole it is part of, drawn as squares
 const institutions = [
@@ -104,41 +112,38 @@ const teams = [
       </div>
     </section>
 
-    <!-- privacy enforcement is routine: one giant figure, three tiles, the settlements as a band -->
+    <!-- privacy enforcement is routine: the $7B+ and its two shares (each a hundred squares) beside the settlements,
+         drawn on one scale with the average as a line through them -->
     <section class="enf is-night v5-sec" id="enforcement" data-nav-dark aria-labelledby="enf-h">
       <div class="wrap">
         <h2 id="enf-h" class="v5-h2 enf-h" data-reveal>Privacy enforcement is routine.</h2>
-        <p class="enf-fig" data-reveal>
-          <span class="enf-frame fx-hd" data-in><span class="enf-n" data-decode>{fines.figure}</span><i class="enf-rule" aria-hidden="true"><b></b></i></span>
-          <span class="enf-of">{fines.label}</span>
-        </p>
-        <!-- three figures, each a row: the two shares light their part of a hundred ticks; the average is one mark on its scale -->
-        <dl class="enf-rows" data-reveal-group>
-          {stats.map((e) => (
-            <div class="enf-row" data-reveal data-in>
-              <dt data-decode>{e.figure}</dt>
-              <dd>{e.label}</dd>
-              {e.suffix === '%' ? (
-                <span class="enf-scale" aria-hidden="true">{Array.from({ length: 100 }, (_, i) => <i class:list={{ lit: i < e.count }} style={`--i: ${i}`}></i>)}</span>
-              ) : (
-                <span class="enf-avg" aria-hidden="true"><i></i></span>
-              )}
+        <div class="enf-plate">
+          <div class="enf-left">
+            <p class="enf-fig" data-reveal>
+              <span class="enf-frame fx-hd" data-in><span class="enf-n" data-decode>{fines.figure}</span><i class="enf-rule" aria-hidden="true"><b></b></i></span>
+              <span class="enf-of">{fines.label}</span>
+            </p>
+            <dl class="enf-shares" data-reveal-group>
+              {shares.map((e) => (
+                <div class="enf-share" data-reveal data-in>
+                  <dt data-decode>{e.figure}</dt>
+                  <dd>{e.label}</dd>
+                  <span class="enf-wf" aria-hidden="true">{waffle.map((k) => <i class:list={{ lit: k < (e.count ?? 0) }} style={`--d: ${k}`}></i>)}</span>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <figure class="enf-chart fx-hd" aria-label="Recent privacy settlements, each drawn to scale against the average settlement" data-in>
+            <div class="enf-chart-in" style={`--mean: ${meanAt}`}>
+              <p class="enf-mean"><b data-decode>{mean.figure}</b><span>{mean.label}</span></p>
+              <ol class="enf-bars" role="list">
+                {bars.map((b, n) => (
+                  <li class:list={{ lo: b.lo }} style={`--v: ${b.v}; --n: ${n}`}><span class="eb-name">{b.name}</span><span class="eb-amt">{b.amount}</span><i class="eb-bar" aria-hidden="true"></i></li>
+                ))}
+              </ol>
             </div>
-          ))}
-        </dl>
-      </div>
-      <!-- the settlements run past; the square button stops and starts them (and they stop on hover and focus) -->
-      <div class="ticker" role="region" aria-label="Recent privacy settlements" data-ticker>
-        <div class="tk-track">
-          {[0, 1].map((c) => (
-            <ul role="list" class="tk-set" aria-hidden={c === 1 ? 'true' : undefined}>
-              {deals.map((d) => <li><span>{d.name}</span> <span class="tk-amt">{d.amount}</span></li>)}
-            </ul>
-          ))}
+          </figure>
         </div>
-        <button type="button" class="tk-pause" aria-pressed="false" aria-label="Pause the settlements" data-tk-pause>
-          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path class="tk-i-pause" d="M4 3h3v10H4zM9 3h3v10H9z" /><path class="tk-i-play" d="M5 3l8 5-8 5z" /></svg>
-        </button>
       </div>
       <div class="wrap enf-close" data-reveal-group>
         <p class="enf-p" data-reveal>Most enforcement actions hit companies that didn’t see them coming. It’s become a recurring cost of doing business online, and it’s accelerating.</p>
@@ -287,7 +292,7 @@ const teams = [
     --t-copy: 20px;     --lh-copy: 28px;     /* the closing line and the quotation */
     --t-fig: 48px;      --lh-fig: 44px;      /* the three enforcement figures */
     --t-tally: 96px;    --lh-tally: 76px;    /* the institutions' figures */
-    --t-giant: 120px;   --lh-giant: 96px;    /* $7M, the one giant figure */
+    --t-giant: 96px;   --lh-giant: 80px;    /* $7M, the one giant figure */
     --t-quote: 96px;    --lh-quote: 68px;    /* the quotation mark */
     --tone: var(--stone-2);           /* the one tone step on white */
     --tone-dark: var(--night-2);      /* and on black */
@@ -298,7 +303,7 @@ const teams = [
       --t-title: 24px; --lh-title: 32px;
       --t-step: 28px; --lh-step: 32px;  --t-name: 28px; --lh-name: 32px;  --t-band: 28px; --lh-band: 32px;
       --t-copy: 24px; --lh-copy: 32px;
-      --t-fig: 56px; --lh-fig: 52px;  --t-tally: 112px; --lh-tally: 88px;  --t-giant: 176px; --lh-giant: 140px;  --t-quote: 128px; --lh-quote: 88px;
+      --t-fig: 56px; --lh-fig: 52px;  --t-tally: 112px; --lh-tally: 88px;  --t-giant: 144px; --lh-giant: 116px;  --t-quote: 128px; --lh-quote: 88px;
     }
   }
   @media (min-width: 1024px) {
@@ -306,7 +311,7 @@ const teams = [
       --t-display: 56px; --lh-display: 60px;  --t-h2: 40px; --lh-h2: 44px;
       --t-title: 28px; --lh-title: 36px;
       --t-step: 32px; --lh-step: 36px;  --t-name: 32px; --lh-name: 36px;  --t-band: 32px; --lh-band: 36px;
-      --t-fig: 64px; --lh-fig: 56px;  --t-tally: 136px; --lh-tally: 108px;  --t-giant: 232px; --lh-giant: 184px;  --t-quote: 160px; --lh-quote: 112px;
+      --t-fig: 64px; --lh-fig: 56px;  --t-tally: 136px; --lh-tally: 108px;  --t-giant: 160px; --lh-giant: 128px;  --t-quote: 160px; --lh-quote: 112px;
     }
   }
   @media (min-width: 1280px) {
@@ -315,14 +320,14 @@ const teams = [
       --t-title: 28px; --lh-title: 36px;
       --t-step: 36px; --lh-step: 40px;  --t-name: 40px; --lh-name: 40px;  --t-band: 40px; --lh-band: 44px;
       --t-copy: 28px; --lh-copy: 36px;
-      --t-fig: 80px; --lh-fig: 72px;  --t-tally: 160px; --lh-tally: 128px;  --t-giant: 288px; --lh-giant: 232px;  --t-quote: 200px; --lh-quote: 140px;
+      --t-fig: 80px; --lh-fig: 72px;  --t-tally: 160px; --lh-tally: 128px;  --t-giant: 200px; --lh-giant: 160px;  --t-quote: 200px; --lh-quote: 140px;
     }
   }
   @media (min-width: 1440px) {
     .v5 {
       --t-display: 72px; --lh-display: 76px;  --t-h2: 56px; --lh-h2: 60px;
       --t-title: 32px; --lh-title: 40px;
-      --t-giant: 312px; --lh-giant: 248px;
+      --t-giant: 232px; --lh-giant: 184px;
     }
   }
   /* ---- the 4-point spacing scale: every space is a multiple of 4 and steps at the same four widths as the type ---- */
@@ -413,52 +418,47 @@ const teams = [
   .hx-frame { --hd-gap: 8px; }
   .hx-cap { margin-top: 16px; text-align: right; font-size: var(--t-small); line-height: var(--lh-small); color: var(--on-stone-muted); text-wrap: pretty; }
 
-  /* ---- enforcement: one giant figure, three tiles, the settlements as a band ---- */
+  /* ---- enforcement: the $7B+ and its two shares (a hundred squares each, filling from the bottom) beside the
+     settlements drawn on one scale, with the average as a line through them ---- */
   .enf { padding-bottom: var(--s-end); }
   .enf-h { max-width: 14ch; }
-  .enf-fig { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: end; margin: var(--s-s) 0 var(--s-m); }
+  .enf-plate { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: var(--s-m); margin-top: var(--s-m); align-items: stretch; }
+  .enf-left { grid-column: 1 / span 6; display: grid; align-content: space-between; gap: var(--s-m); }
+  .enf-fig { margin: 0; display: grid; gap: 16px; justify-items: start; }
   /* the figure is held by handles, over a cyan rule with a node at its middle that draws out from the centre */
-  .enf-frame { grid-column: 1 / span 9; justify-self: start; display: block; padding: 8px 20px 28px; --hd-c: var(--on-night); --hd-gap: 0px; }
+  .enf-frame { display: block; padding: 8px 16px 24px; --hd-c: var(--on-night); --hd-gap: 0px; }
   .enf-n { display: block; font: 300 var(--t-giant)/var(--lh-giant) var(--font); letter-spacing: -0.07em; color: var(--cyan); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .enf-rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--cyan); transition: transform 1.1s var(--ease) 0.3s; }
   .enf-rule b { position: absolute; left: 50%; top: -4px; width: 8px; height: 8px; translate: -50% 0; background: var(--cyan); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.1s; }
   .enf-rule b::after { content: ''; position: absolute; left: 4px; top: 8px; width: 1px; height: 16px; background: var(--cyan); }
   :global(html.js) .enf-frame:not(.in) .enf-rule { transform: scaleX(0); }
   :global(html.js) .enf-frame:not(.in) .enf-rule b { transform: scale(0); }
-  .enf-of { grid-column: 10 / -1; padding-bottom: 8px; font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--on-night); }
-  /* three rows: the figure, what it counts, and its scale of a hundred ticks */
-  .enf-rows { display: grid; margin: 0; }
-  .enf-row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; padding-block: var(--s-row); }
-  .enf-row dt { grid-column: 1 / span 3; font: 300 var(--t-fig)/var(--lh-fig) var(--font); letter-spacing: -0.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .enf-row dd { grid-column: 4 / span 3; margin: 0; font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--on-night); text-wrap: pretty; }
-  .enf-scale { grid-column: 7 / -1; display: grid; grid-template-columns: repeat(100, minmax(0, 1fr)); gap: 3px; height: var(--s-bar); }
-  .enf-scale i { background: var(--night-2); transform-origin: bottom; transition: background-color 0.3s, transform 0.5s var(--ease); transition-delay: calc(var(--i) * 14ms + 250ms); }
-  .enf-scale i.lit { background: var(--cyan); }
-  :global(html.js) .enf-row:not(.in) .enf-scale i.lit { background: var(--night-2); transform: scaleY(0.35); }
-  /* the average: one cyan mark at the middle of its scale */
-  .enf-avg { grid-column: 7 / -1; position: relative; height: var(--s-bar); background: linear-gradient(var(--night-2), var(--night-2)) 0 50% / 100% 1px no-repeat; }
-  .enf-avg i { position: absolute; left: 50%; top: 0; bottom: 0; width: 5px; background: var(--cyan); transition: transform 0.7s var(--ease) 0.5s; }
-  :global(html.js) .enf-row:not(.in) .enf-avg i { transform: scaleY(0); }
-  .ticker { position: relative; overflow: hidden; margin-top: var(--s-xl); background: var(--tone-dark); }
-  .tk-track { display: flex; }
-  .tk-set { display: flex; flex: none; list-style: none; margin: 0; padding: var(--s-band) 0; animation: tk 60s linear infinite; }
-  .ticker:hover .tk-set, .ticker:focus-within .tk-set, .ticker.is-paused .tk-set { animation-play-state: paused; }
-  /* the pause: a square on the band's right edge, cyan bars; it turns into a play mark once pressed */
-  /* a solid cap on the band's right end: the names slide under it, and the button sits on it */
-  .ticker::after { content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: calc(var(--inset) + 72px); background: var(--tone-dark); pointer-events: none; }
-  .tk-pause {
-    position: absolute; z-index: 1; right: var(--inset); top: 50%; translate: 0 -50%; display: grid; place-items: center; width: 48px; height: 48px;
-    padding: 0; border: 0; background: var(--night); color: var(--cyan); cursor: pointer; transition: background-color 0.25s, color 0.25s;
-  }
-  .tk-pause svg { width: 16px; height: 16px; fill: currentColor; }
-  .tk-pause:hover { background: var(--cyan); color: var(--night); }
-  .tk-pause:active { opacity: 0.8; }
-  .tk-i-play, .ticker.is-paused .tk-i-pause { display: none; }
-  .ticker.is-paused .tk-i-play { display: inline; }
+  .enf-of { max-width: 28ch; padding-left: 16px; font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--on-night); text-wrap: pretty; }
+  /* the two shares: each figure over the hundred squares it is part of, lit from the bottom up */
+  .enf-shares { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--gap); margin: 0; }
+  .enf-share { display: grid; align-content: start; gap: 8px; }
+  .enf-share dt { font: 300 var(--t-fig)/var(--lh-fig) var(--font); letter-spacing: -0.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .enf-share dd { margin: 0 0 8px; font: 400 var(--t-body)/var(--lh-body) var(--font); color: var(--on-night); text-wrap: pretty; }
+  .enf-wf { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+  .enf-wf i { aspect-ratio: 1; background: var(--night-2); transition: background-color 0.3s, transform 0.5s var(--ease); transition-delay: calc(var(--d) * 10ms + 200ms); }
+  .enf-wf i.lit { background: var(--cyan); }
+  :global(html.js) .enf-share:not(.in) .enf-wf i.lit { background: var(--night-2); transform: scale(0.6); }
+  /* the settlements, each bar its amount on one scale; the dashed line is the average */
+  .enf-chart { grid-column: 7 / -1; margin: 0; padding: var(--s-pad); display: grid; background: var(--tone-dark); --hd-gap: 4px; --hd-c: var(--on-night); }
+  .enf-chart-in { position: relative; display: grid; grid-template-rows: auto 1fr; gap: var(--s-s); }
+  .enf-chart-in::before { content: ''; position: absolute; z-index: 1; top: 0; bottom: 0; left: calc(var(--mean) * 1%); border-left: 1px dashed var(--on-night-muted); transform-origin: top; transition: transform 1.2s var(--ease) 0.2s; }
+  .enf-chart-in::after { content: ''; position: absolute; z-index: 1; top: 0; left: calc(var(--mean) * 1% - 4px); width: 8px; height: 8px; background: var(--cyan); }
+  :global(html.js) .enf-chart:not(.in) .enf-chart-in::before { transform: scaleY(0); }
+  .enf-mean { display: grid; gap: 8px; padding-left: calc(var(--mean) * 1% + 16px); }
+  .enf-mean b { font: 300 var(--t-h2)/var(--lh-h2) var(--font); letter-spacing: -0.05em; color: var(--cyan); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .enf-mean span { max-width: 24ch; font: 400 var(--t-body)/var(--lh-body) var(--font); color: var(--on-night); text-wrap: pretty; }
+  .enf-bars { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-rows: 1fr; border-right: 1px solid var(--on-night-line); background: repeating-linear-gradient(90deg, var(--on-night-line) 0 1px, transparent 1px 20%); }
+  .enf-bars li { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-content: center; gap: 8px 16px; padding-block: 12px; font: 500 var(--t-lead)/var(--lh-lead) var(--font); letter-spacing: -0.02em; }
+  .eb-amt { font-variant-numeric: tabular-nums; }
+  .eb-bar { grid-column: 1 / -1; height: 16px; width: calc(var(--v) * 1%); background: var(--cyan); transform-origin: left; transition: transform 1.1s var(--ease) calc(var(--n) * 100ms + 300ms); }
+  .enf-bars li.lo .eb-bar { background: var(--on-night-muted); }
+  :global(html.js) .enf-chart:not(.in) .eb-bar { transform: scaleX(0); }
   @keyframes tk { to { transform: translateX(-100%); } }
-  .tk-set li { display: flex; align-items: baseline; gap: 12px; white-space: nowrap; font: 400 var(--t-band)/var(--lh-band) var(--font); letter-spacing: -0.035em; }
-  .tk-set li::after { content: ''; align-self: center; width: 8px; height: 8px; margin-inline: var(--s-tk); background: var(--cyan); }
-  .tk-amt { color: var(--cyan); font-variant-numeric: tabular-nums; }
   .enf-close { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 32px; align-items: end; margin-top: var(--s-xl); }
   .enf-p { grid-column: 1 / span 8; margin: 0; font: 400 var(--t-copy)/var(--lh-copy) var(--font); letter-spacing: -0.03em; text-wrap: pretty; }
   .enf-go { grid-column: 9 / -1; justify-self: end; }
@@ -615,12 +615,8 @@ const teams = [
     .hx-copy { padding-right: 0; }
     .hx-visual { margin: 0; }
     .hx-cap { text-align: left; }
-    .enf-frame { grid-column: 1 / -1; }
-    .enf-of { grid-column: 1 / -1; padding: 12px 0 0; }
+    .enf-left, .enf-chart { grid-column: 1 / -1; }
     .inst-list { grid-template-columns: 1fr; }
-    .enf-row { row-gap: 12px; }
-    .enf-row dt, .enf-row dd, .enf-scale, .enf-avg { grid-column: 1 / -1; }
-    .enf-scale { gap: 1px; }
     .inst-panel { min-height: 0; }
     .enf-p, .enf-go { grid-column: 1 / -1; justify-self: start; }
     .quote { row-gap: 20px; }
@@ -649,7 +645,6 @@ const teams = [
   @media (hover: none) { .lg:hover .lg-set { animation-play-state: running; } .lg.is-paused:hover .lg-set { animation-play-state: paused; } }
   @media (prefers-reduced-motion: reduce) {
     /* the loops run slower, not off: the page keeps its life (see docs/DESIGN-LANGUAGE) */
-    .tk-set { animation-duration: 90s; }
     .lg-set { animation-duration: 90s; }
   }
 </style>

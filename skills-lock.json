@@ -36,6 +36,12 @@
       "computedHash": "1491bb966a2c289550e0d6eb25c19b0570ead479240f6b2ba5766d94599ea744",
       "installMode": "copy"
     },
+    "stageshow": {
+      "source": "benjitaylor/skills",
+      "sourceType": "github",
+      "skillPath": "stageshow/SKILL.md",
+      "computedHash": "e61d752c729645bd4b96fb8dd6e31769aaaf0c4b409fd4bfc7ef8be79af84774"
+    },
     "stitch::extract-design-md": {
       "source": "google-labs-code/stitch-skills",
       "sourceType": "github",
