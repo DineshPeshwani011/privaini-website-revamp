@@ -150,9 +150,9 @@ const teams = [
     <section class="inst is-stone v5-sec" id="institutions" aria-labelledby="inst-h">
       <div class="wrap">
         <h2 id="inst-h" class="v5-h2 inst-h" data-reveal>The institutions that price cyber risk choose Privaini.</h2>
-        <ul class="inst-list fx-hd" role="list" data-reveal-group>
+        <ul class="inst-list" role="list" data-reveal-group>
           {institutions.map((t) => (
-            <li class="inst-panel fx-dots" data-reveal data-in>
+            <li class="inst-panel fx-dots fx-hd" data-reveal data-in>
               <p class="inst-n" data-decode>{t.n}</p>
               <p class="inst-of">{t.of} <strong>{t.what}</strong></p>
               <p class="inst-grid" aria-hidden="true" style={`--cols: ${t.cols}`}>
@@ -466,9 +466,9 @@ const teams = [
   /* ---- the institutions: three panels, each figure over the whole it is part of ---- */
   .inst { padding-bottom: var(--s-sec); }
   .inst-h { max-width: 22ch; margin-bottom: var(--s-l); }
-  .inst-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .inst-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   /* each panel is an open field of fine square dots, no fill */
-  .inst-panel { display: grid; grid-template-rows: auto auto 1fr; gap: 20px; min-height: var(--s-panel); padding: var(--s-pad); background: none; --dot-c: var(--dot-on-tone); }
+  .inst-panel { display: grid; grid-template-rows: auto auto 1fr; gap: 20px; min-height: var(--s-panel); padding: var(--s-pad); background: none; --dot-c: var(--dot-on-tone); --hd-gap: 4px; }
   .inst-n { margin: 0; font: 300 var(--t-tally)/var(--lh-tally) var(--font); letter-spacing: -0.07em; font-variant-numeric: tabular-nums; margin-left: -4px; }
   .inst-of { margin: 0; font: 400 var(--t-lead)/var(--lh-lead) var(--font); }
   .inst-of strong { display: block; font: 500 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; }
