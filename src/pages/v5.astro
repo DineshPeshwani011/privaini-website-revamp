@@ -40,7 +40,7 @@ const beats = [
 // enforcement: the headline figure, then three more; each decodes out of scrambled glyphs once it is on screen
 // (src/scripts/flat-v5.ts). The two shares are drawn as bars of their whole.
 const [fines, ...stats] = enforcement;
-const deals = settlements.map((s) => { const i = s.search(/[$€]/); return { name: s.slice(0, i).trim(), amount: s.slice(i) }; });
+const deals = settlements.map((s) => { const i = s.search(/[$â‚¬]/); return { name: s.slice(0, i).trim(), amount: s.slice(i) }; });
 
 // the institutions that price cyber risk: the figure, what it counts, and the whole it is part of, drawn as squares
 const institutions = [
@@ -61,7 +61,7 @@ const href = (label: string) => solutions.find((s) => s.label === label)?.href ?
 const teams = [
   { label: 'Enterprises', note: 'Find the gaps between policy and practice.', icon: 'M4 4h10v10H4zM18 4h10v10H18zM4 18h10v10H4zM18 18h10v10H18z' },
   { label: 'Insurers', note: 'Spot privacy loss drivers before claims surface.', icon: 'M16 3 28 7V16L16 29 4 16V7ZM10.5 15.5l4 4 7-8' },
-  { label: 'Law Firms', note: 'See the evidence plaintiffs’ counsel already scanned.', icon: 'M16 4V27M9 27H23M5 9H27M5 9 2 18H8ZM27 9 24 18H30Z' },
+  { label: 'Law Firms', note: 'See the evidence plaintiffsâ€™ counsel already scanned.', icon: 'M16 4V27M9 27H23M5 9H27M5 9 2 18H8ZM27 9 24 18H30Z' },
   { label: 'M&A Advisors', note: 'Find privacy & AI risk before it impacts the deal outcome.', icon: 'M4 11h15v15H4zM13 6h15v15H13z' },
 ].map((t) => ({ ...t, href: href(t.label) }));
 ---
@@ -141,7 +141,7 @@ const teams = [
         </button>
       </div>
       <div class="wrap enf-close" data-reveal-group>
-        <p class="enf-p" data-reveal>Most enforcement actions hit companies that didn’t see them coming. It’s become a recurring cost of doing business online, and it’s accelerating.</p>
+        <p class="enf-p" data-reveal>Most enforcement actions hit companies that didnâ€™t see them coming. Itâ€™s become a recurring cost of doing business online, and itâ€™s accelerating.</p>
         <a class="f-btn f-btn--cyan enf-go" href={DEMO_URL} data-reveal>Find out if your company is exposed <span class="arr" aria-hidden="true"><svg viewBox="0 0 16 16" focusable="false"><path d="M2 8h11M9 4l4 4-4 4" /></svg></span></a>
       </div>
     </section>
@@ -169,7 +169,7 @@ const teams = [
       <div class="wrap">
         <figure class="quote" data-reveal-group>
           <span class="q-pad fx-dots" aria-hidden="true" data-reveal><span class="q-mark"></span></span>
-          <blockquote class="q-text" data-reveal>“{viaquest.text}”</blockquote>
+          <blockquote class="q-text" data-reveal>â€œ{viaquest.text}â€</blockquote>
           <figcaption class="q-by" data-reveal>
             <span class="q-who"><span class="q-role">{viaquest.name}</span><span class="q-org">{viaquest.org}</span></span>
             <a class="v5-link" href={viaquest.href}>See how ViaQuest uses Privaini <span class="arr" aria-hidden="true"><svg viewBox="0 0 16 16" focusable="false"><path d="M2 8h11M9 4l4 4-4 4" /></svg></span></a>
@@ -261,31 +261,75 @@ const teams = [
 </script>
 
 <style>
-  /* Hallmark · checked: 2026-11-11 · genre: modern-minimal (inferred) · copy: verbatim
-   * floor: 29 → 2 open (fixed 26a, 48, 63, 67; 54 kept on purpose, below) · reflex: 57 → 0 open (fixed 24b, 26b, 38iii twice) · added 18 (a pause on the ticker)
-   * built: the project · redesign: polish · v2.0.0 */
+  /* Hallmark Â· checked: 2026-11-11 Â· genre: modern-minimal (inferred) Â· copy: verbatim
+   * floor: 29 â†’ 2 open (fixed 26a, 48, 63, 67; 54 kept on purpose, below) Â· reflex: 57 â†’ 0 open (fixed 24b, 26b, 38iii twice) Â· added 18 (a pause on the ticker)
+   * built: the project Â· redesign: polish Â· v2.0.0 */
   /* kept on purpose (Hallmark 54): "Privacy & AI Risk Intelligence" and "Findings" are the live page's own labels, kept word for word */
   /* kept on purpose (Hallmark 54, 67), 2026-11-11: small labels and chips in mono capitals with a square, dot fields and
      selection handles, after carta.com, which the user asked for; the palette moved to charcoal, slate and cool greys */
-  /* Hallmark · waive 38iii · the cyan rule under "before they do." · the page's signature, once, in the hero */
+  /* Hallmark Â· waive 38iii Â· the cyan rule under "before they do." Â· the page's signature, once, in the hero */
   /* kept on purpose (Hallmark 47a): the hero's sample website is /v4's x-ray, which the user asked for by name */
-  /* Hallmark · waive 26b · no :disabled styling · the page has no control that can be disabled */
+  /* Hallmark Â· waive 26b Â· no :disabled styling Â· the page has no control that can be disabled */
   /* ---- Flat's type: one family, Urbanist, in six sizes ---- */
   .v5 {
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
-    --t-display: clamp(46px, 5.8vw, 92px);
-    --t-h2: clamp(36px, 4.4vw, 68px);
-    --t-title: clamp(24px, 2.2vw, 34px);
-    --t-lead: clamp(18px, 1.35vw, 21px);
-    --t-small: 15px;
+    /* the 4-point type scale (2026-11-12): every size and line height is a multiple of 4 (14px alone is the floor and
+       the exception), and sizes step at four widths instead of drifting. The display tops out at 72px. Phone first. */
+    --t-display: 40px;  --lh-display: 44px;
+    --t-h2: 32px;       --lh-h2: 36px;
+    --t-title: 24px;    --lh-title: 32px;
+    --t-lead: 20px;     --lh-lead: 28px;
+    --t-body: 16px;     --lh-body: 24px;
+    --t-small: 14px;    --lh-small: 20px;
+    --t-step: 24px;     --lh-step: 28px;     /* findings step titles */
+    --t-name: 24px;     --lh-name: 28px;     /* team names */
+    --t-band: 24px;     --lh-band: 28px;     /* the settlements band */
+    --t-copy: 20px;     --lh-copy: 28px;     /* the closing line and the quotation */
+    --t-fig: 48px;      --lh-fig: 44px;      /* the three enforcement figures */
+    --t-tally: 96px;    --lh-tally: 76px;    /* the institutions' figures */
+    --t-giant: 120px;   --lh-giant: 96px;    /* $7M, the one giant figure */
+    --t-quote: 96px;    --lh-quote: 68px;    /* the quotation mark */
     --tone: var(--stone-2);           /* the one tone step on white */
     --tone-dark: var(--night-2);      /* and on black */
   }
+  @media (min-width: 768px) {
+    .v5 {
+      --t-display: 48px; --lh-display: 52px;  --t-h2: 36px; --lh-h2: 40px;
+      --t-title: 24px; --lh-title: 32px;
+      --t-step: 28px; --lh-step: 32px;  --t-name: 28px; --lh-name: 32px;  --t-band: 28px; --lh-band: 32px;
+      --t-copy: 24px; --lh-copy: 32px;
+      --t-fig: 56px; --lh-fig: 52px;  --t-tally: 112px; --lh-tally: 88px;  --t-giant: 176px; --lh-giant: 140px;  --t-quote: 128px; --lh-quote: 88px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .v5 {
+      --t-display: 56px; --lh-display: 60px;  --t-h2: 40px; --lh-h2: 44px;
+      --t-title: 28px; --lh-title: 36px;
+      --t-step: 32px; --lh-step: 36px;  --t-name: 32px; --lh-name: 36px;  --t-band: 32px; --lh-band: 36px;
+      --t-fig: 64px; --lh-fig: 56px;  --t-tally: 136px; --lh-tally: 108px;  --t-giant: 232px; --lh-giant: 184px;  --t-quote: 160px; --lh-quote: 112px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .v5 {
+      --t-display: 64px; --lh-display: 68px;  --t-h2: 48px; --lh-h2: 52px;
+      --t-title: 28px; --lh-title: 36px;
+      --t-step: 36px; --lh-step: 40px;  --t-name: 40px; --lh-name: 40px;  --t-band: 40px; --lh-band: 44px;
+      --t-copy: 28px; --lh-copy: 36px;
+      --t-fig: 80px; --lh-fig: 72px;  --t-tally: 160px; --lh-tally: 128px;  --t-giant: 288px; --lh-giant: 232px;  --t-quote: 200px; --lh-quote: 140px;
+    }
+  }
+  @media (min-width: 1440px) {
+    .v5 {
+      --t-display: 72px; --lh-display: 76px;  --t-h2: 56px; --lh-h2: 60px;
+      --t-title: 32px; --lh-title: 40px;
+      --t-giant: 312px; --lh-giant: 248px;
+    }
+  }
   .v5-sec { position: relative; padding-block: clamp(104px, 11vw, 184px); }
-  .v5-display { margin: 0; font: 500 var(--t-display)/1 var(--font); letter-spacing: -0.05em; color: var(--ink); text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
-  .v5-h2 { margin: 0; font: 500 var(--t-h2)/1.04 var(--font); letter-spacing: -0.045em; color: var(--ink); text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
-  .v5-title { margin: 0; font: 500 var(--t-title)/1.15 var(--font); letter-spacing: -0.03em; color: var(--ink); }
-  .v5-lead { margin: 0; font-size: var(--t-lead); line-height: 1.55; color: var(--ink); max-width: 48ch; text-wrap: pretty; }
+  .v5-display { margin: 0; font: 500 var(--t-display)/var(--lh-display) var(--font); letter-spacing: -0.05em; color: var(--ink); text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+  .v5-h2 { margin: 0; font: 500 var(--t-h2)/var(--lh-h2) var(--font); letter-spacing: -0.045em; color: var(--ink); text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+  .v5-title { margin: 0; font: 500 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; color: var(--ink); }
+  .v5-lead { margin: 0; font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--ink); max-width: 48ch; text-wrap: pretty; }
   /* the hero's key phrase, and only the hero's, carries a cyan rule that draws in (a flat bar, set as a
      background so it can grow from the left) */
   .mk {
@@ -295,7 +339,7 @@ const teams = [
   }
   :global(html.js) [data-in]:not(.in) .mk { background-size: 0% 0.12em; }
   .v5-link {
-    display: inline-flex; gap: 12px; align-items: center; padding-bottom: 4px; font: 600 16px/1.3 var(--font); color: var(--ink);
+    display: inline-flex; gap: 12px; align-items: center; padding-bottom: 4px; font: 600 var(--t-body)/var(--lh-body) var(--font); color: var(--ink);
     background: linear-gradient(var(--cyan), var(--cyan)) 0 100% / 100% 2px no-repeat; transition: background-size 0.45s var(--ease);
   }
   .v5-link:hover { background-size: 0% 2px; background-position: 100% 100%; }
@@ -318,12 +362,12 @@ const teams = [
   .hx { position: relative; min-height: max(100svh, 760px); display: grid; grid-template-rows: 1fr auto; align-items: center; padding-block: calc(var(--nav-h) + 40px) 20px; overflow-x: clip; }
   .hx-grid { position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; }
   .hx-copy { grid-column: 1 / span 6; display: grid; gap: 36px; justify-items: start; padding-right: clamp(0px, 3vw, 48px); }
-  .hx-sub { margin: 0; font: 500 var(--t-lead)/1.6 var(--font); letter-spacing: -0.01em; color: var(--ink); }
+  .hx-sub { margin: 0; font: 500 var(--t-lead)/var(--lh-lead) var(--font); letter-spacing: -0.01em; color: var(--ink); }
   .hx-cta { min-height: 60px; }
   /* the x-ray stands on a dot field set down and to the right, like a canvas, and is held by selection handles */
   .hx-visual { grid-column: 7 / -1; margin: 0 calc(var(--margin) * -0.5) 0 0; --dots-inset: -44px 56px 64px -44px; }
   .hx-frame { --hd-gap: 10px; }
-  .hx-cap { margin-top: 16px; text-align: right; font-size: 14px; color: var(--on-stone-muted); text-wrap: pretty; }
+  .hx-cap { margin-top: 16px; text-align: right; font-size: var(--t-small); line-height: var(--lh-small); color: var(--on-stone-muted); text-wrap: pretty; }
 
   /* ---- enforcement: one giant figure, three tiles, the settlements as a band ---- */
   .enf { padding-bottom: clamp(88px, 9vw, 152px); }
@@ -331,18 +375,18 @@ const teams = [
   .enf-fig { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: end; margin: clamp(24px, 3vw, 48px) 0 clamp(48px, 5vw, 80px); }
   /* the figure is held by handles, over a cyan rule with a node at its middle that draws out from the centre */
   .enf-frame { grid-column: 1 / span 9; justify-self: start; display: block; padding: 8px 20px 28px; --hd-c: var(--on-night); --hd-gap: 0px; }
-  .enf-n { display: block; font: 300 clamp(150px, 25vw, 400px)/0.8 var(--font); letter-spacing: -0.07em; color: var(--cyan); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .enf-n { display: block; font: 300 var(--t-giant)/var(--lh-giant) var(--font); letter-spacing: -0.07em; color: var(--cyan); font-variant-numeric: tabular-nums; white-space: nowrap; }
   .enf-rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--cyan); transition: transform 1.1s var(--ease) 0.3s; }
   .enf-rule b { position: absolute; left: 50%; top: -3px; width: 7px; height: 7px; translate: -50% 0; background: var(--cyan); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.1s; }
   .enf-rule b::after { content: ''; position: absolute; left: 3px; top: 7px; width: 1px; height: 16px; background: var(--cyan); }
   :global(html.js) .enf-frame:not(.in) .enf-rule { transform: scaleX(0); }
   :global(html.js) .enf-frame:not(.in) .enf-rule b { transform: scale(0); }
-  .enf-of { grid-column: 10 / -1; padding-bottom: 0.4em; font-size: var(--t-lead); line-height: 1.4; color: var(--on-night); }
+  .enf-of { grid-column: 10 / -1; padding-bottom: 0.4em; font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--on-night); }
   /* three rows: the figure, what it counts, and its scale of a hundred ticks */
   .enf-rows { display: grid; margin: 0; }
   .enf-row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; padding-block: clamp(20px, 2.4vw, 36px); }
-  .enf-row dt { grid-column: 1 / span 3; font: 300 clamp(56px, 6.4vw, 104px)/0.9 var(--font); letter-spacing: -0.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .enf-row dd { grid-column: 4 / span 3; margin: 0; font-size: var(--t-lead); line-height: 1.4; color: var(--on-night); text-wrap: pretty; }
+  .enf-row dt { grid-column: 1 / span 3; font: 300 var(--t-fig)/var(--lh-fig) var(--font); letter-spacing: -0.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .enf-row dd { grid-column: 4 / span 3; margin: 0; font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--on-night); text-wrap: pretty; }
   .enf-scale { grid-column: 7 / -1; display: grid; grid-template-columns: repeat(100, minmax(0, 1fr)); gap: 3px; height: clamp(36px, 4vw, 60px); }
   .enf-scale i { background: var(--night-2); transform-origin: bottom; transition: background-color 0.3s, transform 0.5s var(--ease); transition-delay: calc(var(--i) * 14ms + 250ms); }
   .enf-scale i.lit { background: var(--cyan); }
@@ -368,11 +412,11 @@ const teams = [
   .tk-i-play, .ticker.is-paused .tk-i-pause { display: none; }
   .ticker.is-paused .tk-i-play { display: inline; }
   @keyframes tk { to { transform: translateX(-100%); } }
-  .tk-set li { display: flex; align-items: baseline; gap: 0.4em; white-space: nowrap; font: 400 clamp(30px, 3.2vw, 52px)/1.1 var(--font); letter-spacing: -0.035em; }
+  .tk-set li { display: flex; align-items: baseline; gap: 0.4em; white-space: nowrap; font: 400 var(--t-band)/var(--lh-band) var(--font); letter-spacing: -0.035em; }
   .tk-set li::after { content: ''; align-self: center; width: 10px; height: 10px; margin-inline: clamp(32px, 3.4vw, 64px); background: var(--cyan); }
   .tk-amt { color: var(--cyan); font-variant-numeric: tabular-nums; }
   .enf-close { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 32px; align-items: end; margin-top: clamp(72px, 7vw, 112px); }
-  .enf-p { grid-column: 1 / span 8; margin: 0; font: 400 clamp(26px, 2.5vw, 36px)/1.25 var(--font); letter-spacing: -0.03em; text-wrap: pretty; }
+  .enf-p { grid-column: 1 / span 8; margin: 0; font: 400 var(--t-copy)/var(--lh-copy) var(--font); letter-spacing: -0.03em; text-wrap: pretty; }
   .enf-go { grid-column: 9 / -1; justify-self: end; }
 
   /* ---- the institutions: three panels, each figure over the whole it is part of ---- */
@@ -381,9 +425,9 @@ const teams = [
   .inst-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   /* each panel is an open field of fine square dots, no fill */
   .inst-panel { display: grid; grid-template-rows: auto auto 1fr; gap: 20px; min-height: clamp(380px, 32vw, 470px); padding: clamp(28px, 2.8vw, 44px); background: none; --dot-c: var(--dot-on-tone); }
-  .inst-n { margin: 0; font: 300 clamp(120px, 13vw, 210px)/0.8 var(--font); letter-spacing: -0.07em; font-variant-numeric: tabular-nums; margin-left: -0.05em; }
-  .inst-of { margin: 0; font: 400 var(--t-lead)/1.35 var(--font); }
-  .inst-of strong { display: block; font: 500 var(--t-title)/1.15 var(--font); letter-spacing: -0.03em; }
+  .inst-n { margin: 0; font: 300 var(--t-tally)/var(--lh-tally) var(--font); letter-spacing: -0.07em; font-variant-numeric: tabular-nums; margin-left: -0.05em; }
+  .inst-of { margin: 0; font: 400 var(--t-lead)/var(--lh-lead) var(--font); }
+  .inst-of strong { display: block; font: 500 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; }
   /* the whole: ten squares with four lit, three with two lit, ninety with every one lit */
   .inst-grid { align-self: end; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 4px; margin: 0; }
   .inst-grid i { aspect-ratio: 1; background: var(--stone-3); transition: background-color 0.4s; transition-delay: calc(var(--i) * 70ms + 300ms); }
@@ -408,7 +452,7 @@ const teams = [
   .lg:hover .lg-set { animation-play-state: paused; }
   .lg-set li { flex: none; display: grid; place-items: center; height: 56px; padding-inline: clamp(8px, 1vw, 16px); }
   /* each mark in its own colours; multiply drops a mark's white ground into the page */
-  /* the source files are padded 221×161 cards with the mark in the middle: cover crops the empty top and bottom */
+  /* the source files are padded 221Ã—161 cards with the mark in the middle: cover crops the empty top and bottom */
   .lg-set img { display: block; width: 150px; height: 56px; object-fit: cover; mix-blend-mode: multiply; }
   /* a boxed mark (McGraw Hill) fills its card, so it is shown whole */
   .lg-set .boxed img { object-fit: contain; }
@@ -418,14 +462,14 @@ const teams = [
   .quote { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 36px; margin: 0; }
   /* the quote mark sits on a square of dots */
   .q-pad { grid-column: 1 / span 2; grid-row: 1 / span 2; align-self: start; display: grid; place-items: center; aspect-ratio: 1; padding-top: 0.12em; }
-  .q-mark { font: 500 clamp(160px, 16vw, 260px)/0.7 var(--font); color: var(--cyan); }
-  .q-mark::before { content: '“'; }
+  .q-mark { font: 500 var(--t-quote)/var(--lh-quote) var(--font); color: var(--cyan); }
+  .q-mark::before { content: 'â€œ'; }
   /* the opening quote mark hangs in the margin, so the text's left edge stays straight */
-  .q-text { grid-column: 3 / -1; margin: 0; font: 400 clamp(26px, 2.5vw, 36px)/1.3 var(--font); letter-spacing: -0.025em; text-wrap: pretty; text-indent: -0.42em; }
+  .q-text { grid-column: 3 / -1; margin: 0; font: 400 var(--t-copy)/var(--lh-copy) var(--font); letter-spacing: -0.025em; text-wrap: pretty; text-indent: -0.42em; }
   .q-by { grid-column: 3 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 20px 32px; }
   .q-who { display: grid; gap: 4px; }
-  .q-role { font-size: var(--t-small); }
-  .q-org { font: 600 var(--t-title)/1.1 var(--font); letter-spacing: -0.03em; }
+  .q-role { font-size: var(--t-small); line-height: var(--lh-small); }
+  .q-org { font: 600 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; }
 
   /* ---- the risk picture: a wide headline, then the pipeline on its own dark panel ---- */
   .pic { padding-bottom: clamp(72px, 7vw, 120px); }
@@ -450,15 +494,15 @@ const teams = [
   .fnd-steps li { display: grid; grid-template-columns: 16px 1fr; gap: 28px; align-items: start; }
   .fnd-steps .node { position: relative; z-index: 1; width: 16px; height: 16px; margin-top: 16px; background: var(--on-stone); transition: background-color 0.4s; }
   .fnd-steps li.on .node { background: var(--cyan); }
-  .fs-t { margin: 0 0 16px; font: 500 clamp(32px, 3vw, 48px)/1.05 var(--font); letter-spacing: -0.04em; }
-  .fs-p { margin: 0; max-width: 40ch; font-size: 18px; line-height: 1.55; color: var(--ink); text-wrap: pretty; }
+  .fs-t { margin: 0 0 16px; font: 500 var(--t-step)/var(--lh-step) var(--font); letter-spacing: -0.04em; }
+  .fs-p { margin: 0; max-width: 40ch; font-size: var(--t-body); line-height: var(--lh-body); color: var(--ink); text-wrap: pretty; }
   .fnd-steps.is-armed li:not(.on) .node { background: var(--tone); }
   .fnd-steps.is-armed li > div { transition: opacity 0.7s var(--ease), translate 0.9s var(--ease); }
   .fnd-steps.is-armed li:not(.on) > div { opacity: 0.22; translate: 0 14px; }
   /* the stage runs from the seventh column to the screen's right edge */
   .fnd-stage { grid-column: 7 / -1; align-self: stretch; margin-right: calc(var(--inset) * -1); padding: clamp(24px, 4vw, 64px) var(--inset) clamp(24px, 4vw, 64px) clamp(24px, 3.4vw, 56px); background: var(--tone); }
   .fnd-side { position: sticky; top: calc(var(--nav-h) + 32px); display: grid; gap: 20px; max-width: 640px; }
-  .fnd-valid { display: flex; align-items: center; gap: 12px; margin: 0; font-size: var(--t-small); }
+  .fnd-valid { display: flex; align-items: center; gap: 12px; margin: 0; font-size: var(--t-small); line-height: var(--lh-small); }
   .fv-mark { flex: none; display: grid; place-items: center; width: 18px; height: 18px; background: var(--cyan); }
   .fv-mark svg { width: 80%; height: 80%; overflow: visible; }
   .fv-mark path { fill: none; stroke: var(--night); stroke-width: 1.8; stroke-linecap: square; }
@@ -477,10 +521,10 @@ const teams = [
   .tr-icon path { stroke-dasharray: 1 1; }
   .tr:hover .tr-icon path, .tr:focus-visible .tr-icon path { animation: tr-draw 1.1s var(--ease); }
   @keyframes tr-draw { from { stroke-dashoffset: 1; } }
-  .tr-name { font: 500 clamp(30px, 3.4vw, 54px)/1 var(--font); letter-spacing: -0.045em; }
-  .tr-note { font-size: var(--t-lead); line-height: 1.45; color: var(--ink); transition: color 0.35s; text-wrap: pretty; }
+  .tr-name { font: 500 var(--t-name)/var(--lh-name) var(--font); letter-spacing: -0.045em; }
+  .tr-note { font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--ink); transition: color 0.35s; text-wrap: pretty; }
   /* "Learn more", then its arrow in a small cyan square */
-  .tr-go { display: inline-flex; align-items: center; gap: 12px; font: 600 15px/1 var(--font); white-space: nowrap; }
+  .tr-go { display: inline-flex; align-items: center; gap: 12px; font: 600 var(--t-small)/var(--lh-small) var(--font); white-space: nowrap; }
   .tr-go > span.arr { display: inline-grid; place-items: center; width: 32px; height: 32px; background: var(--cyan); color: var(--night); }
   .tr-go > span.arr svg { width: 15px; height: 15px; }
   .tr:hover, .tr:focus-visible { background: var(--night); color: var(--on-night); }
@@ -492,7 +536,7 @@ const teams = [
   /* ---- your exposure is already visible: the cyan poster ---- */
   .cta5 { background: var(--cyan); color: var(--night); --ink: var(--night); padding-block: clamp(104px, 11vw, 184px) clamp(88px, 9vw, 152px); }
   .cta-in { display: grid; gap: clamp(40px, 4vw, 64px); }
-  .cta-h { margin: 0; font: 500 clamp(40px, 6.1vw, 100px)/0.98 var(--font); letter-spacing: -0.055em; }
+  .cta-h { margin: 0; font: 500 var(--t-display)/var(--lh-display) var(--font); letter-spacing: -0.055em; }
   /* the closing line types itself out (src/scripts/flat-v5.ts): letters hold their places, hidden, and show one by
      one behind an ink caret that keeps blinking once the line is done */
   .cta-h :global(.tc) { visibility: hidden; }
@@ -500,12 +544,12 @@ const teams = [
   .cta-h :global(.caret) { display: inline-block; width: 0.07em; height: 0.82em; margin-right: -0.07em; vertical-align: -0.06em; background: currentColor; animation: caret 1s steps(1) infinite; }
   @keyframes caret { 50% { opacity: 0; } }
   .cta-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px 40px; }
-  .cta-lead { margin: 0; font: 500 var(--t-title)/1.2 var(--font); letter-spacing: -0.03em; max-width: 30ch; text-wrap: pretty; }
+  .cta-lead { margin: 0; font: 500 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; max-width: 30ch; text-wrap: pretty; }
   .cta-btn { background: var(--night); color: var(--on-night); min-height: 64px !important; padding: 0 36px !important; }
   .cta-btn:hover { background: var(--stone); color: var(--night); }
   .cta-btn:active { opacity: 0.85; }
   /* the four promises, each after a small ink square */
-  .cta-points { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 32px; font: 600 var(--t-small)/1.5 var(--font); }
+  .cta-points { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px 32px; font: 600 var(--t-small)/var(--lh-small) var(--font); }
   .cta-points li { display: flex; align-items: center; gap: 12px; }
   .cta-points li::before { content: ''; width: 8px; height: 8px; background: var(--night); }
 
@@ -532,7 +576,6 @@ const teams = [
     .enf-p, .enf-go { grid-column: 1 / -1; justify-self: start; }
     .quote { row-gap: 20px; }
     .q-pad { grid-column: 1 / span 4; grid-row: auto; }
-    .q-mark { font-size: 120px; }
     .q-text, .q-by { grid-column: 1 / -1; }
     .fnd-steps, .fnd-stage { grid-column: 1 / -1; }
     .fnd-lead { grid-column: 1 / -1 !important; }
@@ -543,13 +586,12 @@ const teams = [
   }
   @media (max-width: 600px) {
     .fnd-head br, .cta-h br { display: none; }
-    .enf-p { font-size: 22px; }
     .lg-set li { height: 56px; padding-inline: 20px; }
     .lg-set img { width: 120px; height: 46px; }
     .tr { grid-template-columns: 1fr auto; padding: 24px 20px; }
     .tr-icon { display: none; }
     .tr-name { grid-column: 1; }
-    .tr-note { grid-column: 1 / -1; font-size: 17px; }
+    .tr-note { grid-column: 1 / -1; font-size: var(--t-body); }
     .tr-go { grid-column: 2; grid-row: 1; }
     .cta-btn { width: 100%; }
   }

@@ -1,5 +1,5 @@
 ---
-// Folio · the footer as the current privaini.com sets it out (the /v4 candidate home page): the address and
+// Folio Â· the footer as the current privaini.com sets it out (the /v4 candidate home page): the address and
 // contacts on the left, then four columns: the main pages, Solutions, Partners and Legal. Night, square, Urbanist.
 // Used through Base's "footer" slot; every other page keeps src/components/Footer.astro. /v5 passes `flat`.
 import Wordmark from '@/components/Wordmark.astro';
@@ -66,7 +66,7 @@ const platformCols = [
     </div>
   </div>
   <div class="wrap fz-base">
-    <p class="fz-copy">© {year} Privaini Inc. All rights reserved.</p>
+    <p class="fz-copy">Â© {year} Privaini Inc. All rights reserved.</p>
     <nav aria-label="Legal"><ul role="list" class="fz-legal">{legalLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul></nav>
   </div>
 </footer>
@@ -80,7 +80,7 @@ const platformCols = [
         <span>Sales: <a href={`mailto:${contact.sales}`}>{contact.sales}</a></span>
         <span>Support: <a href={`mailto:${contact.support}`}>{contact.support}</a></span>
       </p>
-      <p class="ff-copy">© {year} Privaini Inc. All rights reserved.</p>
+      <p class="ff-copy">Â© {year} Privaini Inc. All rights reserved.</p>
     </div>
     <nav class="ff-col ff-main" aria-label="Main pages">
       <ul role="list">{main.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
@@ -143,36 +143,42 @@ const platformCols = [
     /* equal space above and below: the line box is cut to the capitals (0.72em), so the margins are the whole gap */
     margin: clamp(24px, 3vw, 48px) 0; text-align: center; pointer-events: none; user-select: none;
     transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1), translate 1.4s cubic-bezier(0.22, 1, 0.36, 1);
-    font: 400 clamp(56px, 15.6vw, 320px)/0.72 var(--logo); letter-spacing: 0.02em; white-space: nowrap; color: var(--on-night); opacity: 0.12;
+    font: 400 64px/48px var(--logo); letter-spacing: 0.02em; white-space: nowrap; color: var(--on-night); opacity: 0.12;
     -webkit-mask-image: linear-gradient(180deg, #000 30%, rgba(0, 0, 0, 0.3) 100%); mask-image: linear-gradient(180deg, #000 30%, rgba(0, 0, 0, 0.3) 100%);
   }
   .fz-groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(64px, 6vw, 96px) var(--gap); align-items: start; }
   .fz-g--3 { grid-column: span 3; }
   .fz-h {
     display: flex; align-items: center; gap: 12px; margin: 0 0 20px; padding-bottom: 12px; border-bottom: 1px solid var(--on-night-line-2);
-    font: 500 12.5px/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-night);
+    font: 500 14px/20px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--on-night);
   }
   .fz-h::before { content: ''; flex: none; width: 8px; height: 8px; background: var(--on-night); }
   .fz-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 32px; }
-  .fz-list { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; gap: 10px; font-size: 14px; line-height: 1.45; color: var(--on-night-muted); }
+  .fz-list { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; gap: 8px; font-size: 14px; line-height: 20px; color: var(--on-night-muted); }
   .fz-list--lead, .fz-lead { color: var(--on-night); font-weight: 600; }
   .fz-lead { margin-bottom: 2px; }
-  .fz-contact { display: flex; flex-wrap: wrap; gap: 8px 32px; font-style: normal; font-size: 14px; color: var(--on-night-muted); }
+  .fz-contact { display: flex; flex-wrap: wrap; gap: 8px 32px; font-style: normal; font-size: 14px; line-height: 20px; color: var(--on-night-muted); }
   .fz-contact a { color: var(--on-night); margin-left: 6px; }
   .ff--flat a { transition: color 0.25s; }
   .ff--flat a:hover { color: var(--on-night); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
   .ff--flat a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
   .ff--flat a:active { opacity: 0.75; }
+  /* the faded name is decorative; its size steps on the 4-point grid, with its line height cut to the capitals */
+  @media (min-width: 768px) { .fz-name { font-size: 120px; line-height: 88px; } }
+  @media (min-width: 1024px) { .fz-name { font-size: 160px; line-height: 116px; } }
+  @media (min-width: 1280px) { .fz-name { font-size: 200px; line-height: 144px; } }
+  @media (min-width: 1440px) { .fz-name { font-size: 224px; line-height: 160px; } }
+  @media (min-width: 1600px) { .fz-name { font-size: 256px; line-height: 184px; } }
   /* scroll reveal: it rises and fades up to its resting 12% when the footer's close comes into view */
   :global(html.js) .fz-name:not(.in) { opacity: 0; translate: 0 36px; }
   @media (prefers-reduced-motion: reduce) { :global(html.js) .fz-name:not(.in) { translate: none; } }
   .fz-bar { margin-top: 0; border-block: 1px solid var(--on-night-line); }
   .fz-bar-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; min-height: 72px; padding-block: 14px; }
-  .fz-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid var(--on-night-line-2); font-size: 14px; color: var(--on-night); }
+  .fz-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid var(--on-night-line-2); font-size: 14px; line-height: 20px; color: var(--on-night); }
   .ff--flat .fz-cta:hover { background: var(--cyan); border-color: var(--cyan); color: var(--night); text-decoration: none; }
   .fz-base { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding-block: 28px 32px; }
-  .fz-copy { margin: 0; font: 500 12.5px/1.4 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-night-muted); }
-  .fz-legal { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 14px; color: var(--on-night-muted); }
+  .fz-copy { margin: 0; font: 500 14px/20px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--on-night-muted); }
+  .fz-legal { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 14px; line-height: 20px; color: var(--on-night-muted); }
   @media (max-width: 1099px) {
     .fz-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .fz-g--3 { grid-column: 1 / -1; }

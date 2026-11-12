@@ -16,7 +16,7 @@ const caps = ['Regulatory Repository', 'Technology Detection', 'Market Observati
 const decisions = ['Fix what matters first', 'Quantify exposure', 'Brief the board', 'Price or transfer risk', 'Deal Diligence'];
 
 const W = 1320, H = 676;
-const L = { x: 590, y: 330, r: 88, ring: 150 };
+const L = { x: 590, y: 330, r: 88, ring: 196 };
 const sy = (i: number) => 64 + i * 28;
 const threads = signals.map(([, hot], i) => ({
   hot,
@@ -35,10 +35,10 @@ const bands = bandY.map((y) => ({
 const TX = 926;
 // the ring of words: one circle of text round the lens
 const ring = `M${L.x - L.ring} ${L.y}a${L.ring} ${L.ring} 0 1 1 ${L.ring * 2} 0a${L.ring} ${L.ring} 0 1 1 ${-L.ring * 2} 0`;
-const ringText = caps.join('   ·   ') + '   ·   ';
+const ringText = caps.join(' · ') + ' · ';
 // the decisions, in a row along the foot
-let dx = 250;
-const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; return { d, x }; });
+let dx = 264;
+const decs = decisions.map((d) => { const x = dx; dx += d.length * 9.2 + 44; return { d, x }; });
 ---
 <figure class="rf" data-rf role="img" aria-label="From your company's website, twenty signals (cookies, pixels, policies and the statutes they meet, among them VPPA and BIPA) run into the Privaini lens, which brings a regulatory repository, technology detection, market observations, AI transparency, jurisdiction mapping, evidence collection and litigation patterns to bear. Out comes the Privaini risk briefing in four parts: findings, exposure, evidence and remediation. From it, your next decisions: fix what matters first, quantify exposure, brief the board, price or transfer risk, deal diligence.">
   <svg class="rf-svg" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
@@ -72,9 +72,9 @@ const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; ret
     <g class="rf-label" data-rf-out><rect x={TX} y="34" width="8" height="8" /><text x={TX + 20} y="43">Privaini Risk Briefing</text></g>
     <g data-rf-out>
       <text class="rf-t" x={TX} y={bandY[0] - 2}>Findings</text>
-      <rect class="rf-tag-fill" x={TX} y={bandY[0] + 12} width="46" height="22" /><text class="rf-tag-in" x={TX + 23} y={bandY[0] + 27.5} text-anchor="middle">High</text>
-      <rect class="rf-tag-line" x={TX + 54.5} y={bandY[0] + 12.5} width="50" height="21" /><text class="rf-tag-out" x={TX + 79.5} y={bandY[0] + 27.5} text-anchor="middle">VPPA</text>
-      <text class="rf-mono" x={TX + 122} y={bandY[0] + 27.5}>US-CA   US-IL</text>
+      <rect class="rf-tag-fill" x={TX} y={bandY[0] + 12} width="56" height="24" /><text class="rf-tag-in" x={TX + 28} y={bandY[0] + 29.5} text-anchor="middle">High</text>
+      <rect class="rf-tag-line" x={TX + 64.5} y={bandY[0] + 12.5} width="62" height="23" /><text class="rf-tag-out" x={TX + 95.5} y={bandY[0] + 29.5} text-anchor="middle">VPPA</text>
+      <text class="rf-mono" x={TX + 146} y={bandY[0] + 29.5}>US-CA   US-IL</text>
     </g>
     <g data-rf-out>
       <text class="rf-t" x={TX} y={bandY[1] - 2}>Exposure</text>
@@ -127,8 +127,8 @@ const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; ret
   .rf-svg text { font-family: var(--font); fill: var(--on-night); }
 
   .rf-label rect { fill: var(--cyan); }
-  .rf-label text { font: 500 12.5px/1 var(--mono); letter-spacing: 0.06em; text-transform: uppercase; }
-  .rf-sig { font-size: 15px; fill: var(--on-night-muted) !important; }
+  .rf-label text { font: 500 16px/1 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; }
+  .rf-sig { font-size: 16px; fill: var(--on-night-muted) !important; }
   .rf-sig.hot { fill: var(--cyan) !important; }
   .rf-thread { stroke: var(--on-night-line-2); stroke-width: 1; stroke-dasharray: 1 1; }
   .rf-thread.hot { stroke: var(--cyan); }
@@ -139,26 +139,26 @@ const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; ret
   .rf-glass { stroke: var(--cyan); stroke-width: 1.5; }
   .rf-inner { stroke: var(--on-night-line-2); stroke-dasharray: 2 5; }
   .rf-core { fill: var(--cyan-wash) !important; }
-  .rf-mark { font: 400 17px/1 var(--logo) !important; }
-  .rf-events { font: 500 9.5px/1 var(--mono) !important; letter-spacing: 0.08em; text-transform: uppercase; fill: var(--on-night-muted) !important; }
-  .rf-ring { font-size: 12.5px; letter-spacing: 0.02em; fill: var(--on-night-muted) !important; paint-order: stroke; stroke: var(--night); stroke-width: 7px; transform-box: view-box; transform-origin: 590px 330px; }
+  .rf-mark { font: 400 20px/1 var(--logo) !important; }
+  .rf-events { font: 500 16px/1 var(--font) !important; fill: var(--on-night-muted) !important; }
+  .rf-ring { font-size: 16px; letter-spacing: 0; fill: var(--on-night-muted) !important; paint-order: stroke; stroke: var(--night); stroke-width: 7px; transform-box: view-box; transform-origin: 590px 330px; }
 
   .rf-ribbon { fill: var(--cyan-wash) !important; }
   .rf-band { stroke: var(--cyan); stroke-width: 1.5; }
-  .rf-t { font-size: 26px; font-weight: 500; letter-spacing: -0.03em; }
-  .rf-d { font-size: 15px; }
-  .rf-mono { font: 400 13px/1 var(--mono) !important; fill: var(--on-night-muted) !important; white-space: pre; }
+  .rf-t { font-size: 28px; font-weight: 500; letter-spacing: -0.03em; }
+  .rf-d { font-size: 16px; }
+  .rf-mono { font: 400 16px/1 var(--mono) !important; fill: var(--on-night-muted) !important; white-space: pre; }
   .rf-tag-fill { fill: var(--on-night); }
-  .rf-tag-in { font-size: 13px; font-weight: 700; fill: var(--night) !important; }
+  .rf-tag-in { font-size: 16px; font-weight: 700; fill: var(--night) !important; }
   .rf-tag-line { fill: none; stroke: var(--on-night-muted); }
-  .rf-tag-out { font-size: 13px; font-weight: 700; }
+  .rf-tag-out { font-size: 16px; font-weight: 700; }
   .rf-fig { font-size: 40px; font-weight: 300; letter-spacing: -0.04em; fill: var(--cyan) !important; font-variant-numeric: tabular-nums; }
   .rf-trace { stroke: var(--cyan); stroke-width: 1.5; }
   .rf-step { fill: none; stroke: var(--on-night-muted); }
   .rf-step.on { fill: var(--cyan); stroke: none; }
 
   .rf-rule { stroke: var(--on-night-line-2); transform-box: fill-box; transform-origin: left; }
-  .rf-dec text { font-size: 15px; }
+  .rf-dec text { font-size: 16px; }
   .rf-box { fill: var(--cyan); }
   .rf-tick { stroke: var(--night); stroke-width: 1.8; stroke-linecap: square; }
 
@@ -173,26 +173,26 @@ const decs = decisions.map((d) => { const x = dx; dx += d.length * 8.4 + 62; ret
 
   /* narrower: stacked */
   .rf-m { display: none; }
-  @media (max-width: 1099px) {
+  @media (max-width: 1279px) {
     .rf-svg { display: none; }
     .rf-m { display: grid; gap: 28px; justify-items: start; }
     .rf-m ul, .rf-m dl, .rf-m p { margin: 0; padding: 0; list-style: none; }
     .rf-m p.fx-chip { padding: 8px 14px 8px 10px; }
-    .rf-m-sigs { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 16px; color: var(--on-night-muted); }
+    .rf-m-sigs { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 16px; line-height: 24px; color: var(--on-night-muted); }
     .rf-m-sigs .hot { color: var(--cyan); }
     .rf-m-lens { justify-self: center; display: grid; place-content: center; gap: 8px; width: 200px; aspect-ratio: 1; border: 1.5px solid var(--cyan); border-radius: 50%; text-align: center; }
-    .rf-m-mark { font: 400 18px/1 var(--logo); }    .rf-m-ev { font: 500 10px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-night-muted); }
-    .rf-m-caps { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 15px; }
+    .rf-m-mark { font: 400 20px/1 var(--logo); }    .rf-m-ev { font: 500 14px/20px var(--font); color: var(--on-night-muted); }
+    .rf-m-caps { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 16px; line-height: 24px; }
     .rf-m-out { display: grid; gap: 20px; width: 100%; }
     .rf-m-out div { display: grid; gap: 8px; padding-left: 16px; border-left: 2px solid var(--cyan); }
-    .rf-m-out dt { font: 500 24px/1.1 var(--font); letter-spacing: -0.03em; }
-    .rf-m-out dd { margin: 0; font-size: 16px; }
+    .rf-m-out dt { font: 500 24px/28px var(--font); letter-spacing: -0.03em; }
+    .rf-m-out dd { margin: 0; font-size: 16px; line-height: 24px; }
     .rf-m-out dd b { padding: 2px 8px; background: var(--on-night); color: var(--night); }
     .rf-m-out dd span { color: var(--on-night-muted); }
-    .rf-m-out .fig { font: 300 36px/1 var(--font); color: var(--cyan); }
+    .rf-m-out .fig { font: 300 36px/40px var(--font); color: var(--cyan); }
     .rf-m-out svg { width: 170px; height: 24px; overflow: visible; }
     .rf-m-out path { fill: none; stroke: var(--cyan); stroke-width: 1.5; }
-    .rf-m-decs { display: grid; gap: 12px; font-size: 16px; }
+    .rf-m-decs { display: grid; gap: 12px; font-size: 16px; line-height: 24px; }
     .rf-m-decs li { display: flex; align-items: center; gap: 12px; }
     .rf-m-decs li::before { content: ''; width: 12px; height: 12px; background: var(--cyan); }
   }

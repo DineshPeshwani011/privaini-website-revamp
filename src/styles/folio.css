@@ -168,14 +168,14 @@ body.folio.flat {
 /* a label: a cyan square, then a word or two in small capitals of the mono face */
 .flat .fx-label {
   display: inline-flex; align-items: center; gap: 12px; margin: 0; color: var(--ink);
-  font: 500 12.5px/1.2 var(--mono); letter-spacing: 0.06em; text-transform: uppercase;
+  font: 500 14px/20px var(--mono); letter-spacing: 0.04em; text-transform: uppercase;
   transition: clip-path 0.6s ease-in-out;
 }
 .flat .fx-label::before { content: ''; flex: none; width: 8px; height: 8px; background: var(--cyan); }
 /* a chip: the same, set on a cyan bar */
 .flat .fx-chip {
   display: inline-flex; align-items: center; gap: 8px; width: max-content; padding: 8px 14px 8px 10px; background: var(--cyan); color: var(--night);
-  font: 500 12px/1 var(--mono); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
+  font: 500 14px/20px var(--mono); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
   transition: clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .flat .fx-chip::before { content: ''; flex: none; width: 8px; height: 8px; background: var(--night); }
@@ -188,3 +188,11 @@ body.folio.flat .nav.theme-dark {
   --ink: var(--on-night); --muted: var(--on-night-muted); --accent-hi: var(--cyan); --ui-line: var(--on-night-line);
 }
 body.folio.flat .nav .menu-inner { box-shadow: none; border: 1px solid var(--ui-line); }
+
+/* ---- Flat's navigation on the same 4-point scale (2026-11-12): 14px floor, sizes and line heights multiples of 4 ---- */
+body.folio.flat .nav .top, body.folio.flat .nav .login, body.folio.flat .nav .btn, body.folio.flat .nav .menu-label { font-size: 16px; line-height: 24px; }
+body.folio.flat .nav .menu-note, body.folio.flat .nav .menu-side-title, body.folio.flat .nav .menu-side a, body.folio.flat .nav .menu-all { font-size: 14px; line-height: 20px; }
+body.folio.flat .nav .m-link { line-height: 32px; }
+body.folio.flat .nav .m-group a { font-size: 16px; line-height: 24px; }
+body.folio.flat .wordmark--md { font-size: 24px; }
+body.folio.flat .skip-link { font-size: 16px; line-height: 24px; }body.folio.flat .nav li { font-size: 16px; line-height: 24px; }
