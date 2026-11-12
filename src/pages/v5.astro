@@ -469,6 +469,11 @@ const teams = [
   .inst-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   /* each panel is an open field of fine square dots, no fill */
   .inst-panel { display: grid; grid-template-rows: auto auto 1fr; gap: 20px; min-height: var(--s-panel); padding: var(--s-pad); background: none; --dot-c: var(--dot-on-tone); --hd-gap: 4px; }
+  /* the dot field opens like a shutter, bottom to top, when the section comes into view (the panels one after another) */
+  .inst-panel::before { clip-path: inset(0 0 0 0); transition: clip-path 1.4s cubic-bezier(0.65, 0, 0.35, 1) calc(var(--n, 0) * 150ms); }
+  :global(html.js) .inst-panel:not(.in)::before { clip-path: inset(100% 0 0 0); }
+  .inst-panel:nth-child(2) { --n: 1; }
+  .inst-panel:nth-child(3) { --n: 2; }
   .inst-n { margin: 0; font: 300 var(--t-tally)/var(--lh-tally) var(--font); letter-spacing: -0.07em; font-variant-numeric: tabular-nums; margin-left: -4px; }
   .inst-of { margin: 0; font: 400 var(--t-lead)/var(--lh-lead) var(--font); }
   .inst-of strong { display: block; font: 500 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; }
