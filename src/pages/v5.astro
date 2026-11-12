@@ -51,6 +51,17 @@ const institutions = [
 
 const viaquest = quotes.viaquest;
 
+// the square ring: a square's perimeter drawn as the part of its whole (pathLength 100, clockwise from the top left).
+// A share is one continuous arc; a count of a whole is that many separate segments, the counted ones lit.
+const SQ = 'M4 4H96V96H4Z';
+const segs = (n: number, lit: number) => {
+  const gap = n <= 10 ? 1.6 : n <= 30 ? 0.8 : 0.4, len = 100 / n;
+  return Array.from({ length: n }, (_, i) => ({ i, on: i < lit, dash: `${(len - gap).toFixed(2)} 100`, off: `-${(i * len).toFixed(2)}` }));
+};
+// the average settlement counted out in units of $1M: eleven whole squares and a half
+const avgM = parseFloat(stats[2].figure.replace(/[^0-9.]/g, ''));
+const units = Array.from({ length: Math.ceil(avgM) }, (_, i) => Math.min(1, avgM - i));
+
 const steps = [
   { title: 'Findings', text: 'Get detailed, evidence-backed findings based on observations from your markets and the statutes that apply to your company.' },
   { title: 'Exposure', text: 'Understand potential regulatory fines exposure from enforcement agencies and consumer exposure arising from litigation.' },
@@ -112,16 +123,16 @@ const teams = [
           <span class="enf-frame fx-hd" data-in><span class="enf-n" data-decode>{fines.figure}</span><i class="enf-rule" aria-hidden="true"><b></b></i></span>
           <span class="enf-of">{fines.label}</span>
         </p>
-        <!-- three figures, each a row: the two shares light their part of a hundred ticks; the average is one mark on its scale -->
+        <!-- three figures, each a row: the two shares fill that part of a square ring; the average is counted out in squares of $1M -->
         <dl class="enf-rows" data-reveal-group>
           {stats.map((e) => (
             <div class="enf-row" data-reveal data-in>
               <dt data-decode>{e.figure}</dt>
               <dd>{e.label}</dd>
               {e.suffix === '%' ? (
-                <span class="enf-scale" aria-hidden="true">{Array.from({ length: 100 }, (_, i) => <i class:list={{ lit: i < e.count }} style={`--i: ${i}`}></i>)}</span>
+                <span class="enf-viz" aria-hidden="true"><svg class="sq" viewBox="0 0 100 100" focusable="false"><path class="trk" d={SQ} pathLength="100" /><path class="arc" d={SQ} pathLength="100" stroke-dasharray={`${e.count} 100`} /></svg></span>
               ) : (
-                <span class="enf-avg" aria-hidden="true"><i></i></span>
+                <span class="enf-viz enf-units" aria-hidden="true"><span class="units">{units.map((f, i) => <i style={`--i: ${i}; --f: ${f * 100}%`}></i>)}</span><small>Each square is $1M</small></span>
               )}
             </div>
           ))}
@@ -155,9 +166,9 @@ const teams = [
             <li class="inst-panel fx-dots fx-hd" data-reveal data-in>
               <p class="inst-n" data-decode>{t.n}</p>
               <p class="inst-of">{t.of} <strong>{t.what}</strong></p>
-              <p class="inst-grid" aria-hidden="true" style={`--cols: ${t.cols}`}>
-                {Array.from({ length: t.total }, (_, i) => <i class:list={{ lit: i < t.n }} style={`--i: ${i}`}></i>)}
-              </p>
+              <svg class="sq inst-sq" viewBox="0 0 100 100" aria-hidden="true" focusable="false" style={`--n: ${t.total}`}>
+                {segs(t.total, t.n).map((s) => <path class:list={['seg', { on: s.on }]} d={SQ} pathLength="100" stroke-dasharray={s.dash} stroke-dashoffset={s.off} style={`--i: ${s.i}`} />)}
+              </svg>
             </li>
           ))}
         </ul>
@@ -431,14 +442,25 @@ const teams = [
   .enf-row { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); align-items: center; padding-block: var(--s-row); }
   .enf-row dt { grid-column: 1 / span 3; font: 300 var(--t-fig)/var(--lh-fig) var(--font); letter-spacing: -0.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .enf-row dd { grid-column: 4 / span 3; margin: 0; font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--on-night); text-wrap: pretty; }
-  .enf-scale { grid-column: 7 / -1; display: grid; grid-template-columns: repeat(100, minmax(0, 1fr)); gap: 3px; height: var(--s-bar); }
-  .enf-scale i { background: var(--night-2); transform-origin: bottom; transition: background-color 0.3s, transform 0.5s var(--ease); transition-delay: calc(var(--i) * 14ms + 250ms); }
-  .enf-scale i.lit { background: var(--cyan); }
-  :global(html.js) .enf-row:not(.in) .enf-scale i.lit { background: var(--night-2); transform: scaleY(0.35); }
-  /* the average: one cyan mark at the middle of its scale */
-  .enf-avg { grid-column: 7 / -1; position: relative; height: var(--s-bar); background: linear-gradient(var(--night-2), var(--night-2)) 0 50% / 100% 1px no-repeat; }
-  .enf-avg i { position: absolute; left: 50%; top: 0; bottom: 0; width: 5px; background: var(--cyan); transition: transform 0.7s var(--ease) 0.5s; }
-  :global(html.js) .enf-row:not(.in) .enf-avg i { transform: scaleY(0); }
+  /* the data marks: square rings (a square's perimeter, clockwise from its top left) and squares of $1M */
+  .sq { display: block; flex: none; width: var(--sq, 88px); height: var(--sq, 88px); overflow: visible; }
+  .sq path { fill: none; stroke-width: 6; stroke-linecap: butt; stroke-linejoin: miter; }
+  .sq .trk, .sq .seg { stroke: var(--trk); }
+  .sq .arc, .sq .seg.on { stroke: var(--cyan); }
+  .sq .arc { transition: stroke-dasharray 1.6s var(--ease) 0.3s; }
+  .sq .seg { transition: stroke 0.35s; transition-delay: calc(var(--i) * 90ms + 300ms); }
+  .inst-sq[style*="--n: 90"] .seg, .inst-sq[style*="--n:90"] .seg { transition-delay: calc(var(--i) * 12ms + 300ms); }
+  :global(html.js) .enf-row:not(.in) .sq .arc { stroke-dasharray: 0 100; }
+  :global(html.js) .inst-panel:not(.in) .sq .seg.on { stroke: var(--trk); }
+  .enf { --trk: var(--night-2); --sq: 80px; }
+  .enf-viz { grid-column: 7 / -1; display: flex; align-items: center; }
+  .enf-units { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .units { display: flex; flex-wrap: wrap; gap: 4px; }
+  .units i { width: 20px; height: 20px; background: linear-gradient(90deg, var(--cyan) var(--f), var(--night-2) var(--f)); transition: transform 0.45s var(--ease); transition-delay: calc(var(--i) * 60ms + 250ms); }
+  :global(html.js) .enf-row:not(.in) .units i { transform: scale(0); }
+  .enf-units small { font-size: var(--t-small); line-height: var(--lh-small); color: var(--on-night-muted); }
+  @media (min-width: 768px) { .enf { --sq: 88px; } .units i { width: 24px; height: 24px; } }
+  @media (min-width: 1280px) { .enf { --sq: 96px; } .units i { width: 28px; height: 28px; } }
   .ticker { position: relative; overflow: hidden; margin-top: var(--s-xl); background: var(--tone-dark); }
   .tk-track { display: flex; }
   .tk-set { display: flex; flex: none; list-style: none; margin: 0; padding: var(--s-band) 0; animation: tk 60s linear infinite; }
@@ -477,13 +499,11 @@ const teams = [
   .inst-n { margin: 0; font: 300 var(--t-tally)/var(--lh-tally) var(--font); letter-spacing: -0.07em; font-variant-numeric: tabular-nums; margin-left: -4px; }
   .inst-of { margin: 0; font: 400 var(--t-lead)/var(--lh-lead) var(--font); }
   .inst-of strong { display: block; font: 500 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; }
-  /* the whole: ten squares with four lit, three with two lit, ninety with every one lit */
-  .inst-grid { align-self: end; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 4px; margin: 0; }
-  .inst-grid i { aspect-ratio: 1; background: var(--stone-3); transition: background-color 0.4s; transition-delay: calc(var(--i) * 70ms + 300ms); }
-  .inst-grid i.lit { background: var(--cyan); }
-  .inst-panel:nth-child(3) .inst-grid { gap: 4px; }
-  .inst-panel:nth-child(3) .inst-grid i { transition-delay: calc(var(--i) * 14ms + 300ms); }
-  :global(html.js) .inst-panel:not(.in) .inst-grid i.lit { background: var(--stone-3); }
+  /* the whole, as a square ring: ten segments with four lit, three with two lit, ninety with every one lit */
+  .inst { --trk: var(--stone-3); }
+  .inst-sq { align-self: end; --sq: 96px; }
+  @media (min-width: 768px) { .inst-sq { --sq: 112px; } }
+  @media (min-width: 1280px) { .inst-sq { --sq: 128px; } }
 
   /* ---- trusted by: the customers' marks, a marquee along the foot of the hero ---- */
   /* row one: the label, centred; row two: the marks, running from one edge of the page to the other */
@@ -619,8 +639,7 @@ const teams = [
     .enf-of { grid-column: 1 / -1; padding: 12px 0 0; }
     .inst-list { grid-template-columns: 1fr; }
     .enf-row { row-gap: 12px; }
-    .enf-row dt, .enf-row dd, .enf-scale, .enf-avg { grid-column: 1 / -1; }
-    .enf-scale { gap: 1px; }
+    .enf-row dt, .enf-row dd, .enf-viz { grid-column: 1 / -1; }
     .inst-panel { min-height: 0; }
     .enf-p, .enf-go { grid-column: 1 / -1; justify-self: start; }
     .quote { row-gap: 20px; }
