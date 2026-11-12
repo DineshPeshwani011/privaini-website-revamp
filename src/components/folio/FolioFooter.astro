@@ -1,5 +1,5 @@
 ---
-// Folio Â· the footer as the current privaini.com sets it out (the /v4 candidate home page): the address and
+// Folio · the footer as the current privaini.com sets it out (the /v4 candidate home page): the address and
 // contacts on the left, then four columns: the main pages, Solutions, Partners and Legal. Night, square, Urbanist.
 // Used through Base's "footer" slot; every other page keeps src/components/Footer.astro. /v5 passes `flat`.
 import Wordmark from '@/components/Wordmark.astro';
@@ -66,7 +66,7 @@ const platformCols = [
     </div>
   </div>
   <div class="wrap fz-base">
-    <p class="fz-copy">Â© {year} Privaini Inc. All rights reserved.</p>
+    <p class="fz-copy">© {year} Privaini Inc. All rights reserved.</p>
     <nav aria-label="Legal"><ul role="list" class="fz-legal">{legalLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul></nav>
   </div>
 </footer>
@@ -80,7 +80,7 @@ const platformCols = [
         <span>Sales: <a href={`mailto:${contact.sales}`}>{contact.sales}</a></span>
         <span>Support: <a href={`mailto:${contact.support}`}>{contact.support}</a></span>
       </p>
-      <p class="ff-copy">Â© {year} Privaini Inc. All rights reserved.</p>
+      <p class="ff-copy">© {year} Privaini Inc. All rights reserved.</p>
     </div>
     <nav class="ff-col ff-main" aria-label="Main pages">
       <ul role="list">{main.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
@@ -138,15 +138,15 @@ const platformCols = [
 
   /* ---- Flat (/v5): carta.com's footer. Labelled groups on a four-column grid, a bar, then the base line; the
      name sits behind it all, large and faint, fading out towards the foot ---- */
-  .ff--flat { position: relative; overflow: clip; border-top: 0; padding: clamp(80px, 8vw, 120px) 0 0; isolation: isolate; }
+  .ff--flat { position: relative; overflow: clip; border-top: 0; padding: 80px 0 0; isolation: isolate; }
   .fz-name {
     /* equal space above and below: the line box is cut to the capitals (0.72em), so the margins are the whole gap */
-    margin: clamp(24px, 3vw, 48px) 0; text-align: center; pointer-events: none; user-select: none;
+    margin: 24px 0; text-align: center; pointer-events: none; user-select: none;
     transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1), translate 1.4s cubic-bezier(0.22, 1, 0.36, 1);
     font: 400 64px/48px var(--logo); letter-spacing: 0.02em; white-space: nowrap; color: var(--on-night); opacity: 0.12;
     -webkit-mask-image: linear-gradient(180deg, #000 30%, rgba(0, 0, 0, 0.3) 100%); mask-image: linear-gradient(180deg, #000 30%, rgba(0, 0, 0, 0.3) 100%);
   }
-  .fz-groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(64px, 6vw, 96px) var(--gap); align-items: start; }
+  .fz-groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 64px var(--gap); align-items: start; }
   .fz-g--3 { grid-column: span 3; }
   .fz-h {
     display: flex; align-items: center; gap: 12px; margin: 0 0 20px; padding-bottom: 12px; border-bottom: 1px solid var(--on-night-line-2);
@@ -156,13 +156,17 @@ const platformCols = [
   .fz-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 32px; }
   .fz-list { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; gap: 8px; font-size: 14px; line-height: 20px; color: var(--on-night-muted); }
   .fz-list--lead, .fz-lead { color: var(--on-night); font-weight: 600; }
-  .fz-lead { margin-bottom: 2px; }
+  .fz-lead { margin-bottom: 4px; }
   .fz-contact { display: flex; flex-wrap: wrap; gap: 8px 32px; font-style: normal; font-size: 14px; line-height: 20px; color: var(--on-night-muted); }
-  .fz-contact a { color: var(--on-night); margin-left: 6px; }
+  .fz-contact a { color: var(--on-night); margin-left: 8px; }
   .ff--flat a { transition: color 0.25s; }
   .ff--flat a:hover { color: var(--on-night); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
   .ff--flat a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
   .ff--flat a:active { opacity: 0.75; }
+  @media (min-width: 768px) { .ff--flat { padding-top: 88px; } .fz-name { margin-block: 32px; } }
+  @media (min-width: 1024px) { .ff--flat { padding-top: 96px; } .fz-groups { row-gap: 72px; } }
+  @media (min-width: 1280px) { .ff--flat { padding-top: 112px; } .fz-name { margin-block: 40px; } .fz-groups { row-gap: 80px; } }
+  @media (min-width: 1440px) { .ff--flat { padding-top: 120px; } .fz-name { margin-block: 48px; } .fz-groups { row-gap: 96px; } }
   /* the faded name is decorative; its size steps on the 4-point grid, with its line height cut to the capitals */
   @media (min-width: 768px) { .fz-name { font-size: 120px; line-height: 88px; } }
   @media (min-width: 1024px) { .fz-name { font-size: 160px; line-height: 116px; } }
@@ -173,7 +177,7 @@ const platformCols = [
   :global(html.js) .fz-name:not(.in) { opacity: 0; translate: 0 36px; }
   @media (prefers-reduced-motion: reduce) { :global(html.js) .fz-name:not(.in) { translate: none; } }
   .fz-bar { margin-top: 0; border-block: 1px solid var(--on-night-line); }
-  .fz-bar-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; min-height: 72px; padding-block: 14px; }
+  .fz-bar-in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; min-height: 72px; padding-block: 16px; }
   .fz-cta { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border: 1px solid var(--on-night-line-2); font-size: 14px; line-height: 20px; color: var(--on-night); }
   .ff--flat .fz-cta:hover { background: var(--cyan); border-color: var(--cyan); color: var(--night); text-decoration: none; }
   .fz-base { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; padding-block: 28px 32px; }

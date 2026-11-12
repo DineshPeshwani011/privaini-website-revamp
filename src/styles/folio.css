@@ -174,7 +174,7 @@ body.folio.flat {
 .flat .fx-label::before { content: ''; flex: none; width: 8px; height: 8px; background: var(--cyan); }
 /* a chip: the same, set on a cyan bar */
 .flat .fx-chip {
-  display: inline-flex; align-items: center; gap: 8px; width: max-content; padding: 8px 14px 8px 10px; background: var(--cyan); color: var(--night);
+  display: inline-flex; align-items: center; gap: 8px; width: max-content; padding: 8px 12px 8px 8px; background: var(--cyan); color: var(--night);
   font: 500 14px/20px var(--mono); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
   transition: clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -196,3 +196,7 @@ body.folio.flat .nav .m-link { line-height: 32px; }
 body.folio.flat .nav .m-group a { font-size: 16px; line-height: 24px; }
 body.folio.flat .wordmark--md { font-size: 24px; }
 body.folio.flat .skip-link { font-size: 16px; line-height: 24px; }body.folio.flat .nav li { font-size: 16px; line-height: 24px; }
+body.folio.flat .skip-link { padding: 8px 16px; }
+body.folio.flat .nav .brand { padding-block: 8px; }
+body.folio.flat .nav .top { gap: 8px; }
+body.folio.flat .nav .btn, body.folio.flat .f-btn { gap: 8px; }
