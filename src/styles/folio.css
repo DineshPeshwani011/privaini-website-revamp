@@ -16,7 +16,7 @@ body.folio {
   --on-stone: #0b0f10;
   --on-stone-muted: #55625f;
   --on-stone-line: rgba(11, 15, 16, 0.14);
-  --cyan: #07bcd4;
+  --cyan: #189db5;
   --cyan-soft: #67d6e6;        /* italic lines and links on night */
   --teal: #0a4652;             /* italic lines and links on stone */
   --ease-edit: cubic-bezier(0.22, 1, 0.36, 1);
@@ -75,7 +75,7 @@ body.folio {
   transition: background-color 0.35s var(--ease-edit), color 0.35s, border-color 0.35s, transform 0.35s var(--ease-edit);
 }
 .folio .f-btn--cyan { background: var(--cyan); color: var(--night); }
-.folio .f-btn--cyan:hover { background: #3fd0e3; }
+.folio .f-btn--cyan:hover { background: #4fb5c8; }
 .folio .f-btn--line { border-color: color-mix(in srgb, var(--ink) 40%, transparent); color: var(--ink); }
 .folio .f-btn--line:hover { border-color: var(--ink); }
 .folio .f-btn--ink { background: var(--ink); color: var(--stone); }
@@ -105,7 +105,7 @@ body.folio {
 /* the shared nav and footer keep their own corner sizes; on a Folio page they are square too */
 .folio .nav *, .folio .footer *, .folio :focus-visible { border-radius: 0 !important; }
 .folio .nav .btn { border-radius: 0; min-height: 42px; padding: 0 20px; --btn-bg: var(--cyan); --btn-ink: var(--night); box-shadow: none; }
-.folio .nav .btn:hover { --btn-bg: #3fd0e3; box-shadow: none; }
+.folio .nav .btn:hover { --btn-bg: #4fb5c8; box-shadow: none; }
 .folio .nav.scrolled { box-shadow: 0 1px 0 var(--on-stone-line); }
 .folio .nav.theme-dark.scrolled { box-shadow: 0 1px 0 var(--on-night-line); }
 .folio .footer {

@@ -147,7 +147,7 @@ const markers = [
     for (let i = 0; i <= 256; i++) { const a = (i / 256) * Math.PI * 2; ringPts.push(Math.cos(a) * 1.32, 0, Math.sin(a) * 1.32); }
     const ringGeo = new THREE.BufferGeometry();
     ringGeo.setAttribute('position', new THREE.Float32BufferAttribute(ringPts, 3));
-    const orbitMat = new THREE.LineBasicMaterial({ color: col('--accent', '#07bcd4'), transparent: true, opacity: 0.35 });
+    const orbitMat = new THREE.LineBasicMaterial({ color: col('--accent', '#189db5'), transparent: true, opacity: 0.35 });
     orbit.add(new THREE.Line(ringGeo, orbitMat));
     const probeGeo = new THREE.BufferGeometry();
     probeGeo.setAttribute('position', new THREE.Float32BufferAttribute([1.32, 0, 0], 3));
@@ -163,7 +163,7 @@ const markers = [
       bodyMat.color.copy(col('--globe-body', '#0a222c'));
       dotMat.uniforms.uColor.value.copy(col('--globe-dot', '#aaeefa'));
       markerMat.uniforms.uColor.value.copy(col('--globe-mark', '#5ee6f5'));
-      orbitMat.color.copy(col('--accent', '#07bcd4'));
+      orbitMat.color.copy(col('--accent', '#189db5'));
       probeMat.color.copy(col('--globe-mark', '#5ee6f5'));
       beamMat.color.copy(col('--globe-mark', '#5ee6f5'));
       renderer.render(scene, camera);

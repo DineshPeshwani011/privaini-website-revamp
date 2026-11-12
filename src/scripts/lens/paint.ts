@@ -11,7 +11,7 @@ export const C = {
   soft: 'rgba(200, 228, 234, 0.72)',
   faint: 'rgba(170, 205, 214, 0.42)',
   cyan: '#5ee6f5',
-  cyanDeep: '#07bcd4',
+  cyanDeep: '#189db5',
   green: '#4fe3a8',
   red: '#ff5a4e',
   amber: '#f5a524',
