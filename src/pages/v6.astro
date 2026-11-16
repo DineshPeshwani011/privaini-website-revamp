@@ -1,0 +1,609 @@
+---
+// /v6: a second take on the /v5 page (same words, same figures, same 60 / 30 / 10 white, charcoal and cyan, flat),
+// every section re-composed after the editorial work seen on Dribbble, Behance and Awwwards: a split headline with
+// its sentences in a margin column and the x-ray on a wide stage, a bento of tiles, a scoreboard of rows, one
+// large pull-quote, a framed instrument, a stepper over a stage, tall tiles that turn black, and a white poster
+// to close. The two drawings are /v5's (the refraction and the exposure map); the exposure map is now played by a
+// stepper (src/scripts/flat-v6.ts). Kept out of search results while it is a candidate.
+import Base from '@/layouts/Base.astro';
+import FolioFooter from '@/components/folio/FolioFooter.astro';
+import Xray from '@/components/folio/Xray.astro';
+import Refraction from '@/components/flat/Refraction.astro';
+import ExposureMap from '@/components/flat/ExposureMap.astro';
+import { enforcement, settlements, sampleReport } from '@/data/findings';
+import { solutions, partners, DEMO_URL } from '@/data/site';
+import { customerLogos } from '@/data/logos';
+import { quotes } from '@/data/quotes';
+
+const nav = [
+  { label: 'Risk Intelligence', href: '/risk-intelligence' },
+  { label: 'Platform', href: '/platform-overview' },
+  { label: 'Solutions', href: '/solutions', items: solutions },
+  { label: 'Partners', href: '/partner-program', items: partners },
+  { label: 'Company', href: '/about-us' },
+  { label: 'Resources', href: '/resources' },
+];
+
+const beats = [
+  'Your program & current stack look inwards.',
+  'Enforcement and litigation come from outside.',
+  'We show you what they see.',
+];
+
+// enforcement: the headline figure, two shares (a hundred squares each) and the settlements on one scale, with the
+// average as a line through them
+const [fines, ...shares] = enforcement;
+const mean = shares.pop()!;
+const deals = settlements.map((s) => { const i = s.search(/[$€]/); return { name: s.slice(0, i).trim(), amount: s.slice(i) }; });
+const SCALE = 60;   // $M across the track (an amount keeps its own currency symbol; the euro figure is drawn at its face value)
+const num = (s: string) => parseFloat(s.replace(/[^0-9.]/g, ''));
+const bars = deals.map((d) => ({ ...d, v: +((num(d.amount) / SCALE) * 100).toFixed(1), lo: num(d.amount) < (mean.count ?? 0) }));
+const meanAt = +(((mean.count ?? 0) / SCALE) * 100).toFixed(1);
+const waffle = Array.from({ length: 100 }, (_, i) => (9 - Math.floor(i / 10)) * 10 + (i % 10));
+
+const institutions = [
+  { n: 4, of: 'of top 10', what: 'Cyber Insurers', total: 10, cols: 10 },
+  { n: 2, of: 'of top 3', what: 'Brokers', total: 3, cols: 10 },
+  { n: 90, of: 'countries of', what: 'Customer Operations', total: 90, cols: 30 },
+];
+
+const viaquest = quotes.viaquest;
+
+const steps = [
+  { title: 'Findings', text: 'Get detailed, evidence-backed findings based on observations from your markets and the statutes that apply to your company.' },
+  { title: 'Exposure', text: 'Understand potential regulatory fines exposure from enforcement agencies and consumer exposure arising from litigation.' },
+  { title: 'Remediation', text: 'Get recommendations to remediate findings and a phased plan. Each phase maps to quantified reduction to potential risk exposure.' },
+];
+
+const href = (label: string) => solutions.find((s) => s.label === label)?.href ?? '/solutions';
+const teams = [
+  { label: 'Enterprises', note: 'Find the gaps between policy and practice.', icon: 'M4 4h10v10H4zM18 4h10v10H18zM4 18h10v10H4zM18 18h10v10H18z' },
+  { label: 'Insurers', note: 'Spot privacy loss drivers before claims surface.', icon: 'M16 3 28 7V16L16 29 4 16V7ZM10.5 15.5l4 4 7-8' },
+  { label: 'Law Firms', note: 'See the evidence plaintiffs’ counsel already scanned.', icon: 'M16 4V27M9 27H23M5 9H27M5 9 2 18H8ZM27 9 24 18H30Z' },
+  { label: 'M&A Advisors', note: 'Find privacy & AI risk before it impacts the deal outcome.', icon: 'M4 11h15v15H4zM13 6h15v15H13z' },
+].map((t) => ({ ...t, href: href(t.label) }));
+
+const arrow = '<svg viewBox="0 0 16 16" focusable="false"><path d="M2 8h11M9 4l4 4-4 4" /></svg>';
+---
+<Base
+  title="Privaini | Privacy & AI Risk Intelligence Platform"
+  description="See privacy and AI risk the way regulators and litigators do, outside-in, from your domain alone. Continuous monitoring across 90 countries and 20 US states."
+  bodyClass="home flat"
+  folio
+  noindex
+  nav={nav}
+>
+  <div data-folio class="v5" data-v6>
+    <!-- the hero: the headline across eight columns, its three sentences and the action in a margin column, then
+         the x-ray on a wide stage with its caption standing up beside it; the customers' marks run under it -->
+    <section class="h6 is-stone" id="top" aria-labelledby="hx-h">
+      <div class="wrap">
+        <div class="h6-top">
+          <p class="fx-label h6-label" data-reveal data-in>Privacy &amp; AI Risk Intelligence</p>
+          <h1 id="hx-h" class="v5-display h6-title" data-reveal data-in>See what regulators &amp; litigators detect, <span class="mk">before they do.</span></h1>
+          <div class="h6-side" data-reveal-group>
+            <ol class="h6-beats" role="list">{beats.map((b) => <li data-reveal>{b}</li>)}</ol>
+            <div data-reveal><a class="f-btn f-btn--cyan hx-cta" href={DEMO_URL}>See Your Exposure <span class="arr" aria-hidden="true" set:html={arrow} /></a></div>
+          </div>
+        </div>
+        <figure class="h6-stage">
+          <figcaption class="h6-cap">A sample website, as its visitors see it and through the Privaini lens</figcaption>
+          <div class="h6-plate fx-dots"><div class="h6-frame fx-hd"><Xray theme="light" /></div></div>
+        </figure>
+      </div>
+      <div class="b6" role="region" aria-labelledby="trust-h">
+        <div class="wrap b6-row"><h2 id="trust-h" class="fx-label">Trusted by leading insurers &amp; enterprises</h2></div>
+        <div class="lg">
+          <div class="lg-track">
+            {[0, 1].map((c) => (
+              <ul role="list" class="lg-set" aria-hidden={c === 1 ? 'true' : undefined}>
+                {customerLogos.map((l) => <li class:list={{ boxed: l.boxed }}><img src={l.src} alt={c === 1 ? '' : l.name} width="160" height="116" decoding="async" /></li>)}
+              </ul>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- privacy enforcement is routine: a bento of slate tiles on charcoal; the $7B+ across the top left, the settlements
+         charted on one scale below it, a share (a hundred squares) in each tile at the right -->
+    <section class="e6 is-night v5-sec" id="enforcement" data-nav-dark aria-labelledby="enf-h">
+      <div class="wrap">
+        <h2 id="enf-h" class="v5-h2 e6-h" data-reveal>Privacy enforcement is routine.</h2>
+        <div class="e6-bento" data-reveal-group>
+          <p class="e6-big" data-reveal>
+            <span class="e6-frame fx-hd" data-in><span class="e6-n" data-decode>{fines.figure}</span><i class="e6-rule" aria-hidden="true"><b></b></i></span>
+            <span class="e6-of">{fines.label}</span>
+          </p>
+          <dl class="e6-shares">
+            {shares.map((e) => (
+              <div class="e6-t e6-share" data-reveal data-in>
+                <dt data-decode>{e.figure}</dt>
+                <dd>{e.label}</dd>
+                <span class="e6-wf" aria-hidden="true">{waffle.map((k) => <i class:list={{ lit: k < (e.count ?? 0) }} style={`--d: ${k}`}></i>)}</span>
+              </div>
+            ))}
+          </dl>
+          <figure class="e6-t e6-chart" aria-label="Recent privacy settlements, each drawn to scale against the average settlement" data-reveal data-in>
+            <p class="e6-mean"><b data-decode>{mean.figure}</b><span>{mean.label}</span></p>
+            <ol class="e6-bars" role="list" style={`--mean: ${meanAt}`}>
+              {bars.map((b, n) => (
+                <li class:list={{ lo: b.lo }} style={`--v: ${b.v}; --n: ${n}`}>
+                  <span class="eb-name">{b.name}</span>
+                  <span class="eb-track"><i class="eb-bar" aria-hidden="true"></i><b class="eb-amt">{b.amount}</b></span>
+                </li>
+              ))}
+            </ol>
+          </figure>
+        </div>
+        <div class="e6-close" data-reveal-group>
+          <p class="e6-p" data-reveal>Most enforcement actions hit companies that didn’t see them coming. It’s become a recurring cost of doing business online, and it’s accelerating.</p>
+          <a class="f-btn f-btn--cyan e6-go" href={DEMO_URL} data-reveal>Find out if your company is exposed <span class="arr" aria-hidden="true" set:html={arrow} /></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- the institutions that price cyber risk: a scoreboard. The headline stands at the left; each institution is a
+         row, its figure large, its meter of squares at the right, all on one field of dots that opens like a shutter -->
+    <section class="i6 is-stone v5-sec" id="institutions" aria-labelledby="inst-h">
+      <div class="wrap i6-grid">
+        <h2 id="inst-h" class="v5-h2 i6-h" data-reveal>The institutions that price cyber risk choose Privaini.</h2>
+        <ul class="i6-list fx-dots" role="list" data-reveal-group data-in>
+          {institutions.map((t) => (
+            <li class="i6-row" data-reveal data-in>
+              <p class="i6-n" data-decode>{t.n}</p>
+              <p class="i6-of">{t.of} <strong>{t.what}</strong></p>
+              <p class="i6-meter" aria-hidden="true" style={`--cols: ${t.cols}`}>
+                {Array.from({ length: t.total }, (_, i) => <i class:list={{ lit: i < t.n }} style={`--i: ${i}`}></i>)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- a customer's words, set large on a grey band, a cyan bar beside them -->
+    <section class="q6" id="trusted" aria-label="What a customer says">
+      <div class="wrap">
+        <figure class="q6-fig" data-reveal-group>
+          <blockquote class="q6-text" data-reveal>“{viaquest.text}”</blockquote>
+          <figcaption class="q6-by" data-reveal>
+            <span class="q6-who"><span class="q6-role">{viaquest.name}</span><span class="q6-org">{viaquest.org}</span></span>
+            <a class="v5-link" href={viaquest.href}>See how ViaQuest uses Privaini <span class="arr" aria-hidden="true" set:html={arrow} /></a>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- from your company name and website, your risk picture: the headline and its sentence side by side, then the
+         instrument in a frame of dots -->
+    <section class="r6 is-night v5-sec" id="risk-picture" data-nav-dark aria-labelledby="pic-h">
+      <div class="wrap">
+        <div class="r6-head" data-reveal-group>
+          <h2 id="pic-h" class="v5-h2 r6-h" data-reveal>From your company name and website, we deliver your risk picture.</h2>
+          <div class="r6-side" data-reveal>
+            <p class="v5-lead">Privaini delivers evidence-backed findings, exposure, and remediation, mapped to the statutes that apply to you.</p>
+            <div class="r6-btns">
+              <a class="f-btn f-btn--cyan" href={DEMO_URL}>See Your Exposure</a>
+              <a class="f-btn f-btn--line" href="#preview">Preview</a>
+            </div>
+          </div>
+        </div>
+        <div class="r6-plate fx-dots fx-hd" id="preview"><Refraction /></div>
+      </div>
+    </section>
+
+    <!-- findings mapped to statutes: a stepper (one, two, three squares) lights across the top as the exposure map
+         below it is drawn, part by part -->
+    <section class="f6 is-stone v5-sec" id="findings" aria-labelledby="fnd-h">
+      <div class="wrap">
+        <div class="f6-head" data-reveal-group>
+          <p class="fx-label" data-reveal data-in>Findings</p>
+          <h2 id="fnd-h" class="v5-h2" data-reveal>Findings mapped to statutes applicable to you.<br /> Reproducible. Timestamped.</h2>
+          <p class="v5-lead f6-lead" data-reveal>Monitor your digital assets for privacy and AI risk across your markets and understand your regulatory and consumer exposure. Remediate and reduce your risk prioritized by your markets.</p>
+        </div>
+        <ol class="f6-steps" role="list" data-f6-steps>
+          {steps.map((s, i) => (
+            <li class="f6-step on" data-f6-step>
+              <span class="f6-sq" aria-hidden="true">{Array.from({ length: i + 1 }, () => <b></b>)}</span>
+              <h3 class="f6-t">{s.title}</h3>
+              <p class="f6-p">{s.text}</p>
+            </li>
+          ))}
+        </ol>
+        <div class="f6-stage fx-dots fx-hd">
+          <div class="f6-map"><ExposureMap /></div>
+          <p class="fnd-valid"><span class="fv-mark" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2.5 6.5 5 9 9.5 3" /></svg></span>{sampleReport.validated}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- built for every team with privacy exposure: four tall tiles on a grey band; each turns black under the pointer -->
+    <section class="t6s is-stone v5-sec" id="teams" aria-labelledby="teams-h">
+      <div class="wrap">
+        <h2 id="teams-h" class="v5-h2 t6-h" data-reveal>Built for every team with privacy exposure.</h2>
+        <ul class="t6-grid" role="list" data-reveal-group>
+          {teams.map((t) => (
+            <li data-reveal>
+              <a class="t6" href={t.href}>
+                <svg class="t6-icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><path d={t.icon} pathLength="1" /></svg>
+                <span class="t6-name">{t.label}</span>
+                <span class="t6-note">{t.note}</span>
+                <span class="t6-go">Learn more <span class="arr" aria-hidden="true" set:html={arrow} /></span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- your exposure is already visible: a white poster, the second line in cyan, the four promises in a ruled row -->
+    <section class="c6" id="exposure" aria-labelledby="cta-h">
+      <div class="wrap c6-in" data-reveal-group>
+        <h2 id="cta-h" class="c6-h" data-reveal data-type>Your exposure is already visible.<br /> <span class="c6-acc">See it before they do.</span></h2>
+        <div class="c6-row" data-reveal>
+          <p class="c6-lead">No sales pitch. No questionnaires. No IT lift. Just your domain name.</p>
+          <a class="f-btn c6-btn" href={DEMO_URL}>See Your Exposure <span class="arr" aria-hidden="true" set:html={arrow} /></a>
+        </div>
+        <ul class="c6-points" role="list" data-reveal>
+          {['No generic alerts', 'No installation', 'Domain name only', 'Statute-mapped findings'].map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <FolioFooter slot="footer" flat />
+</Base>
+
+<script>
+  import { mountFlatV6 } from '@/scripts/flat-v6';
+  const root = document.querySelector<HTMLElement>('[data-v6]');
+  if (root) mountFlatV6(root);
+</script>
+
+<style>
+  /* ---- Flat's type: one family, Urbanist, in six sizes ---- */
+  .v5 {
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    /* the 4-point type scale (2026-11-12): every size and line height is a multiple of 4 (14px alone is the floor and
+       the exception), and sizes step at four widths instead of drifting. The display tops out at 72px. Phone first. */
+    --t-display: 40px;  --lh-display: 44px;
+    --t-h2: 32px;       --lh-h2: 36px;
+    --t-title: 24px;    --lh-title: 32px;
+    --t-lead: 20px;     --lh-lead: 28px;
+    --t-body: 16px;     --lh-body: 24px;
+    --t-small: 14px;    --lh-small: 20px;
+    --t-step: 24px;     --lh-step: 28px;     /* findings step titles */
+    --t-name: 24px;     --lh-name: 28px;     /* team names */
+    --t-band: 24px;     --lh-band: 28px;     /* the settlements band */
+    --t-copy: 20px;     --lh-copy: 28px;     /* the closing line and the quotation */
+    --t-fig: 48px;      --lh-fig: 44px;      /* the three enforcement figures */
+    --t-tally: 96px;    --lh-tally: 76px;    /* the institutions' figures */
+    --t-giant: 96px;   --lh-giant: 80px;    /* $7M, the one giant figure */
+    --t-quote: 96px;    --lh-quote: 68px;    /* the quotation mark */
+    --tone: var(--stone-2);           /* the one tone step on white */
+    --tone-dark: var(--night-2);      /* and on black */
+  }
+  @media (min-width: 768px) {
+    .v5 {
+      --t-display: 48px; --lh-display: 52px;  --t-h2: 36px; --lh-h2: 40px;
+      --t-title: 24px; --lh-title: 32px;
+      --t-step: 28px; --lh-step: 32px;  --t-name: 28px; --lh-name: 32px;  --t-band: 28px; --lh-band: 32px;
+      --t-copy: 24px; --lh-copy: 32px;
+      --t-fig: 56px; --lh-fig: 52px;  --t-tally: 112px; --lh-tally: 88px;  --t-giant: 144px; --lh-giant: 116px;  --t-quote: 128px; --lh-quote: 88px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .v5 {
+      --t-display: 56px; --lh-display: 60px;  --t-h2: 40px; --lh-h2: 44px;
+      --t-title: 28px; --lh-title: 36px;
+      --t-step: 32px; --lh-step: 36px;  --t-name: 32px; --lh-name: 36px;  --t-band: 32px; --lh-band: 36px;
+      --t-fig: 64px; --lh-fig: 56px;  --t-tally: 136px; --lh-tally: 108px;  --t-giant: 160px; --lh-giant: 128px;  --t-quote: 160px; --lh-quote: 112px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .v5 {
+      --t-display: 64px; --lh-display: 68px;  --t-h2: 48px; --lh-h2: 52px;
+      --t-title: 28px; --lh-title: 36px;
+      --t-step: 36px; --lh-step: 40px;  --t-name: 40px; --lh-name: 40px;  --t-band: 40px; --lh-band: 44px;
+      --t-copy: 28px; --lh-copy: 36px;
+      --t-fig: 80px; --lh-fig: 72px;  --t-tally: 160px; --lh-tally: 128px;  --t-giant: 200px; --lh-giant: 160px;  --t-quote: 200px; --lh-quote: 140px;
+    }
+  }
+  @media (min-width: 1440px) {
+    .v5 {
+      --t-display: 72px; --lh-display: 76px;  --t-h2: 56px; --lh-h2: 60px;
+      --t-title: 32px; --lh-title: 40px;
+      --t-giant: 232px; --lh-giant: 184px;
+    }
+  }
+  /* ---- the 4-point spacing scale: every space is a multiple of 4 and steps at the same four widths as the type ---- */
+  .v5 {
+    --s-bar: 36px; --s-sec: 96px;    --s-end: 80px;   --s-xl: 72px;    --s-l: 56px;    --s-l2: 64px;   --s-m: 48px;
+    --s-s: 24px;      --s-row: 20px;   --s-band: 28px;  --s-tk: 32px;   --s-pad: 28px;  --s-panel: 380px;
+    --s-fnd-top: 24px; --s-fnd-bot: 40px; --s-fnd-gap: 72px; --s-fnd-in: 24px;
+    --s-tr-y: 28px;   --s-tr-x: 24px;  --s-tr-col: 20px; --s-cta: 40px;  --s-lg: 8px;   --s-copy: 0px;  --s-qpad: 12px;
+  }
+  @media (min-width: 768px) {
+    .v5 {
+      --s-bar: 40px; --s-sec: 104px; --s-end: 88px; --s-xl: 80px; --s-l: 64px; --s-l2: 72px; --s-m: 56px;
+      --s-s: 32px; --s-row: 24px; --s-band: 32px; --s-tk: 40px; --s-pad: 32px; --s-panel: 400px;
+      --s-fnd-top: 32px; --s-fnd-bot: 56px; --s-fnd-gap: 80px; --s-fnd-in: 32px;
+      --s-tr-y: 32px; --s-tr-x: 24px; --s-tr-col: 24px; --s-cta: 48px; --s-lg: 8px; --s-copy: 16px; --s-qpad: 16px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .v5 {
+      --s-bar: 48px; --s-sec: 120px; --s-end: 104px; --s-xl: 88px; --s-l: 72px; --s-l2: 80px; --s-m: 64px;
+      --s-s: 32px; --s-row: 28px; --s-band: 32px; --s-tk: 48px; --s-pad: 36px; --s-panel: 424px;
+      --s-fnd-top: 40px; --s-fnd-bot: 80px; --s-fnd-gap: 96px; --s-fnd-in: 32px;
+      --s-tr-y: 32px; --s-tr-x: 32px; --s-tr-col: 32px; --s-cta: 48px; --s-lg: 12px; --s-copy: 24px; --s-qpad: 20px;
+    }
+  }
+  @media (min-width: 1280px) {
+    .v5 {
+      --s-bar: 56px; --s-sec: 144px; --s-end: 128px; --s-xl: 96px; --s-l: 80px; --s-l2: 96px; --s-m: 72px;
+      --s-s: 40px; --s-row: 32px; --s-band: 36px; --s-tk: 56px; --s-pad: 40px; --s-panel: 448px;
+      --s-fnd-top: 48px; --s-fnd-bot: 104px; --s-fnd-gap: 112px; --s-fnd-in: 40px;
+      --s-tr-y: 36px; --s-tr-x: 32px; --s-tr-col: 40px; --s-cta: 56px; --s-lg: 12px; --s-copy: 32px; --s-qpad: 24px;
+    }
+  }
+  @media (min-width: 1440px) {
+    .v5 {
+      --s-bar: 60px; --s-sec: 160px; --s-end: 144px; --s-xl: 112px; --s-l: 96px; --s-l2: 104px; --s-m: 80px;
+      --s-s: 48px; --s-row: 36px; --s-band: 40px; --s-tk: 64px; --s-pad: 44px; --s-panel: 468px;
+      --s-fnd-top: 64px; --s-fnd-bot: 120px; --s-fnd-gap: 128px; --s-fnd-in: 48px;
+      --s-tr-y: 40px; --s-tr-x: 40px; --s-tr-col: 48px; --s-cta: 64px; --s-lg: 16px; --s-copy: 40px;
+    }
+  }
+  /* the side gaps are 5% of the screen narrower each side (2026-11-16): the column is 96px wider at 1920 (1440 to 1536),
+     and the margins on smaller screens step down by 4px. The nav, hero, every section and the footer share these tokens */
+  body.folio.flat { --margin: 16px; --gap: 16px; --max: 1536px; }
+  @media (min-width: 768px) { body.folio.flat { --margin: 20px; --gap: 20px; } }
+  @media (min-width: 1024px) { body.folio.flat { --margin: 28px; --gap: 24px; } }
+  @media (min-width: 1280px) { body.folio.flat { --margin: 36px; --gap: 24px; } }
+  @media (min-width: 1440px) { body.folio.flat { --margin: 44px; --gap: 28px; } }
+  .v5-sec { position: relative; padding-block: var(--s-sec); }
+  .v5-display { margin: 0; font: 500 var(--t-display)/var(--lh-display) var(--font); letter-spacing: -0.05em; color: var(--ink); text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+  .v5-h2 { margin: 0; font: 500 var(--t-h2)/var(--lh-h2) var(--font); letter-spacing: -0.045em; color: var(--ink); text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
+  .v5-title { margin: 0; font: 500 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; color: var(--ink); }
+  .v5-lead { margin: 0; font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--ink); max-width: 48ch; text-wrap: pretty; }
+  /* the hero's key phrase, and only the hero's, carries a cyan rule that draws in (a flat bar, set as a
+     background so it can grow from the left) */
+  .mk {
+    background: linear-gradient(var(--cyan), var(--cyan)) no-repeat 0 94% / 100% 0.12em;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; padding-bottom: 4px;
+    transition: background-size 1.1s var(--ease) 0.4s;
+  }
+  :global(html.js) [data-in]:not(.in) .mk { background-size: 0% 0.12em; }
+  .v5-link {
+    display: inline-flex; gap: 12px; align-items: center; padding-bottom: 4px; font: 600 var(--t-body)/var(--lh-body) var(--font); color: var(--ink);
+    background: linear-gradient(var(--cyan), var(--cyan)) 0 100% / 100% 2px no-repeat; transition: background-size 0.45s var(--ease);
+  }
+  .v5-link:hover { background-size: 0% 2px; background-position: 100% 100%; }
+  .v5 :global(.f-btn) { min-height: 56px; padding: 0 32px; font-size: 16px; font-weight: 600; }
+  .v5 :global(.f-btn--cyan) { color: var(--night); }
+  .v5 :global(.f-btn--cyan:hover) { background: var(--on-stone); color: var(--stone); }
+  .is-night :global(.f-btn--cyan:hover) { background: var(--on-night); color: var(--night); }
+  /* every control's focus ring, at once, never animated: cyan, and ink on the cyan close */
+  .v5 :is(a, button):focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
+  /* pressed */
+  .v5-link:active, .t6:active { opacity: 0.8; }
+  /* the arrow is its own mark: it steps forward under the pointer */
+  .f-btn > span[aria-hidden], .v5-link > span[aria-hidden], .t6-go > span[aria-hidden] { display: inline-block; transition: transform 0.35s var(--ease); }
+  .arr { display: inline-flex; flex: none; }
+  .arr svg { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: square; stroke-linejoin: miter; overflow: visible; }
+  .f-btn:hover > span[aria-hidden], .v5-link:hover > span[aria-hidden], .t6:hover .t6-go > span[aria-hidden] { transform: translateX(4px); }
+
+  /* ================= v6 sections ================= */
+  /* the pull-quote's size, on the same 4-point steps */
+  .v5 { --t-qt: 28px; --lh-qt: 36px; }
+  @media (min-width: 768px) { .v5 { --t-qt: 32px; --lh-qt: 40px; } }
+  @media (min-width: 1024px) { .v5 { --t-qt: 36px; --lh-qt: 44px; } }
+  @media (min-width: 1280px) { .v5 { --t-qt: 40px; --lh-qt: 48px; } }
+  @media (min-width: 1440px) { .v5 { --t-qt: 44px; --lh-qt: 52px; } }
+  @keyframes tk { to { transform: translateX(-100%); } }
+  @keyframes caret { 50% { opacity: 0; } }
+
+  /* ---- the hero ---- */
+  .h6 { position: relative; padding-top: calc(var(--nav-h) + var(--s-m)); overflow-x: clip; }
+  .h6-top { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 24px; align-items: end; }
+  .h6-label { grid-column: 1 / -1; }
+  .h6-title { grid-column: 1 / span 8; }
+  .h6-side { grid-column: 9 / -1; display: grid; gap: 32px; justify-items: start; padding-bottom: 8px; }
+  .h6-beats { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; font: 500 var(--t-lead)/var(--lh-lead) var(--font); letter-spacing: -0.01em; }
+  .h6-beats li { display: grid; grid-template-columns: 8px minmax(0, 1fr); column-gap: 12px; align-items: start; }
+  .h6-beats li::before { content: ''; width: 8px; height: 8px; margin-top: 10px; background: var(--cyan); }
+  .h6-stage { margin: var(--s-l) 0 0; display: grid; grid-template-columns: auto minmax(0, 1120px); justify-content: space-between; column-gap: var(--gap); align-items: end; }
+  .h6-cap { margin: 0; writing-mode: vertical-rl; transform: rotate(180deg); font-size: var(--t-small); line-height: var(--lh-small); color: var(--on-stone-muted); }
+  .h6-plate { --dots-inset: -44px 56px 64px -44px; }
+  .h6-frame { --hd-gap: 8px; }
+  /* the customers' marks: the label above a rule, the marquee below it, edge to edge */
+  .b6 { margin-top: var(--s-l); border-top: 1px solid var(--on-stone-line); }
+  .b6-row { display: flex; justify-content: center; padding-block: 20px 16px; }
+  .b6-row .fx-label { margin: 0; text-align: center; }
+  .lg { overflow: hidden; margin-bottom: 20px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 96px), transparent); mask-image: linear-gradient(90deg, transparent, #000 64px, #000 calc(100% - 96px), transparent); }
+  .lg-track { display: flex; width: max-content; }
+  .lg-set { display: flex; flex: none; align-items: center; list-style: none; margin: 0; padding: 0; animation: tk 55s linear infinite; }
+  .lg:hover .lg-set { animation-play-state: paused; }
+  .lg-set li { flex: none; display: grid; place-items: center; height: 56px; padding-inline: var(--s-lg); }
+  /* the source files are padded cards with the mark in the middle: cover crops the empty top and bottom */
+  .lg-set img { display: block; width: 150px; height: 56px; object-fit: cover; mix-blend-mode: multiply; }
+  .lg-set .boxed img { object-fit: contain; }
+
+  /* ---- enforcement: the bento ---- */
+  .e6 { padding-bottom: var(--s-end); }
+  .e6-h { max-width: 14ch; margin-bottom: var(--s-m); }
+  .e6-bento { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); }
+  .e6-t { background: var(--night-2); padding: var(--s-pad); }
+  .e6-big { grid-column: 1 / span 8; grid-row: 1; margin: 0; display: grid; align-content: end; justify-items: start; gap: 16px; }
+  .e6-frame { display: block; padding: 8px 16px 24px; --hd-c: var(--on-night); --hd-gap: 0px; }
+  .e6-n { display: block; font: 300 var(--t-giant)/var(--lh-giant) var(--font); letter-spacing: -0.07em; color: var(--cyan); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .e6-rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--cyan); transition: transform 1.1s var(--ease) 0.3s; }
+  .e6-rule b { position: absolute; left: 50%; top: -4px; width: 8px; height: 8px; translate: -50% 0; background: var(--cyan); transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.1s; }
+  :global(html.js) .e6-frame:not(.in) .e6-rule { transform: scaleX(0); }
+  :global(html.js) .e6-frame:not(.in) .e6-rule b { transform: scale(0); }
+  .e6-of { max-width: 28ch; padding-left: 16px; font-size: var(--t-lead); line-height: var(--lh-lead); color: var(--on-night); text-wrap: pretty; }
+  .e6-shares { display: contents; margin: 0; }
+  .e6-share { display: grid; align-content: start; gap: 8px; }
+  .e6-share:nth-child(1) { grid-column: 9 / -1; grid-row: 1; }
+  .e6-share:nth-child(2) { grid-column: 9 / -1; grid-row: 2; }
+  .e6-share dt { font: 300 var(--t-fig)/var(--lh-fig) var(--font); letter-spacing: -0.055em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .e6-share dd { margin: 0 0 8px; font: 400 var(--t-body)/var(--lh-body) var(--font); color: var(--on-night); text-wrap: pretty; }
+  .e6-wf { width: min(100%, 280px); display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+  .e6-wf i { aspect-ratio: 1; background: var(--night-4); transition: background-color 0.3s, transform 0.5s var(--ease); transition-delay: calc(var(--d) * 10ms + 200ms); }
+  .e6-wf i.lit { background: var(--cyan); }
+  :global(html.js) .e6-share:not(.in) .e6-wf i.lit { background: var(--night-4); transform: scale(0.6); }
+  /* the settlements: a name, a bar on one scale with its amount at its end; the dashed line is the average */
+  .e6-chart { grid-column: 1 / span 8; grid-row: 2; margin: 0; display: grid; grid-template-rows: auto 1fr; gap: var(--s-s); }
+  .e6-mean { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 16px; align-items: end; }
+  .e6-mean b { font: 300 var(--t-h2)/var(--lh-h2) var(--font); letter-spacing: -0.05em; color: var(--cyan); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .e6-mean span { max-width: 28ch; padding-bottom: 4px; font: 400 var(--t-body)/var(--lh-body) var(--font); color: var(--on-night); text-wrap: pretty; }
+  .e6-bars { --nw: 200px; position: relative; list-style: none; margin: 0; padding: 0; display: grid; grid-auto-rows: 1fr; }
+  .e6-bars::before { content: ''; position: absolute; z-index: 1; top: 0; bottom: 0; left: calc(var(--nw) + (100% - var(--nw)) * var(--mean) / 100); border-left: 1px dashed var(--on-night-muted); transform-origin: top; transition: transform 1.2s var(--ease) 0.2s; }
+  .e6-bars::after { content: ''; position: absolute; z-index: 1; top: 0; left: calc(var(--nw) + (100% - var(--nw)) * var(--mean) / 100 - 4px); width: 8px; height: 8px; background: var(--cyan); }
+  :global(html.js) .e6-chart:not(.in) .e6-bars::before { transform: scaleY(0); }
+  .e6-bars li { display: grid; grid-template-columns: var(--nw) minmax(0, 1fr); align-items: center; min-height: 56px; border-top: 1px solid var(--on-night-line); font: 500 var(--t-lead)/var(--lh-lead) var(--font); letter-spacing: -0.02em; }
+  .eb-track { position: relative; height: 16px; }
+  .eb-bar { display: block; height: 100%; width: calc(var(--v) * 1%); background: var(--cyan); transform-origin: left; transition: transform 1.1s var(--ease) calc(var(--n) * 100ms + 300ms); }
+  .e6-bars li.lo .eb-bar { background: var(--on-night-muted); }
+  .eb-amt { position: absolute; top: 50%; left: calc(var(--v) * 1% + 12px); translate: 0 -50%; font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; transition: opacity 0.5s var(--ease) calc(var(--n) * 100ms + 900ms); }
+  :global(html.js) .e6-chart:not(.in) .eb-bar { transform: scaleX(0); }
+  :global(html.js) .e6-chart:not(.in) .eb-amt { opacity: 0; }
+  .e6-close { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 32px; align-items: end; margin-top: var(--s-xl); padding-top: var(--s-s); border-top: 1px solid var(--on-night-line); }
+  .e6-p { grid-column: 1 / span 8; margin: 0; font: 400 var(--t-copy)/var(--lh-copy) var(--font); letter-spacing: -0.03em; text-wrap: pretty; }
+  .e6-go { grid-column: 9 / -1; justify-self: end; }
+
+  /* ---- the institutions: a scoreboard ---- */
+  .i6 { padding-bottom: var(--s-sec); }
+  .i6-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: var(--s-m); align-items: start; }
+  .i6-h { grid-column: 1 / span 4; align-self: start; position: sticky; top: calc(var(--nav-h) + 32px); }
+  .i6-list { grid-column: 5 / -1; list-style: none; margin: 0; padding: 0; --dot-c: var(--dot-on-tone); }
+  .i6-row { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 36%); align-items: center; column-gap: var(--gap); padding-block: var(--s-row); border-top: 1px solid var(--on-stone-line); }
+  .i6-row:last-child { border-bottom: 1px solid var(--on-stone-line); }
+  .i6-n { margin: 0; min-width: 2.2ch; font: 300 var(--t-tally)/var(--lh-tally) var(--font); letter-spacing: -0.07em; font-variant-numeric: tabular-nums; }
+  .i6-of { margin: 0; font: 400 var(--t-lead)/var(--lh-lead) var(--font); }
+  .i6-of strong { display: block; font: 500 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; }
+  .i6-meter { margin: 0; width: 100%; display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: 4px; }
+  .i6-meter i { aspect-ratio: 1; background: var(--stone-3); transition: background-color 0.4s; transition-delay: calc(var(--i) * 70ms + 300ms); }
+  .i6-meter i.lit { background: var(--cyan); }
+  .i6-row:nth-child(3) .i6-meter i { transition-delay: calc(var(--i) * 14ms + 300ms); }
+  :global(html.js) .i6-row:not(.in) .i6-meter i.lit { background: var(--stone-3); }
+  /* the dots open like a shutter, bottom to top, when the list comes into view */
+  .i6-list::before { clip-path: inset(0 0 0 0); transition: clip-path 1.4s cubic-bezier(0.65, 0, 0.35, 1); }
+  :global(html.js) .i6-list:not(.in)::before { clip-path: inset(100% 0 0 0); }
+
+  /* ---- the customer's words ---- */
+  .q6 { background: var(--tone); color: var(--on-stone); padding-block: var(--s-sec); }
+  .q6-fig { margin: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: var(--s-s); }
+  .q6-text { grid-column: 2 / span 10; margin: 0; padding-left: var(--s-s); border-left: 4px solid var(--cyan); font: 400 var(--t-qt)/var(--lh-qt) var(--font); letter-spacing: -0.03em; text-wrap: pretty; }
+  .q6-by { grid-column: 2 / span 10; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 20px 32px; padding-left: calc(var(--s-s) + 4px); }
+  .q6-who { display: grid; gap: 4px; }
+  .q6-role { font-size: var(--t-small); line-height: var(--lh-small); }
+  .q6-org { font: 600 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; }
+
+  /* ---- the risk picture: headline and sentence side by side, the instrument in a frame of dots ---- */
+  .r6 { padding-bottom: var(--s-sec); }
+  .r6-head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: var(--s-s); align-items: end; margin-bottom: var(--s-m); }
+  .r6-h { grid-column: 1 / span 8; }
+  .r6-side { grid-column: 9 / -1; display: grid; gap: 24px; justify-items: start; }
+  .r6-side .v5-lead { color: var(--on-night); }
+  .r6-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .r6 :global(.f-btn--line) { border-color: color-mix(in srgb, var(--on-night) 45%, transparent); color: var(--on-night); }
+  .r6-plate { --dot-c: var(--night-4); --hd-c: var(--on-night); --hd-gap: 8px; padding: var(--s-pad); scroll-margin-top: calc(var(--nav-h) + 24px); }
+
+  /* ---- findings: a stepper over a stage ---- */
+  .f6-head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gap); row-gap: 24px; align-items: end; margin-bottom: var(--s-l2); }
+  .f6-head .fx-label { grid-column: 1 / -1; }
+  .f6-head .v5-h2 { grid-column: 1 / span 8; text-wrap: wrap; }
+  .f6-lead { grid-column: 9 / -1; }
+  .f6-steps { list-style: none; margin: 0 0 var(--s-l); padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); column-gap: var(--gap); }
+  .f6-step { position: relative; padding-top: 28px; border-top: 4px solid var(--stone-3); transition: opacity 0.5s var(--ease); }
+  .f6-step::before { content: ''; position: absolute; left: 0; right: 0; top: -4px; height: 4px; background: var(--cyan); transform-origin: left; transition: transform 1s var(--ease); }
+  .f6-sq { display: flex; gap: 4px; margin-bottom: 20px; }
+  .f6-sq b { width: 12px; height: 12px; background: var(--on-stone); }
+  .f6-t { margin: 0 0 16px; font: 500 var(--t-step)/var(--lh-step) var(--font); letter-spacing: -0.04em; }
+  .f6-p { margin: 0; max-width: 40ch; font: 400 var(--t-body)/var(--lh-body) var(--font); text-wrap: pretty; }
+  :global(html.js) .f6.is-armed .f6-step:not(.on) { opacity: 0.28; }
+  :global(html.js) .f6.is-armed .f6-step:not(.on)::before { transform: scaleX(0); }
+  .f6-stage { padding: var(--s-fnd-top) var(--s-pad); display: grid; justify-items: center; gap: 24px; background: var(--tone); --dot-c: var(--dot-on-tone); }
+  .f6-map { width: min(100%, 520px); }
+  .fnd-valid { display: flex; align-items: center; gap: 12px; margin: 0; font-size: var(--t-small); line-height: var(--lh-small); }
+  .fv-mark { flex: none; display: grid; place-items: center; width: 20px; height: 20px; background: var(--cyan); }
+  .fv-mark svg { width: 80%; height: 80%; overflow: visible; }
+  .fv-mark path { fill: none; stroke: var(--night); stroke-width: 1.8; stroke-linecap: square; }
+
+  /* ---- the teams: tall tiles on a grey band ---- */
+  .t6s { background: var(--tone); }
+  .t6-h { max-width: 18ch; margin-bottom: var(--s-m); }
+  .t6-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); }
+  .t6-grid li { display: grid; }
+  .t6 { display: grid; grid-template-rows: auto 1fr auto auto; row-gap: 16px; min-height: 420px; padding: var(--s-pad); background: var(--stone); color: var(--on-stone); transition: background-color 0.35s var(--ease), color 0.35s; }
+  .t6-icon { width: 56px; height: 56px; overflow: visible; }
+  .t6-icon path { fill: none; stroke: var(--on-stone); stroke-width: 1.5; stroke-linejoin: miter; stroke-linecap: square; stroke-dasharray: 1 1; transition: stroke 0.35s; }
+  .t6:hover .t6-icon path, .t6:focus-visible .t6-icon path { animation: t6-draw 1.1s var(--ease); stroke: var(--cyan); }
+  @keyframes t6-draw { from { stroke-dashoffset: 1; } }
+  .t6-name { align-self: end; font: 500 var(--t-name)/var(--lh-name) var(--font); letter-spacing: -0.045em; }
+  .t6-note { font: 400 var(--t-body)/var(--lh-body) var(--font); text-wrap: pretty; }
+  .t6-go { display: inline-flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 16px; border-top: 1px solid var(--on-stone-line); font: 600 var(--t-small)/var(--lh-small) var(--font); transition: border-color 0.35s; }
+  .t6-go > span.arr { display: inline-grid; place-items: center; width: 32px; height: 32px; background: var(--cyan); color: var(--night); }
+  .t6-go > span.arr svg { width: 16px; height: 16px; }
+  .t6:hover, .t6:focus-visible { background: var(--night); color: var(--on-night); }
+  .t6:hover .t6-go, .t6:focus-visible .t6-go { border-color: var(--on-night-line-2); color: var(--cyan); }
+  .t6:active { opacity: 0.85; }
+
+  /* ---- the close: a white poster ---- */
+  .c6 { padding-block: var(--s-sec); border-top: 1px solid var(--on-stone-line); }
+  .c6-in { display: grid; gap: var(--s-cta); }
+  .c6-h { margin: 0; font: 500 var(--t-display)/var(--lh-display) var(--font); letter-spacing: -0.055em; }
+  .c6-acc { color: var(--cyan); }
+  .c6-h :global(.tc) { visibility: hidden; }
+  .c6-h :global(.tc.on) { visibility: visible; }
+  .c6-h :global(.caret) { display: inline-block; width: 0.07em; height: 0.82em; margin-right: -0.07em; vertical-align: -0.06em; background: currentColor; animation: caret 1s steps(1) infinite; }
+  .c6-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px 40px; }
+  .c6-lead { margin: 0; font: 500 var(--t-title)/var(--lh-title) var(--font); letter-spacing: -0.03em; max-width: 30ch; text-wrap: pretty; }
+  .c6-btn { background: var(--night); color: var(--on-night); min-height: 64px !important; padding: 0 36px !important; }
+  .c6-btn:hover { background: var(--cyan); color: var(--night); }
+  .c6-btn:active { opacity: 0.85; }
+  .c6-points { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--gap); border-top: 1px solid var(--on-stone-line); font: 600 var(--t-small)/var(--lh-small) var(--font); }
+  .c6-points li { display: flex; align-items: center; gap: 12px; padding-top: 20px; }
+  .c6-points li::before { content: ''; width: 8px; height: 8px; background: var(--cyan); }
+
+  /* ---- narrower ---- */
+  .lg.is-paused .lg-set { animation-play-state: paused; }
+  @media (hover: none) { .lg:hover .lg-set { animation-play-state: running; } .lg.is-paused:hover .lg-set { animation-play-state: paused; } }
+  @media (max-width: 1099px) {
+    .t6-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .i6-row { grid-template-columns: auto minmax(0, 1fr); row-gap: 16px; }
+    .i6-meter { grid-column: 1 / -1; }
+    .c6-points { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 8px; }
+  }
+  @media (max-width: 899px) {
+    .h6-title, .h6-side { grid-column: 1 / -1; }
+    .h6-stage { grid-template-columns: minmax(0, 1fr); row-gap: 16px; }
+    .h6-cap { writing-mode: horizontal-tb; transform: none; order: 2; }
+    .e6-big, .e6-chart { grid-column: 1 / -1; grid-row: auto; }
+    .e6-share:nth-child(1), .e6-share:nth-child(2) { grid-column: span 6; grid-row: auto; }
+    .e6-p, .e6-go { grid-column: 1 / -1; justify-self: start; }
+    .i6-h, .i6-list { grid-column: 1 / -1; position: static; }
+    .q6-text, .q6-by { grid-column: 1 / -1; }
+    .r6-h, .r6-side, .f6-head .v5-h2, .f6-lead { grid-column: 1 / -1; }
+    .f6-steps { grid-template-columns: minmax(0, 1fr); row-gap: var(--s-s); }
+    .f6-stage { margin-inline: calc(var(--margin) * -1); padding-inline: var(--margin); }
+  }
+  @media (max-width: 600px) {
+    .e6-share:nth-child(1), .e6-share:nth-child(2) { grid-column: 1 / -1; }
+    .e6-bars { --nw: 0px; }
+    .e6-bars li { grid-template-columns: minmax(0, 1fr); row-gap: 8px; padding-block: 12px; }
+    .e6-mean { grid-template-columns: minmax(0, 1fr); row-gap: 8px; }
+    .t6-grid { grid-template-columns: minmax(0, 1fr); }
+    .t6 { min-height: 320px; }
+    .c6-points { grid-template-columns: minmax(0, 1fr); }
+    .c6-btn { width: 100%; }
+    .lg-set li { height: 56px; padding-inline: 20px; }
+    .lg-set img { width: 120px; height: 46px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lg-set { animation-duration: 90s; }
+  }
+</style>
