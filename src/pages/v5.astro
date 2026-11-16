@@ -369,11 +369,13 @@ const teams = [
       --s-tr-y: 40px; --s-tr-x: 40px; --s-tr-col: 48px; --s-cta: 64px; --s-lg: 16px; --s-copy: 40px;
     }
   }
-  body.folio.flat { --margin: 16px; --gap: 16px; }
-  @media (min-width: 768px) { body.folio.flat { --margin: 24px; --gap: 20px; } }
-  @media (min-width: 1024px) { body.folio.flat { --margin: 32px; --gap: 24px; } }
-  @media (min-width: 1280px) { body.folio.flat { --margin: 40px; --gap: 24px; } }
-  @media (min-width: 1440px) { body.folio.flat { --margin: 48px; --gap: 28px; } }
+  /* the side gaps are 5% of the screen narrower each side (2026-11-16): the column is 96px wider at 1920 (1440 to 1536),
+     and the margins on smaller screens step down by 4px. The nav, hero, every section and the footer share these tokens */
+  body.folio.flat { --margin: 16px; --gap: 16px; --max: 1536px; }
+  @media (min-width: 768px) { body.folio.flat { --margin: 20px; --gap: 20px; } }
+  @media (min-width: 1024px) { body.folio.flat { --margin: 28px; --gap: 24px; } }
+  @media (min-width: 1280px) { body.folio.flat { --margin: 36px; --gap: 24px; } }
+  @media (min-width: 1440px) { body.folio.flat { --margin: 44px; --gap: 28px; } }
   .v5-sec { position: relative; padding-block: var(--s-sec); }
   .v5-display { margin: 0; font: 500 var(--t-display)/var(--lh-display) var(--font); letter-spacing: -0.05em; color: var(--ink); text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
   .v5-h2 { margin: 0; font: 500 var(--t-h2)/var(--lh-h2) var(--font); letter-spacing: -0.045em; color: var(--ink); text-wrap: balance; overflow-wrap: break-word; min-width: 0; }
